@@ -1,0 +1,83 @@
+#include "verbuild.h"
+
+#include <winver.h>
+
+#ifdef _DEBUG
+#define _FF_DEBUG VS_FF_DEBUG
+#else
+#define _FF_DEBUG 0
+#endif
+
+#ifndef _INFOINFERRED
+#define _FF_INFOINFERRED 0
+#else
+#define _FF_INFOINFERRED _INFOINFERRED
+#endif
+
+#ifndef _PATCHED
+#define _FF_PATCHED 0
+#else
+#define _FF_PATCHED _PATCHED
+#endif
+
+#ifndef _PRERELEASE
+#define _FF_PRERELEASE 0
+#else
+#define _FF_PRERELEASE _PRERELEASE
+#endif
+
+#ifndef _PRIVATEBUILD
+#define _FF_PRIVATEBUILD 0
+#else
+#define _FF_PRIVATEBUILD _PRIVATEBUILD
+#endif
+
+
+#ifndef _SPECIALBUILD
+#define _FF_SPECIALBUILD 0
+#else
+#define _FF_SPECIALBUILD _SPECIALBUILD
+#endif
+
+#define _FF (_FF_SPECIALBUILD | _FF_PRIVATEBUILD | _FF_PRERELEASE | _FF_PATCHED | _FF_INFOINFERRED | _FF_DEBUG)
+
+
+
+1 VERSIONINFO
+	FILEVERSION _FILEVERSION
+	PRODUCTVERSION _PRODUCTVERSION
+	FILEFLAGSMASK 0x3f
+	FILEFLAGS _FF
+	FILEOS VOS_NT_WINDOWS32
+	FILETYPE _FILETYPE
+	FILESUBTYPE _FILESUBTYPE
+BEGIN
+	BLOCK "StringFileInfo"
+	BEGIN
+		BLOCK "040904e4"
+		BEGIN
+			VALUE "Comments",S_COMMENT
+			VALUE "CompanyName","Oracle Corporation\000"
+			VALUE "FileDescription",
+				S_FILEDESCRIPTION
+			VALUE "FileVersion",
+            S_FILEVERSION
+			VALUE "InternalName",
+				S_INTERNALNAME
+			VALUE "LegalCopyright",
+            S_COPYRIGHT
+			VALUE "OriginalFilename",
+				S_ORIGINALFILENAME
+			VALUE "ProductName",
+            S_PRODUCT
+			VALUE "ProductVersion",
+				S_PRODUCTVERSION
+		END
+	END
+	BLOCK "VarFileInfo"
+	BEGIN
+		VALUE "Translation",
+			0x409,0x04e4
+	END
+END
+
