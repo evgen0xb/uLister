@@ -23,6 +23,9 @@
 #endif
 #include <sccvw.h>
 
+// VS2005 fix:
+#define member_size(type, member) sizeof(((type *)0)->member)
+
 struct ALLMYDATA
 {
     WNDPROC ViewWindowProc;
@@ -46,4 +49,6 @@ HBITMAP getpreview(wchar_t* FileToLoad,int width,int height);
 void LoadFile(HWND hViewWnd,wchar_t* FileToLoad);
 
 #define ULISTMAXBUF 1024
+
+#define VTMAXSEARCHBUF 80
 

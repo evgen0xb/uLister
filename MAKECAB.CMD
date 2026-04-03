@@ -38,7 +38,7 @@ REM This is the only parameter that needs to be explicitly specified based on th
 REM All other parameters related to archive size and partitioning are set to 0 by default, i.e., the maximum values.
 REM MSZIP compression is used by default; it is not as efficient as LZX, but it works in all older and newer versions of Windows.
 
-makecab.exe /d MaxDiskSize=0 /d "DiskDirectoryTemplate=%CD%" /d "CabinetNameTemplate=%OUTDIR%.cab" /d Cabinet=on /d Compress=on /d RptFileName=nul /d InfFileName=nul /F "%listfile%" > "%OUTDIR%.rep" 2>&1
+makecab.exe /d MaxDiskSize=0 /d "DiskDirectoryTemplate=%CD%" /d "CabinetNameTemplate=%OUTDIR%.cab" /d Cabinet=on /d Compress=on /d RptFileName=nul /d InfFileName=nul /F %listfile% > "%OUTDIR%.rep" 2>&1
 SET el=%ERRORLEVEL%
 IF NOT "%el%" == "0" GOTO :errmakecab
 

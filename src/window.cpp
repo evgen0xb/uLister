@@ -60,14 +60,14 @@ LRESULT CALLBACK ParentWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			break;
 		case WM_SIZE:
 			InvalidateRect(hWnd, NULL, 0);
-			if (!mydata)break;
+			if (!mydata) break;
 			if (IsWindow(mydata->oiWindow)) {
 				MoveWindow(mydata->oiWindow, 0, 0, LOWORD(lParam), HIWORD(lParam), true);
 				ShowWindow(mydata->oiWindow, SW_SHOW);
 			}
 			break;
 		case SCCVW_VIEWTHISFILE:
-			return(loadthisfile(lParam) == 0) ? SCCVWERR_MESSAGEHANDLED : 0;
+			return (loadthisfile(lParam) == 0) ? SCCVWERR_MESSAGEHANDLED : 0;
 		}
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
@@ -102,10 +102,10 @@ HWND CreateLister(HWND ParentWin) {
 	ALLMYDATA *mydata;
 	mydata = new ALLMYDATA();
 	numInstances++;
-	if (!hViewerLibrary)hViewerLibrary = loadlib(L"SCCVW.DLL");
-	if (!hViewerLibrary)return NULL;
+	if (!hViewerLibrary) hViewerLibrary = loadlib(L"SCCVW.DLL");
+	if (!hViewerLibrary) return NULL;
 	mydata->ListerWindow = ParentWin;
-	bool quickview = WS_CHILD&GetWindowLongPtr(ParentWin, GWL_STYLE);
+	bool quickview = WS_CHILD & GetWindowLongPtr(ParentWin, GWL_STYLE);
 	wc.style = CS_HREDRAW | CS_VREDRAW;
 	wc.lpfnWndProc = (WNDPROC)ParentWindowProc;
 	wc.cbClsExtra = 0;
@@ -123,13 +123,13 @@ HWND CreateLister(HWND ParentWin) {
 	GetClientRect(waWnd, &r);
 	hViewWnd = CreateWindow("SCCVIEWER", NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN, r.left, r.top, r.right - r.left, r.bottom - r.top, waWnd, 0, hInst, NULL);
 	mydata->oiWindow = hViewWnd;
-	if (!IsWindow(hViewWnd))return NULL;
+	if (!IsWindow(hViewWnd)) return NULL;
 	mydata->ViewWindowProc = (WNDPROC)SetWindowLongPtr(hViewWnd, GWLP_WNDPROC, (LONG_PTR)ViewWindowProc);
 	// exception with Delphi 12 SetWindowLongPtr(hViewWnd, GWLP_USERDATA,(long) mydata);
 	// exception with Delphi 12 SetWindowLongPtr(waWnd, GWLP_USERDATA,(long) mydata);
 	SetWindowLongPtr(hViewWnd, GWLP_USERDATA, (LONG_PTR)mydata);
 	SetWindowLongPtr(waWnd, GWLP_USERDATA, (LONG_PTR)mydata);
-	if (!quickview)SetFocus(hViewWnd);
+	if (!quickview) SetFocus(hViewWnd);
 	return waWnd;
 }
 

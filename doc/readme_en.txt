@@ -68,7 +68,8 @@ If you unpacked the 32-bit library, copy the 32-bit files from the unpacked "red
 If you plan to use the plugin's optionsdir parameter, replace the sccut.dll file with the corresponding patched version from the "OIT_DATA_PATH support" directory.
 
 7. Keyboard Shortcuts
-Before using "Find Next" with F3, always open the Find dialog (F7 or Ctrl-F) first.
+Enter a search string - Ctrl+F/F7
+Find Next/Previous - F3/Shift+F3
 
 8. Compilation.
 Use the vs2015.sln file to edit the project's source code in modern versions of Visual Studio.
@@ -233,3 +234,19 @@ Use the vs2005.sln file to compile the project to reach most compact code with W
 
 2026-03-22
     https://github.com/evgen0xb/uLister
+
+2026-03-31 4.0.0.5 (Fork by evgen_b)
+    - Implemented support for UTF16 search using Oracle's built-in tools https://www.ghisler.ch/board/viewtopic.php?p=459162#p459162
+      (but it seems that the string is converted back to ANSI inside Outside In Viewer)
+    - Fixed a potential overflow when calculating the search string length (if the input string is longer than 79 characters - an Oracle limitation)
+    - If the search fails, the actual search string is displayed (always truncated to 79 characters), not what was entered in the search field.
+    - Bug fix: keepinmemory (unloading "SCCVW.DLL") had no effect, because The number of newly opened documents in uLister wasn't counted.
+Finally, the search procedure has been rewritten:
+    - After opening a document in uLister, you can immediately use the SEARCHFORWARD/SEARCHBACK keys (F3/Shift+F3) if a search string was previously entered in TC (Ctrl+F/F7).
+    - Previously, the search string was shared across all open uLister windows, which was very confusing for the user. Now, a search string is
+      correctly supported for each open uLister window (in the original, there was no synchronization between what was actually searched for,
+      what was entered into the searchbox, and what was shown in the "Not found" window).
+      (Giesler implemented the SEARCHFORWARD/SEARCHBACK "case-sensitive/case-insensitive" etc search settings for each individual window - this was confirmed experimentally.)
+
+2026-04-02
+    - Compilation hacks in VS2005
