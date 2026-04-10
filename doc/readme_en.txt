@@ -262,10 +262,10 @@ Finally, the search procedure has been rewritten:
 2026-04-02
     - Compilation hacks in VS2005
 
-2026-04-04
+2026-04-04 4.0.0.6 (Fork by evgen_b)
     - Refactoring and dead code removal
     - Slightly more detailed error messages (if library files exist but cannot be loaded, for example, when the library and plugin bit depths don't match,
       VCREDIST isn't installed, or some files are missing)
     - Added a link to Visual C++ Redistributables to the installation description
-    - Changed the search order for Oracle(R) libraries in Outside In Technology: Viewer Technology
-      (try search in XPdist32 or XPdist64 directories first for Outside In libraries for XP/Vista, then in redist32 or redist64 as usual; for other newer OSes, as usual)
+    - Changed the search order for Oracle(R) Outside In Technology: Viewer Technology libraries
+      (try search in XPdist32 or XPdist64 directories first for Outside In libraries for XP/Vista, then in redist32 or redist64 as usual; no changes for other newer OSes)
