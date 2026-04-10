@@ -79,11 +79,11 @@ LRESULT CALLBACK ViewWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
 	if (mydata) {
 		switch (message) {
 		case SCCVW_VIEWTHISFILE:
-			return(loadthisfile(lParam) == 0) ? SCCVWERR_MESSAGEHANDLED : 0;
+			return (loadthisfile(lParam) == 0) ? SCCVWERR_MESSAGEHANDLED : 0;
 		case SCCVW_KEYDOWN:
 			PostMessage(mydata->ListerWindow, WM_KEYDOWN, lParam, 0);
-			if ((GetKeyState(VK_CONTROL) < 0) && ((lParam == VK_OEM_PLUS) || (lParam == VK_ADD)))	zoom(hWnd, 1);
-			if ((GetKeyState(VK_CONTROL) < 0) && ((lParam == VK_OEM_MINUS) || (lParam == VK_SUBTRACT)))zoom(hWnd, -1);
+			if ((GetKeyState(VK_CONTROL) < 0) && ((lParam == VK_OEM_PLUS) || (lParam == VK_ADD)))		zoom(hWnd, 1);
+			if ((GetKeyState(VK_CONTROL) < 0) && ((lParam == VK_OEM_MINUS) || (lParam == VK_SUBTRACT)))	zoom(hWnd, -1);
 			break;
 		case WM_MOUSEHWHEEL:
 			PostMessage(hWnd, SCCVW_HSCROLL, (GET_WHEEL_DELTA_WPARAM(wParam) > 0) ? SCCSB_LINERIGHT : SCCSB_LINELEFT, 0);

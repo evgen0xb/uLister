@@ -25,12 +25,21 @@
 extern HINSTANCE  hInst;
 extern HANDLE     hViewerLibrary;
 extern int        numInstances;
+int NTLevel;
 int keepinmemory;
 wchar_t ininoloadtypes[ULISTMAXBUF];
 wchar_t inionlyloadtypes[ULISTMAXBUF];
 wchar_t ininopreviewtypes[ULISTMAXBUF];
 wchar_t inionlypreviewtypes[ULISTMAXBUF];
 wchar_t inipath[MAX_PATH];
+
+#ifdef ULISTER64
+wchar_t *REDIST_NT6 = L"\\redist64\\";
+wchar_t *REDIST_NT5 = L"\\XPdist64\\";
+#else
+wchar_t *REDIST_NT6 = L"\\redist32\\";
+wchar_t *REDIST_NT5 = L"\\XPdist32\\";
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 VTWORD gettype(wchar_t* FileToLoad) {
@@ -85,7 +94,7 @@ int CheckFile(wchar_t* FileToLoad, wchar_t* onlyload, wchar_t* noload) {
 	return 1;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void LoadFile(HWND hViewWnd, wchar_t* FileToLoad) {
+void LoadFile(HWND hViewWnd, const wchar_t* FileToLoad) {
 	SCCVWVIEWFILE80  locViewFile;
 	locViewFile.dwSize = sizeof(SCCVWVIEWFILE80);
 	locViewFile.dwSpecType = IOTYPE_UNICODEPATH;
@@ -150,7 +159,7 @@ int loadthisfile(LPARAM lParam) {
     return GetLastError();
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-HBITMAP getpreview(wchar_t* FileToLoad,int width,int height) {
+HBITMAP getpreview(const wchar_t* FileToLoad, const int width, const int height) {
 
 	if (!hViewerLibrary)hViewerLibrary = loadlib(L"SCCVW.DLL");
 	if (!hViewerLibrary)return NULL;
@@ -265,57 +274,111 @@ void iniparse() {
 		ExpandEnvironmentStringsW(inioptdir, oitdatapath, MAX_PATH);
 		SetEnvironmentVariableW(OIT_DATA_PATH, oitdatapath);
 	}
+
+	if (REGCurrentBuildNumber() < WINDOWS7BETABUILDNUMBER)
+		NTLevel = WindowsNTLevel::WinNT5;
+	else
+		NTLevel = WindowsNTLevel::WinNT6;
+
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-wchar_t* getlibpath(wchar_t *libname,wchar_t *libpath) {
-	wchar_t *pathposition;
+bool getlibpath(const wchar_t *libname, wchar_t *libpath, const int ntlev) {
+// OUT: build libpath and (!) check if it exists;   true=OK
+
 	GetModuleFileNameW(hInst, libpath, MAX_PATH);
+
+	wchar_t *pathposition;
 	if (pathposition = wcsrchr(libpath, L'\\'))
 		*pathposition = L'\0';
 
-#ifdef ULISTER64
-	wcscat_s(libpath, MAX_PATH,L"\\redist64\\");
-#else
-	wcscat_s(libpath, MAX_PATH,L"\\redist32\\");
-#endif
+	if (ntlev == WindowsNTLevel::WinNT5)
+		wcscat_s(libpath, MAX_PATH, REDIST_NT5);
+	else
+		wcscat_s(libpath, MAX_PATH, REDIST_NT6);
 
 	wcscat_s(libpath, MAX_PATH, libname);
-	if (GetFileAttributesW(libpath) != INVALID_FILE_ATTRIBUTES) return libpath;
-	return NULL;
+
+	return (GetFileAttributesW(libpath) != INVALID_FILE_ATTRIBUTES);
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-int libexist(wchar_t *libname) {
+HINSTANCE loadlib(const wchar_t *libname) {
+	HANDLE lib = NULL;
 	wchar_t path[MAX_PATH];
-	return (int) getlibpath(libname, path);
+
+	// if WinXP, first try to load library from "XPdist*"
+	if (NTLevel == WindowsNTLevel::WinNT5)
+	{
+		if (getlibpath(libname, path, WindowsNTLevel::WinNT5))
+		{
+			lib = LoadLibraryExW(path, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
+			if (lib == NULL) // DLL exist, but can't load...
+				ErrMsgIssue(FileErrIssue::CantLoad, path, GetLastError());
+
+			return (HINSTANCE)lib;
+		}
+	}
+
+	// anycase, load library from "redist*"
+	if (getlibpath(libname, path, WindowsNTLevel::WinNT6))
+	{
+		lib = LoadLibraryExW(path, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
+		if (lib == NULL) // DLL exist, but can't load...
+			ErrMsgIssue(FileErrIssue::CantLoad, path, GetLastError());
+	}
+	else
+		ErrMsgIssue(FileErrIssue::CantFind, path, GetLastError());
+
+	return (HINSTANCE)lib;
 }
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-HINSTANCE loadlib(wchar_t * libname) {
+unsigned long long REGCurrentBuildNumber()
+{
+	char readbuf[VTMAXSEARCHBUF];
+	DWORD readbytes = VTMAXSEARCHBUF - 1;
+
+	HKEY hKey = NULL;
+	unsigned long long CurrentBuildNumber = 0;
+	LONG Stat; // fix VS2005
+
+	Stat = RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", 0, KEY_QUERY_VALUE | KEY_WOW64_64KEY, &hKey);
+	if (Stat == ERROR_SUCCESS)
+	{
+		Stat = RegQueryValueExA(hKey, "CurrentBuildNumber", NULL, NULL, (LPBYTE) readbuf, &readbytes); // Windows XP SP0 support
+		if (Stat == ERROR_SUCCESS)
+		{
+			readbuf[readbytes] = 0; // the return value of RegQueryValueExA may not contain the '\0' character at the end
+			CurrentBuildNumber = _strtoui64(readbuf, NULL, 10); // VS2005 fix
+		}
+	}
+
+	RegCloseKey(hKey);
+	return CurrentBuildNumber;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void ErrMsgIssue(const int issuetype, const wchar_t *path, const DWORD dwError)
+{
 #ifdef ULISTER64
 	const wchar_t *title = L"uLister x64 Error";
 #else
 	const wchar_t *title = L"uLister x86 Error";
 #endif
-	HANDLE lib;
-	wchar_t path[MAX_PATH];
-	if (getlibpath(libname, path))
-	{
-		lib = LoadLibraryExW(path, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
-	}
+
+	wchar_t *issuename;
+	if (issuetype == FileErrIssue::CantFind)
+		issuename = L"File not found:";
 	else
-	{
-		DWORD dwError = GetLastError();
-		wchar_t buf[ULISTMAXBUF];
-		swprintf_s(buf, ULISTMAXBUF,
-		L"Can't load:\n"
+		issuename = L"Can't load:";
+
+	wchar_t buf[ULISTMAXBUF];
+	swprintf_s(buf, ULISTMAXBUF,
+		L"%s\n"
 		L"[%s].\n"
 		L"Error code: 0x%08X   (%lu)\n"
 		L"INI=[%s]\n\n"
 		L"Check Outside In dlls in plugin dir.\n"
-		L"See readme.txt, install section.", path, dwError, dwError, inipath);
+		L"See readme.txt, install section.", issuename, path, dwError, dwError, inipath);
 
-		MessageBoxW(NULL, buf, title, MB_OK);
-		return 0;
-	}
-	return (HINSTANCE) lib;
+	MessageBoxW(NULL, buf, title, MB_OK);
 }
-

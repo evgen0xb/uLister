@@ -67,6 +67,17 @@ If you unpacked the 32-bit library, copy the 32-bit files from the unpacked "red
 
 If you plan to use the plugin's optionsdir parameter, replace the sccut.dll file with the corresponding patched version from the "OIT_DATA_PATH support" directory.
 
+To run Oracle Outside In Technology: Viewer Technology, you need current versions of the Visual C++ Redistributables libraries.
+AIO can be installed, for example, from here: https://github.com/abbodi1406/vcredist
+
+Starting with version 4.0.0.6, uLister selects libraries even more flexibly:
+Now, only for operating systems below Windows 7, a search for Outside In libraries has been added, first in the XPdist32 or XPdist64 directories (higher priority),
+and if nothing found, then in redist32 or redist64 as usual (lower priority). For Windows 7 and higher, the search is performed as before, only in redist32 or redist64.
+This is done so that uLister can flexibly select the appropriate Outside In libraries depending on the OS it is running on
+(legacy libraries but with XP/Vista support, and the newest libraries for other operating systems starting with Windows 7 and higher).
+Therefore, if automatic XP/Vista support using older library versions is not needed, then the XPdist32 and XPdist64 directories containing
+older library versions are also unnecessary, and everything will work as before on any OS without them.
+
 7. Keyboard Shortcuts
 Enter a search string - Ctrl+F/F7
 Find Next/Previous - F3/Shift+F3
@@ -250,3 +261,11 @@ Finally, the search procedure has been rewritten:
 
 2026-04-02
     - Compilation hacks in VS2005
+
+2026-04-04
+    - Refactoring and dead code removal
+    - Slightly more detailed error messages (if library files exist but cannot be loaded, for example, when the library and plugin bit depths don't match,
+      VCREDIST isn't installed, or some files are missing)
+    - Added a link to Visual C++ Redistributables to the installation description
+    - Changed the search order for Oracle(R) libraries in Outside In Technology: Viewer Technology
+      (try search in XPdist32 or XPdist64 directories first for Outside In libraries for XP/Vista, then in redist32 or redist64 as usual; for other newer OSes, as usual)

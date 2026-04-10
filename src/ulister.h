@@ -34,19 +34,35 @@ struct ALLMYDATA
     HWND waWindow;
 };
 
-wchar_t* getlibpath(wchar_t *libname,wchar_t *libpath);
-int libexist(wchar_t *libname);
+namespace WindowsNTLevel {
+	enum Type {
+		WinNT5=0,
+		WinNT6
+	};
+} // VS2005 fix
+
+namespace FileErrIssue {
+	enum Type {
+		CantFind = 0,
+		CantLoad
+	};
+} // VS2005 fix
+
+#define WINDOWS7BETABUILDNUMBER 7000
+
 void iniparse();
-HINSTANCE loadlib(wchar_t * libname);
-void zoom(HWND hWnd,int dir);
+HINSTANCE loadlib(const wchar_t *libname);
+void zoom(HWND hWnd, int dir);
 int loadthisfile(LPARAM lParam);
 LRESULT CALLBACK ParentWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK ViewWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 HWND CreateLister(HWND ParentWin);
 VTWORD gettype(wchar_t* FileToLoad);
-int CheckFile(wchar_t* FileToLoad,wchar_t* onlyload,wchar_t* noload);
-HBITMAP getpreview(wchar_t* FileToLoad,int width,int height);
-void LoadFile(HWND hViewWnd,wchar_t* FileToLoad);
+int CheckFile(wchar_t* FileToLoad, wchar_t* onlyload, wchar_t* noload);
+HBITMAP getpreview(const wchar_t* FileToLoad, const int width, const int height);
+void LoadFile(HWND hViewWnd, const wchar_t* FileToLoad);
+void ErrMsgIssue(const int issuetype, const wchar_t *path, const DWORD dwError);
+unsigned long long REGCurrentBuildNumber();
 
 #define ULISTMAXBUF 1024
 
