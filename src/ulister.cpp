@@ -80,6 +80,33 @@ extern "C" __declspec(dllexport) HWND __stdcall ListLoadW(HWND ParentWin, wchar_
 	if (mydata) {
 		LoadFile(mydata->oiWindow, FileToLoad);
 		numInstances++; // fix
+
+	/*
+		// test unicode clipboard:
+		SCCVWOPTIONSPEC40 locOptionSpec;
+		VTDWORD ClipFormat;
+		locOptionSpec.dwSize = sizeof(SCCVWOPTIONSPEC40);
+		locOptionSpec.dwFlags = SCCVWOPTION_CURRENT;
+		locOptionSpec.dwId = SCCID_TOCLIPBOARD;
+		locOptionSpec.pData = &ClipFormat;
+		// SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+		ClipFormat = SCCVW_CLIPFORMAT_TEXT | SCCVW_CLIPFORMAT_RTF | SCCVW_CLIPFORMAT_UNICODE | SCCVW_CLIPFORMAT_WINBITMAP | SCCVW_CLIPFORMAT_WINDIB | SCCVW_CLIPFORMAT_WINMETAFILE | SCCVW_CLIPFORMAT_WINPALETTE;
+		SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+	*/
+
+	/*
+		// test drag-and-drop copying:
+		SCCVWOPTIONSPEC40 locOptionSpec;
+		VTDWORD OLEFlags;
+		locOptionSpec.dwSize = sizeof(SCCVWOPTIONSPEC40);
+		locOptionSpec.dwFlags = SCCVWOPTION_CURRENT;
+		locOptionSpec.dwId = SCCID_OLEFLAGS;
+		locOptionSpec.pData = &OLEFlags;
+		// SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+		OLEFlags = SCCVW_OLE_ENABLEDRAGDROP;
+		SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+	*/
+
 	}
 	return hViewWnd;
 }
@@ -143,7 +170,7 @@ extern "C" __declspec(dllexport)void __stdcall ListCloseWindow(HWND ListWin) {
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __declspec(dllexport)int __stdcall ListSearchText(HWND ListWin, char* SearchString, int SearchParameter) { // ANSI
+extern "C" __declspec(dllexport)int __stdcall ListSearchText(HWND ListWin, char* SearchString, int SearchParameter) { // ASCII
 // reserved for Windows 98 SE future support maybe
 #pragma warning( push )
 #pragma warning( disable : 4996 )
@@ -154,6 +181,17 @@ extern "C" __declspec(dllexport)int __stdcall ListSearchText(HWND ListWin, char*
 
 	mydata = (ALLMYDATA *)GetWindowLongPtr(ListWin, GWLP_USERDATA);
 	if (mydata) {
+
+		// force internal search engine to ASCII (default)
+		SCCVWOPTIONSPEC40 locOptionSpec;
+		VTDWORD SystemFlags;
+		locOptionSpec.dwSize = sizeof(SCCVWOPTIONSPEC40);
+		locOptionSpec.dwFlags = SCCVWOPTION_CURRENT;
+		locOptionSpec.dwId = SCCID_SYSTEMFLAGS;
+		locOptionSpec.pData = &SystemFlags;
+		SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+		SystemFlags = SystemFlags & (!SCCVW_SYSTEM_UNICODE); // reset the unicode bit
+		SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 
 		WindowWithoutSearchStringYet = (SearchStringPerWindowA.count(ListWin) == 0);
 
@@ -224,6 +262,17 @@ extern "C" __declspec(dllexport)int __stdcall ListSearchTextW(HWND ListWin, WCHA
 	mydata = (ALLMYDATA *) GetWindowLongPtrW(ListWin, GWLP_USERDATA);
 	if (mydata) {
 		
+		// force internal search engine to UNICODE
+		SCCVWOPTIONSPEC40 locOptionSpec;
+		VTDWORD SystemFlags;
+		locOptionSpec.dwSize = sizeof(SCCVWOPTIONSPEC40);
+		locOptionSpec.dwFlags = SCCVWOPTION_CURRENT;
+		locOptionSpec.dwId = SCCID_SYSTEMFLAGS;
+		locOptionSpec.pData = &SystemFlags;
+		SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+		SystemFlags = SystemFlags | SCCVW_SYSTEM_UNICODE; // set the unicode bit
+		SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
 		WindowWithoutSearchStringYet = (SearchStringPerWindowW.count(ListWin) == 0);
 
 		if ((SearchParameter & lcs_findfirst) || WindowWithoutSearchStringYet) {

@@ -81,6 +81,7 @@ older library versions are also unnecessary, and everything will work as before 
 7. Keyboard Shortcuts
 Enter a search string - Ctrl+F/F7
 Find Next/Previous - F3/Shift+F3
+For some formats, mainly tabular and vector ones, you can zoom in/out - Ctrl "+" / Ctrl "-"
 
 8. Compilation.
 Use the vs2015.sln file to edit the project's source code in modern versions of Visual Studio.
@@ -269,3 +270,9 @@ Finally, the search procedure has been rewritten:
     - Added a link to Visual C++ Redistributables to the installation description
     - Changed the search order for Oracle(R) Outside In Technology: Viewer Technology libraries
       (try search in XPdist32 or XPdist64 directories first for Outside In libraries for XP/Vista, then in redist32 or redist64 as usual; no changes for other newer OSes)
+
+2026-04-11
+    - For ListSearchTextW, the Outside In Technology library now explicitly uses the internal UNICODE search engine.
+    - For ListSearchText, the internal ASCII search engine is explicitly used (as was previously the case).
+      (The internal UNICODE search engine allows you to use of specific UNICODE characters, but this only works correctly if
+      the Outside In Technology library "knows" them and can interpret them correctly. Unfortunately, it does not support many new characters.)
