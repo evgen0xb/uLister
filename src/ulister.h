@@ -48,21 +48,62 @@ namespace FileErrIssue {
 	};
 } // VS2005 fix
 
+namespace Opt { // Outside In Technology option representation
+	enum Type {
+		SKIP = -1, // don't change
+		OFF = 0, // set FALSE
+		ON = 1 // set TRUE
+	};
+} // VS2005 fix
+
+#ifndef VTOPTIONSCLIPBOARD
+#define VTOPTIONSCLIPBOARD
+class clsVTOptionsClipboard
+{
+public:
+
+	VTDWORD SSCLIPBOARD;
+	__int8 FORMAT_TEXT;
+	__int8 FORMAT_RTF;
+	__int8 FORMAT_UNICODE;
+	__int8 FORMAT_WINBITMAP;
+	__int8 FORMAT_WINDIB;
+	__int8 FORMAT_WINMETAFILE;
+	__int8 FORMAT_WINPALETTE;
+	__int8 OLE_ENABLEDRAGDROP;
+
+	clsVTOptionsClipboard();
+	VTDWORD Get_SCCVW_CLIPFORMAT(VTDWORD ClipFormat) const;
+	VTDWORD Get_SCCVW_OLE(VTDWORD OLEFlags) const;
+	VTDWORD Get_SCCVW_CLIPSUBFORMAT(VTDWORD ClipSubFormat) const;
+}; // clsVTOptionsClipboard
+#endif
+
+#ifndef VTOPTIONS
+#define VTOPTIONS
+class clsVTOptions
+{
+public:
+	clsVTOptionsClipboard	VTOptionsClipboard;
+};
+#endif
+
 #define WINDOWS7BETABUILDNUMBER 7000
 
-void iniparse();
-HINSTANCE loadlib(const wchar_t *libname);
+void IniParse();
+HINSTANCE LoadLibVT(const wchar_t *libname);
 void zoom(HWND hWnd, int dir);
-int loadthisfile(LPARAM lParam);
+int LoadThisFile(LPARAM lParam);
 LRESULT CALLBACK ParentWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK ViewWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 HWND CreateLister(HWND ParentWin);
-VTWORD gettype(wchar_t* FileToLoad);
-int CheckFile(wchar_t* FileToLoad, wchar_t* onlyload, wchar_t* noload);
-HBITMAP getpreview(const wchar_t* FileToLoad, const int width, const int height);
+VTWORD GetType(const wchar_t* FileToLoad);
+int CheckFile(const wchar_t* FileToLoad, const wchar_t* onlyload, const wchar_t* noload);
+HBITMAP GetPreview(const wchar_t* FileToLoad, const int width, const int height);
 void LoadFile(HWND hViewWnd, const wchar_t* FileToLoad);
 void ErrMsgIssue(const int issuetype, const wchar_t *path, const DWORD dwError);
 unsigned long long REGCurrentBuildNumber();
+void SendVTOptions(const ALLMYDATA *mydata, const clsVTOptions *_VTOptions);
 
 #define ULISTMAXBUF 1024
 

@@ -67,7 +67,7 @@ LRESULT CALLBACK ParentWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			}
 			break;
 		case SCCVW_VIEWTHISFILE:
-			return (loadthisfile(lParam) == 0) ? SCCVWERR_MESSAGEHANDLED : 0;
+			return (LoadThisFile(lParam) == 0) ? SCCVWERR_MESSAGEHANDLED : 0;
 		}
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
@@ -79,7 +79,7 @@ LRESULT CALLBACK ViewWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
 	if (mydata) {
 		switch (message) {
 		case SCCVW_VIEWTHISFILE:
-			return (loadthisfile(lParam) == 0) ? SCCVWERR_MESSAGEHANDLED : 0;
+			return (LoadThisFile(lParam) == 0) ? SCCVWERR_MESSAGEHANDLED : 0;
 		case SCCVW_KEYDOWN:
 			PostMessage(mydata->ListerWindow, WM_KEYDOWN, lParam, 0);
 			if ((GetKeyState(VK_CONTROL) < 0) && ((lParam == VK_OEM_PLUS) || (lParam == VK_ADD)))		zoom(hWnd, 1);
@@ -102,7 +102,7 @@ HWND CreateLister(HWND ParentWin) {
 	ALLMYDATA *mydata;
 	mydata = new ALLMYDATA();
 	numInstances++;
-	if (!hViewerLibrary) hViewerLibrary = loadlib(L"SCCVW.DLL");
+	if (!hViewerLibrary) hViewerLibrary = LoadLibVT(L"SCCVW.DLL");
 	if (!hViewerLibrary) return NULL;
 	mydata->ListerWindow = ParentWin;
 	bool quickview = WS_CHILD & GetWindowLongPtr(ParentWin, GWL_STYLE);

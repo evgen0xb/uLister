@@ -53,6 +53,34 @@ Some patched versions of this file are located in the "OIT_DATA_PATH support" di
 If the optionsdir parameter is not specified, the library creates ".oit" in %APPDATA%; if this value is undefined, it creates it in %LOCALAPPDATA%;
 if this value is also undefined, it creates it in the library directory.
 
+Version 4.0.0.7 of the plugin introduces additional parameters related to Outside In Technology library copying to the clipboard.
+These parameters should be located in the [clipboard] section and are set to "SKIP" by default, meaning they use the settings stored in Outside In Technology rather than the INI file.
+
+The main group is what can be accessed by right-clicking Options->Clipboard in an open document.
+These parameters determine the format in which blocks can be placed on the clipboard (SDK A.10.10 SCCID_TOCLIPBOARD).
+
+[clipboard]
+ascii=skip|on|off
+rtf=skip|on|off
+unicode=skip|on|off (by default, this option is disabled, which in the original led to the appearance of "kryakozyabr" when copying national characters)
+bitmap=skip|on|off
+windib=skip|on|off
+metafile=skip|on|off
+palette=skip|on|off
+
+The following setting enables or disables drag-and-drop copying of a selected block (SDK A.10.6 SCCID_OLEFLAGS).
+dragdrop=skip|on|off
+
+This setting specifies the format for copying cells from spreadsheets (SDK A.4.8 SCCID_SSCLIPBOARD)
+spreadsheet=skip|rtf|tabs|optimizedtabs
+    rtf - copy as a table using RTF format
+    tabs - as plain text, separated between cells by tabs
+    optimizedtabs - as in the previous case, but empty cells are skipped
+
+It is recommended to set all clipboard section parameters to "on" (especially for unicode).
+
+Options are set the first time you launch the plugin. Restart Total Commander for the changes to take effect.
+
 6. Installation
 The Oracle Outside In Technology: Viewer Technology library can be downloaded from
 https://www.oracle.com/middleware/technologies/outside-in-technology-downloads.html
@@ -81,7 +109,9 @@ older library versions are also unnecessary, and everything will work as before 
 7. Keyboard Shortcuts
 Enter a search string - Ctrl+F/F7
 Find Next/Previous - F3/Shift+F3
+(Search is not available in some formats; case-insensitive search option is supported)
 For some formats, mainly tabular and vector ones, you can zoom in/out - Ctrl "+" / Ctrl "-"
+For some formats, you can select a block and copy it to the clipboard, or drag-and-drop copy.
 
 8. Compilation.
 Use the vs2015.sln file to edit the project's source code in modern versions of Visual Studio.
@@ -276,3 +306,7 @@ Finally, the search procedure has been rewritten:
     - For ListSearchText, the internal ASCII search engine is explicitly used (as was previously the case).
       (The internal UNICODE search engine allows you to use of specific UNICODE characters, but this only works correctly if
       the Outside In Technology library "knows" them and can interpret them correctly. Unfortunately, it does not support many new characters.)
+
+2026-04-12 4.0.0.7 (Fork by evgen_b)
+    - added clipboard settings to the [clipboard] section of the ulister.ini file (such as Unicode support, drag-and-drop copying of
+      a selected block, selection format for spreadsheets, etc.)

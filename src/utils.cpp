@@ -22,10 +22,12 @@
 #include <stdio.h>
 #include "ulister.h"
 
-extern HINSTANCE  hInst;
-extern HANDLE     hViewerLibrary;
-extern int        numInstances;
-int NTLevel;
+extern HINSTANCE	hInst;
+extern HANDLE		hViewerLibrary;
+extern int			numInstances;
+extern int			NTLevel;
+extern clsVTOptions VTOptions;
+
 int keepinmemory;
 wchar_t ininoloadtypes[ULISTMAXBUF];
 wchar_t inionlyloadtypes[ULISTMAXBUF];
@@ -41,10 +43,16 @@ wchar_t *REDIST_NT6 = L"\\redist32\\";
 wchar_t *REDIST_NT5 = L"\\XPdist32\\";
 #endif
 
+const wchar_t *CLIPBOARDSECTION = L"clipboard";
+const wchar_t *ASKIP = L"SKIP";
+const wchar_t *AON	 = L"ON";
+const wchar_t *AOFF  = L"OFF";
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-VTWORD gettype(wchar_t* FileToLoad) {
+VTWORD GetType(const wchar_t* FileToLoad) {
 	typedef VTDWORD(*FIInitFUNC)(VTVOID);
-	typedef VTWORD(*FIIdFileExFUNC)(VTDWORD, VTVOID *, VTDWORD, VTWORD *, VTLPTSTR, VTWORD);
+	typedef VTWORD(*FIIdFileExFUNC)(VTDWORD, const VTVOID *, VTDWORD, VTWORD *, VTLPTSTR, VTWORD);
 	typedef VTDWORD(*FIDeInitFUNC)(VTVOID);
 
 	SCCERR  err = SCCERR_UNKNOWN;
@@ -59,7 +67,7 @@ VTWORD gettype(wchar_t* FileToLoad) {
 
 	HINSTANCE hinstDLL;
 
-	hinstDLL = loadlib(L"SCCFI.DLL");
+	hinstDLL = LoadLibVT(L"SCCFI.DLL");
 	if (hinstDLL) {
 		FIInit = (FIInitFUNC)GetProcAddress(hinstDLL, "FIInit");
 		FIIdFileEx = (FIIdFileExFUNC)GetProcAddress(hinstDLL, "FIIdFileEx");
@@ -77,9 +85,9 @@ VTWORD gettype(wchar_t* FileToLoad) {
 	return 	wType;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-int CheckFile(wchar_t* FileToLoad, wchar_t* onlyload, wchar_t* noload) {
+int CheckFile(const wchar_t* FileToLoad, const wchar_t* onlyload, const wchar_t* noload) { // TODO refactor
 	VTWORD  wType;
-	wType = gettype(FileToLoad);
+	wType = GetType(FileToLoad);
 
 	wchar_t ftype[10];
 	_itow_s(wType, ftype, 10, 10);
@@ -94,7 +102,7 @@ int CheckFile(wchar_t* FileToLoad, wchar_t* onlyload, wchar_t* noload) {
 	return 1;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void LoadFile(HWND hViewWnd, const wchar_t* FileToLoad) {
+void LoadFile(const HWND hViewWnd, const wchar_t* FileToLoad) {
 	SCCVWVIEWFILE80  locViewFile;
 	locViewFile.dwSize = sizeof(SCCVWVIEWFILE80);
 	locViewFile.dwSpecType = IOTYPE_UNICODEPATH;
@@ -108,7 +116,7 @@ void LoadFile(HWND hViewWnd, const wchar_t* FileToLoad) {
 	SendMessage(hViewWnd, SCCVW_VIEWFILE, 0, (LPARAM)&locViewFile);
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-int loadthisfile(LPARAM lParam) {
+int LoadThisFile(const LPARAM lParam) { // TODO refactor
     PSCCVWVIEWTHISFILE40    locVTFPtr40;
     PSCCVWVIEWTHISFILE80    locVTFPtr80;
     locVTFPtr40 = (PSCCVWVIEWTHISFILE40)lParam;
@@ -159,9 +167,9 @@ int loadthisfile(LPARAM lParam) {
     return GetLastError();
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-HBITMAP getpreview(const wchar_t* FileToLoad, const int width, const int height) {
+HBITMAP GetPreview(const wchar_t* FileToLoad, const int width, const int height) {
 
-	if (!hViewerLibrary)hViewerLibrary = loadlib(L"SCCVW.DLL");
+	if (!hViewerLibrary)hViewerLibrary = LoadLibVT(L"SCCVW.DLL");
 	if (!hViewerLibrary)return NULL;
 	numInstances++;
 	HWND hViewWnd = CreateWindow("SCCVIEWER", NULL, WS_CLIPCHILDREN, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, 0, hInst, NULL);
@@ -226,42 +234,49 @@ HBITMAP getpreview(const wchar_t* FileToLoad, const int width, const int height)
 	return bitmap;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void iniparse() {
-	const wchar_t *ULISTERSECTION = L"uLister";
+void GetIniPath(wchar_t *_inipath)
+{
 	const wchar_t *ULISTERINI = L"\\ulister.ini";
+	wchar_t *pathposition;
+	int retlength;
+
+	GetModuleFileNameW(hInst, _inipath, MAX_PATH); // самый высокий приоритет расположени€ ulister.ini в каталоге с плагином
+	_inipath[MAX_PATH - 1] = L'\0'; // Windows XP fix: —трока усечена до символов nSize Ќќ не завершаетс€ значением NULL
+	if (pathposition = wcsrchr(_inipath, L'\\'))
+		*pathposition = L'\0';
+	wcscat_s(_inipath, MAX_PATH, ULISTERINI);
+
+	if (GetFileAttributesW(_inipath) == INVALID_FILE_ATTRIBUTES)
+	{
+		retlength = GetEnvironmentVariableW(L"COMMANDER_INI", _inipath, MAX_PATH); // иначе посмотреть ulister.ini там же, где и wincmd.ini
+		if ((retlength < MAX_PATH) && retlength)
+		{
+			if (pathposition = wcsrchr(_inipath, L'\\'))
+				*pathposition = L'\0';
+			wcscat_s(_inipath, MAX_PATH, ULISTERINI);
+		}
+
+		if (GetFileAttributesW(_inipath) == INVALID_FILE_ATTRIBUTES)
+		{
+			GetEnvironmentVariableW(L"APPDATA", _inipath, MAX_PATH); // самый низкий приоритет ulister.ini в %APPDATA%
+			wcscat_s(_inipath, MAX_PATH, ULISTERINI);
+		}
+	}
+
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void InitUlister()
+{
+	const wchar_t *ULISTERSECTION = L"uLister";
 	const wchar_t *OIT_DATA_PATH = L"OIT_DATA_PATH";
 
 	wchar_t inioptdir[MAX_PATH];
 	wchar_t oitdatapath[MAX_PATH];
-	wchar_t *pathposition;
-	int retlength;
 
-	GetModuleFileNameW(hInst, inipath, MAX_PATH); // самый высокий приоритет расположени€ ulister.ini в каталоге с плагином
-	inipath[MAX_PATH - 1] = L'\0'; // Windows XP fix: —трока усечена до символов nSize Ќќ не завершаетс€ значением NULL
-	if (pathposition = wcsrchr(inipath, L'\\'))
-		*pathposition = L'\0';
-	wcscat_s(inipath, MAX_PATH, ULISTERINI);
+	wchar_t buf[ULISTMAXBUF];
 
-	if (GetFileAttributesW(inipath) == INVALID_FILE_ATTRIBUTES)
-	{
-		retlength = GetEnvironmentVariableW(L"COMMANDER_INI", inipath, MAX_PATH); // иначе посмотреть ulister.ini там же, где и wincmd.ini
-		if ((retlength < MAX_PATH) && retlength)
-		{
-			if (pathposition = wcsrchr(inipath, L'\\'))
-				*pathposition = L'\0';
-			wcscat_s(inipath, MAX_PATH, ULISTERINI);
-		}
-
-		if (GetFileAttributesW(inipath) == INVALID_FILE_ATTRIBUTES)
-		{
-			GetEnvironmentVariableW(L"APPDATA", inipath, MAX_PATH); // самый низкий приоритет ulister.ini в %APPDATA%
-			wcscat_s(inipath, MAX_PATH, ULISTERINI);
-		}
-	}
-
-	wchar_t buf[ULISTMAXBUF] = L"";
 	GetPrivateProfileStringW(ULISTERSECTION, L"keepinmemory", L"1", buf, ULISTMAXBUF, inipath);
-	if (wcscmp(buf, L"1") == 0) keepinmemory = 1; else keepinmemory = 0;
+	if (wcscmp(buf, L"1") == 0) keepinmemory = 1; else keepinmemory = 0; // TODO use _wcsicmp everyweare to optimize .text dll-section memory usage
 
 	GetPrivateProfileStringW(ULISTERSECTION, L"optionsdir", L"", inioptdir, MAX_PATH, inipath);
 
@@ -275,14 +290,58 @@ void iniparse() {
 		SetEnvironmentVariableW(OIT_DATA_PATH, oitdatapath);
 	}
 
-	if (REGCurrentBuildNumber() < WINDOWS7BETABUILDNUMBER)
-		NTLevel = WindowsNTLevel::WinNT5;
-	else
-		NTLevel = WindowsNTLevel::WinNT6;
-
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-bool getlibpath(const wchar_t *libname, wchar_t *libpath, const int ntlev) {
+__int8 ReadIniClipbOpt(const wchar_t *optionname)
+{
+	wchar_t buf[ULISTMAXBUF]; // TODO VTMAXSEARCHBUF to optimize stack memory usage
+	__int8 result;
+
+	GetPrivateProfileStringW(CLIPBOARDSECTION, optionname, ASKIP, buf, ULISTMAXBUF, inipath);
+	if (_wcsicmp(buf, AON) == 0) result = Opt::ON;
+	else if (_wcsicmp(buf, AOFF) == 0) result = Opt::OFF;
+	else result = Opt::SKIP;
+
+	return result;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+VTDWORD ReadIniClipbOptSpreadsheet(const wchar_t *optionname)
+{
+	wchar_t buf[ULISTMAXBUF]; // TODO VTMAXSEARCHBUF to optimize stack memory usage
+	VTDWORD result;
+
+	GetPrivateProfileStringW(CLIPBOARDSECTION, optionname, ASKIP, buf, ULISTMAXBUF, inipath);
+	if (_wcsicmp(buf, L"rtf") == 0) result = SCCVW_CLIPSUBFORMAT_TABLE;
+	else if (_wcsicmp(buf, L"tabs") == 0) result = SCCVW_CLIPSUBFORMAT_TABS;
+	else if (_wcsicmp(buf, L"optimizedtabs") == 0) result = SCCVW_CLIPSUBFORMAT_OPTIMIZEDTABS;
+	else result = Opt::SKIP;
+
+	return result;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void InitClipboardOpts()
+{
+	VTOptions.VTOptionsClipboard.FORMAT_TEXT = ReadIniClipbOpt(L"ascii");
+	VTOptions.VTOptionsClipboard.FORMAT_RTF = ReadIniClipbOpt(L"rtf");
+	VTOptions.VTOptionsClipboard.FORMAT_UNICODE = ReadIniClipbOpt(L"unicode");
+	VTOptions.VTOptionsClipboard.FORMAT_WINBITMAP = ReadIniClipbOpt(L"bitmap");
+	VTOptions.VTOptionsClipboard.FORMAT_WINDIB = ReadIniClipbOpt(L"windib");
+	VTOptions.VTOptionsClipboard.FORMAT_WINMETAFILE = ReadIniClipbOpt(L"metafile");
+	VTOptions.VTOptionsClipboard.FORMAT_WINPALETTE = ReadIniClipbOpt(L"palette");
+
+	VTOptions.VTOptionsClipboard.OLE_ENABLEDRAGDROP = ReadIniClipbOpt(L"dragdrop");
+
+	VTOptions.VTOptionsClipboard.SSCLIPBOARD = ReadIniClipbOptSpreadsheet(L"spreadsheet");
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void IniParse()
+{
+	GetIniPath(inipath);
+	InitUlister();
+	InitClipboardOpts();
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+bool GetLibPathVT(const wchar_t *libname, wchar_t *libpath, const int ntlev) { // TODO [OUT] *libpath to first (left) param-order
 // OUT: build libpath and (!) check if it exists;   true=OK
 
 	GetModuleFileNameW(hInst, libpath, MAX_PATH);
@@ -301,14 +360,14 @@ bool getlibpath(const wchar_t *libname, wchar_t *libpath, const int ntlev) {
 	return (GetFileAttributesW(libpath) != INVALID_FILE_ATTRIBUTES);
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-HINSTANCE loadlib(const wchar_t *libname) {
+HINSTANCE LoadLibVT(const wchar_t *libname) {
 	HANDLE lib = NULL;
 	wchar_t path[MAX_PATH];
 
 	// if WinXP, first try to load library from "XPdist*"
 	if (NTLevel == WindowsNTLevel::WinNT5)
 	{
-		if (getlibpath(libname, path, WindowsNTLevel::WinNT5))
+		if (GetLibPathVT(libname, path, WindowsNTLevel::WinNT5))
 		{
 			lib = LoadLibraryExW(path, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
 			if (lib == NULL) // DLL exist, but can't load...
@@ -319,7 +378,7 @@ HINSTANCE loadlib(const wchar_t *libname) {
 	}
 
 	// anycase, load library from "redist*"
-	if (getlibpath(libname, path, WindowsNTLevel::WinNT6))
+	if (GetLibPathVT(libname, path, WindowsNTLevel::WinNT6))
 	{
 		lib = LoadLibraryExW(path, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
 		if (lib == NULL) // DLL exist, but can't load...
@@ -381,4 +440,108 @@ void ErrMsgIssue(const int issuetype, const wchar_t *path, const DWORD dwError)
 		L"See readme.txt, install section.", issuename, path, dwError, dwError, inipath);
 
 	MessageBoxW(NULL, buf, title, MB_OK);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+clsVTOptionsClipboard::clsVTOptionsClipboard()
+{
+	FORMAT_TEXT = Opt::SKIP;
+	FORMAT_RTF = Opt::SKIP;
+	FORMAT_UNICODE = Opt::SKIP;
+	FORMAT_WINBITMAP = Opt::SKIP;
+	FORMAT_WINDIB = Opt::SKIP;
+	FORMAT_WINMETAFILE = Opt::SKIP;
+	FORMAT_WINPALETTE = Opt::SKIP;
+	OLE_ENABLEDRAGDROP = Opt::SKIP;
+	SSCLIPBOARD = Opt::SKIP;
+}
+
+VTDWORD clsVTOptionsClipboard::Get_SCCVW_CLIPSUBFORMAT(VTDWORD ClipSubFormat) const
+{
+	if (SSCLIPBOARD == Opt::SKIP) return ClipSubFormat;
+	else return SSCLIPBOARD;
+}
+VTDWORD clsVTOptionsClipboard::Get_SCCVW_OLE(VTDWORD OLEFlags) const
+{
+	if (OLE_ENABLEDRAGDROP == Opt::SKIP) return OLEFlags;
+	return (OLE_ENABLEDRAGDROP) ? SCCVW_OLE_ENABLEDRAGDROP : 0;
+}
+
+VTDWORD clsVTOptionsClipboard::Get_SCCVW_CLIPFORMAT(VTDWORD ClipFormat) const
+{
+
+	/*
+	//ClipFormat = 0;
+	wchar_t buf[ULISTMAXBUF];
+	swprintf_s(buf, ULISTMAXBUF,
+		L"SRC ClipFormat: 0x%08X (%u)\n"
+		L"FORMAT_TEXT=%i\n"
+		L"FORMAT_RTF=%i\n"
+		L"FORMAT_UNICODE=%i\n"
+		L"FORMAT_WINBITMAP=%i\n"
+		L"FORMAT_WINDIB=%i\n"
+		L"FORMAT_WINMETAFILE=%i\n"
+		L"FORMAT_WINPALETTE=%i\n",
+		ClipFormat, ClipFormat,
+		FORMAT_TEXT, FORMAT_RTF, FORMAT_UNICODE, FORMAT_WINBITMAP, FORMAT_WINDIB, FORMAT_WINMETAFILE, FORMAT_WINPALETTE);
+	MessageBoxW(NULL, buf, L"Get_SCCVW_CLIPFORMAT", MB_OK);
+	*/
+
+
+
+	// skip/set/reset bits
+	if (FORMAT_TEXT != Opt::SKIP) ClipFormat = FORMAT_TEXT ? (ClipFormat | SCCVW_CLIPFORMAT_TEXT) : (ClipFormat & ~SCCVW_CLIPFORMAT_TEXT);
+	if (FORMAT_RTF != Opt::SKIP) ClipFormat = FORMAT_RTF ? (ClipFormat | SCCVW_CLIPFORMAT_RTF) : (ClipFormat & ~SCCVW_CLIPFORMAT_RTF);
+	if (FORMAT_UNICODE != Opt::SKIP) ClipFormat = FORMAT_UNICODE ? (ClipFormat | SCCVW_CLIPFORMAT_UNICODE) : (ClipFormat & ~SCCVW_CLIPFORMAT_UNICODE);
+	if (FORMAT_WINBITMAP != Opt::SKIP) ClipFormat = FORMAT_WINBITMAP ? (ClipFormat | SCCVW_CLIPFORMAT_WINBITMAP) : (ClipFormat & ~SCCVW_CLIPFORMAT_WINBITMAP);
+	if (FORMAT_WINDIB != Opt::SKIP) ClipFormat = FORMAT_WINDIB ? (ClipFormat | SCCVW_CLIPFORMAT_WINDIB) : (ClipFormat & ~SCCVW_CLIPFORMAT_WINDIB);
+	if (FORMAT_WINMETAFILE != Opt::SKIP) ClipFormat = FORMAT_WINMETAFILE ? (ClipFormat | SCCVW_CLIPFORMAT_WINMETAFILE) : (ClipFormat & ~SCCVW_CLIPFORMAT_WINMETAFILE);
+	if (FORMAT_WINPALETTE != Opt::SKIP) ClipFormat = FORMAT_WINPALETTE ? (ClipFormat | SCCVW_CLIPFORMAT_WINPALETTE) : (ClipFormat & ~SCCVW_CLIPFORMAT_WINPALETTE);
+
+
+
+	/*
+	swprintf_s(buf, ULISTMAXBUF,
+		L"DST ClipFormat: 0x%08X (%u)\n",
+		ClipFormat, ClipFormat);
+	MessageBoxW(NULL, buf, L"Get_SCCVW_CLIPFORMAT", MB_OK);
+	*/
+
+	return ClipFormat;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void SendVTOptions(const ALLMYDATA *mydata, const clsVTOptions *_VTOptions)
+{
+	SCCVWOPTIONSPEC40 locOptionSpec;
+	locOptionSpec.dwSize = sizeof(SCCVWOPTIONSPEC40);
+	locOptionSpec.dwFlags = SCCVWOPTION_CURRENT;
+
+	union
+	{
+		VTDWORD ClipFormat;
+		VTDWORD OLEFlags;
+		VTDWORD SpreadsheetClipboard;
+	};
+
+	// unicode clipboard:
+	locOptionSpec.dwId = SCCID_TOCLIPBOARD;
+	locOptionSpec.pData = &ClipFormat;
+	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	ClipFormat = _VTOptions->VTOptionsClipboard.Get_SCCVW_CLIPFORMAT(ClipFormat);
+	SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+	// drag-and-drop copying:
+	locOptionSpec.dwId = SCCID_OLEFLAGS;
+	//locOptionSpec.pData = &OLEFlags;
+	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	OLEFlags = _VTOptions->VTOptionsClipboard.Get_SCCVW_OLE(OLEFlags);
+	SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+	// spreadsheet copying:
+	locOptionSpec.dwId = SCCID_SSCLIPBOARD;
+	//locOptionSpec.pData = &SpreadsheetClipboard;
+	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	SpreadsheetClipboard = _VTOptions->VTOptionsClipboard.Get_SCCVW_CLIPSUBFORMAT(SpreadsheetClipboard);
+	SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
 }

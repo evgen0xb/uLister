@@ -24,14 +24,18 @@
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-HINSTANCE  hInst;
-HANDLE     hViewerLibrary; // extern
-int        numInstances;
-extern int keepinmemory;
-extern wchar_t ininoloadtypes[ULISTMAXBUF];
-extern wchar_t inionlyloadtypes[ULISTMAXBUF];
-extern wchar_t ininopreviewtypes[ULISTMAXBUF];
-extern wchar_t inionlypreviewtypes[ULISTMAXBUF];
+HINSTANCE		hInst;
+HANDLE			hViewerLibrary; // extern
+int				numInstances;
+int				NTLevel;
+clsVTOptions	VTOptions;
+
+extern int		keepinmemory;
+extern wchar_t	ininoloadtypes[ULISTMAXBUF];
+extern wchar_t	inionlyloadtypes[ULISTMAXBUF];
+extern wchar_t	ininopreviewtypes[ULISTMAXBUF];
+extern wchar_t	inionlypreviewtypes[ULISTMAXBUF];
+
 const char *ANOTFOUND = "Not found:";
 const wchar_t *WNOTFOUND = L"Not found:";
 const int MAXSEARCH = VTMAXSEARCHBUF - 1;
@@ -50,7 +54,13 @@ BOOL APIENTRY DllMain(HINSTANCE hinst, unsigned long reason, void* lpReserved) {
 		hInst = hinst;
 		hViewerLibrary = NULL;
 		numInstances = 0;
-		iniparse();
+		IniParse();
+
+		if (REGCurrentBuildNumber() < WINDOWS7BETABUILDNUMBER)
+			NTLevel = WindowsNTLevel::WinNT5;
+		else
+			NTLevel = WindowsNTLevel::WinNT6;
+
 		break;
 
 	case DLL_PROCESS_DETACH:
@@ -81,32 +91,7 @@ extern "C" __declspec(dllexport) HWND __stdcall ListLoadW(HWND ParentWin, wchar_
 		LoadFile(mydata->oiWindow, FileToLoad);
 		numInstances++; // fix
 
-	/*
-		// test unicode clipboard:
-		SCCVWOPTIONSPEC40 locOptionSpec;
-		VTDWORD ClipFormat;
-		locOptionSpec.dwSize = sizeof(SCCVWOPTIONSPEC40);
-		locOptionSpec.dwFlags = SCCVWOPTION_CURRENT;
-		locOptionSpec.dwId = SCCID_TOCLIPBOARD;
-		locOptionSpec.pData = &ClipFormat;
-		// SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
-		ClipFormat = SCCVW_CLIPFORMAT_TEXT | SCCVW_CLIPFORMAT_RTF | SCCVW_CLIPFORMAT_UNICODE | SCCVW_CLIPFORMAT_WINBITMAP | SCCVW_CLIPFORMAT_WINDIB | SCCVW_CLIPFORMAT_WINMETAFILE | SCCVW_CLIPFORMAT_WINPALETTE;
-		SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
-	*/
-
-	/*
-		// test drag-and-drop copying:
-		SCCVWOPTIONSPEC40 locOptionSpec;
-		VTDWORD OLEFlags;
-		locOptionSpec.dwSize = sizeof(SCCVWOPTIONSPEC40);
-		locOptionSpec.dwFlags = SCCVWOPTION_CURRENT;
-		locOptionSpec.dwId = SCCID_OLEFLAGS;
-		locOptionSpec.pData = &OLEFlags;
-		// SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
-		OLEFlags = SCCVW_OLE_ENABLEDRAGDROP;
-		SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
-	*/
-
+		SendVTOptions(mydata, &VTOptions);
 	}
 	return hViewWnd;
 }
@@ -124,6 +109,8 @@ extern "C" __declspec(dllexport) int __stdcall ListLoadNextW(HWND ParentWin, HWN
 	if (mydata) {
 		LoadFile(mydata->oiWindow, FileToLoad);
 		numInstances++; // fix
+
+		SendVTOptions(mydata, &VTOptions);
 	}
 	return LISTPLUGIN_OK;
 }
@@ -353,7 +340,7 @@ extern "C" __declspec(dllexport)int __stdcall ListSendCommand(HWND ListWin, int 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 extern "C" __declspec(dllexport)HBITMAP __stdcall ListGetPreviewBitmapW(wchar_t* FileToLoad, int width, int height, char* contentbuf, int contentbuflen) {
 	if (!CheckFile(FileToLoad, inionlypreviewtypes, ininopreviewtypes))return NULL;
-	HBITMAP bitmap = getpreview(FileToLoad, width, height);
+	HBITMAP bitmap = GetPreview(FileToLoad, width, height);
 	return bitmap;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
