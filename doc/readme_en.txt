@@ -14,7 +14,7 @@ Outside In Viewer (C) 1991, 2026 Oracle(R)
 (C) 2011 Egor Vlaznev
 (C) 2016 Michael Loster (aka milo1012)
 (C) 2024 Marek Jasinski (aka Marek)
-(C) 2024 avogelba
+(C) 2024 Vogelbacher Andreas (aka avogelba)
 (C) 2026 evgen_b (aka evgen_b)
 
 4. Libraries Used
@@ -54,7 +54,8 @@ If the optionsdir parameter is not specified, the library creates ".oit" in %APP
 if this value is also undefined, it creates it in the library directory.
 
 Version 4.0.0.7 of the plugin introduces additional parameters related to Outside In Technology library copying to the clipboard.
-These parameters should be located in the [clipboard] section and are set to "SKIP" by default, meaning they use the settings stored in Outside In Technology rather than the INI file.
+These parameters should be located in the [clipboard] section and are set to "SKIP" by default, meaning they use the settings stored
+in Outside In Technology (".oit" directory) rather than the INI file.
 
 The main group is what can be accessed by right-clicking Options->Clipboard in an open document.
 These parameters determine the format in which blocks can be placed on the clipboard (SDK A.10.10 SCCID_TOCLIPBOARD).
@@ -310,3 +311,7 @@ Finally, the search procedure has been rewritten:
 2026-04-12 4.0.0.7 (Fork by evgen_b)
     - added clipboard settings to the [clipboard] section of the ulister.ini file (such as Unicode support, drag-and-drop copying of
       a selected block, selection format for spreadsheets, etc.)
+    - refactoring
+
+2026-04-25
+    - refactoring and memory optimization

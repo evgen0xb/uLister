@@ -60,14 +60,14 @@ LRESULT CALLBACK ParentWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			break;
 		case WM_SIZE:
 			InvalidateRect(hWnd, NULL, 0);
-			if (!mydata) break;
+			// if (!mydata) break; // ???
 			if (IsWindow(mydata->oiWindow)) {
 				MoveWindow(mydata->oiWindow, 0, 0, LOWORD(lParam), HIWORD(lParam), true);
 				ShowWindow(mydata->oiWindow, SW_SHOW);
 			}
 			break;
-		case SCCVW_VIEWTHISFILE:
-			return (LoadThisFile(lParam) == 0) ? SCCVWERR_MESSAGEHANDLED : 0;
+		// case SCCVW_VIEWTHISFILE:
+		//	return (LoadThisFile(lParam) == 0) ? SCCVWERR_MESSAGEHANDLED : 0;
 		}
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
@@ -78,8 +78,8 @@ LRESULT CALLBACK ViewWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
 	mydata = (ALLMYDATA *)GetWindowLongPtr(hWnd, GWLP_USERDATA);
 	if (mydata) {
 		switch (message) {
-		case SCCVW_VIEWTHISFILE:
-			return (LoadThisFile(lParam) == 0) ? SCCVWERR_MESSAGEHANDLED : 0;
+		// case SCCVW_VIEWTHISFILE:
+		//	return (LoadThisFile(lParam) == 0) ? SCCVWERR_MESSAGEHANDLED : 0;
 		case SCCVW_KEYDOWN:
 			PostMessage(mydata->ListerWindow, WM_KEYDOWN, lParam, 0);
 			if ((GetKeyState(VK_CONTROL) < 0) && ((lParam == VK_OEM_PLUS) || (lParam == VK_ADD)))		zoom(hWnd, 1);

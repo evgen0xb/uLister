@@ -93,14 +93,14 @@ public:
 void IniParse();
 HINSTANCE LoadLibVT(const wchar_t *libname);
 void zoom(HWND hWnd, int dir);
-int LoadThisFile(LPARAM lParam);
+// int LoadThisFile(LPARAM lParam);
 LRESULT CALLBACK ParentWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK ViewWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 HWND CreateLister(HWND ParentWin);
-VTWORD GetType(const wchar_t* FileToLoad);
-int CheckFile(const wchar_t* FileToLoad, const wchar_t* onlyload, const wchar_t* noload);
-HBITMAP GetPreview(const wchar_t* FileToLoad, const int width, const int height);
-void LoadFile(HWND hViewWnd, const wchar_t* FileToLoad);
+VTWORD GetVTFileType(const wchar_t* FileToLoad);
+bool IsVTFileTypeAllowed(const wchar_t* FileToLoad, const wchar_t* onlyload, const wchar_t* noload);
+HBITMAP GetVTFilePreview(const wchar_t* FileToLoad, const int width, const int height);
+void LoadVTFile(HWND hViewWnd, const wchar_t* FileToLoad);
 void ErrMsgIssue(const int issuetype, const wchar_t *path, const DWORD dwError);
 unsigned long long REGCurrentBuildNumber();
 void SendVTOptions(const ALLMYDATA *mydata, const clsVTOptions *_VTOptions);
@@ -109,3 +109,4 @@ void SendVTOptions(const ALLMYDATA *mydata, const clsVTOptions *_VTOptions);
 
 #define VTMAXSEARCHBUF 80
 
+#define INT64STRMAXBUF 24

@@ -50,7 +50,7 @@ const wchar_t *AOFF  = L"OFF";
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-VTWORD GetType(const wchar_t* FileToLoad) {
+VTWORD GetVTFileType(const wchar_t* FileToLoad) {
 	typedef VTDWORD(*FIInitFUNC)(VTVOID);
 	typedef VTWORD(*FIIdFileExFUNC)(VTDWORD, const VTVOID *, VTDWORD, VTWORD *, VTLPTSTR, VTWORD);
 	typedef VTDWORD(*FIDeInitFUNC)(VTVOID);
@@ -85,24 +85,20 @@ VTWORD GetType(const wchar_t* FileToLoad) {
 	return 	wType;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-int CheckFile(const wchar_t* FileToLoad, const wchar_t* onlyload, const wchar_t* noload) { // TODO refactor
-	VTWORD  wType;
-	wType = GetType(FileToLoad);
+bool IsVTFileTypeAllowed(const wchar_t* FileToLoad, const wchar_t* onlyload, const wchar_t* noload) {
+	// TRUE = OK
+	// FALSE = refuse
+	VTWORD  wType = GetVTFileType(FileToLoad);
 
-	wchar_t ftype[10];
-	_itow_s(wType, ftype, 10, 10);
-	if (wcslen(onlyload) > 0) {
-		if (wcsstr(onlyload, ftype))return 1;
-		return NULL;
-	}
-	if (wcslen(noload) > 0) {
-		if (wcsstr(noload, ftype))return NULL;
-	}
+	wchar_t FTypeStr[INT64STRMAXBUF];
+	_itow_s(wType, FTypeStr, INT64STRMAXBUF, 10);
+	if (wcslen(onlyload) > 0)
+		if (wcsstr(onlyload, FTypeStr)) return true; else return false;
 
-	return 1;
+	if (wcslen(noload) > 0 && wcsstr(noload, FTypeStr)) return false; else return true;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void LoadFile(const HWND hViewWnd, const wchar_t* FileToLoad) {
+void LoadVTFile(const HWND hViewWnd, const wchar_t* FileToLoad) {
 	SCCVWVIEWFILE80  locViewFile;
 	locViewFile.dwSize = sizeof(SCCVWVIEWFILE80);
 	locViewFile.dwSpecType = IOTYPE_UNICODEPATH;
@@ -116,6 +112,11 @@ void LoadFile(const HWND hViewWnd, const wchar_t* FileToLoad) {
 	SendMessage(hViewWnd, SCCVW_VIEWFILE, 0, (LPARAM)&locViewFile);
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+/*
 int LoadThisFile(const LPARAM lParam) { // TODO refactor
     PSCCVWVIEWTHISFILE40    locVTFPtr40;
     PSCCVWVIEWTHISFILE80    locVTFPtr80;
@@ -166,18 +167,24 @@ int LoadThisFile(const LPARAM lParam) { // TODO refactor
 		}
     return GetLastError();
 }
+*/
+
+
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-HBITMAP GetPreview(const wchar_t* FileToLoad, const int width, const int height) {
+HBITMAP GetVTFilePreview(const wchar_t* FileToLoad, const int width, const int height) {
 
 	if (!hViewerLibrary)hViewerLibrary = LoadLibVT(L"SCCVW.DLL");
 	if (!hViewerLibrary)return NULL;
-	numInstances++;
+	numInstances++; // TODO: numInstances not needed
 	HWND hViewWnd = CreateWindow("SCCVIEWER", NULL, WS_CLIPCHILDREN, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, 0, hInst, NULL);
 	if (!IsWindow(hViewWnd)) {
 		numInstances--;
 		return NULL;
 	}
-	LoadFile(hViewWnd, FileToLoad);
+	LoadVTFile(hViewWnd, FileToLoad);
 
 	HDC OutputDC,FormatDC;
 	HBITMAP bitmap,oldbitmap;
@@ -273,10 +280,10 @@ void InitUlister()
 	wchar_t inioptdir[MAX_PATH];
 	wchar_t oitdatapath[MAX_PATH];
 
-	wchar_t buf[ULISTMAXBUF];
+	wchar_t buf[INT64STRMAXBUF];
 
-	GetPrivateProfileStringW(ULISTERSECTION, L"keepinmemory", L"1", buf, ULISTMAXBUF, inipath);
-	if (wcscmp(buf, L"1") == 0) keepinmemory = 1; else keepinmemory = 0; // TODO use _wcsicmp everyweare to optimize .text dll-section memory usage
+	GetPrivateProfileStringW(ULISTERSECTION, L"keepinmemory", L"1", buf, INT64STRMAXBUF, inipath);
+	if (_wcsicmp(buf, L"1") == 0) keepinmemory = 1; else keepinmemory = 0;
 
 	GetPrivateProfileStringW(ULISTERSECTION, L"optionsdir", L"", inioptdir, MAX_PATH, inipath);
 
@@ -294,10 +301,10 @@ void InitUlister()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 __int8 ReadIniClipbOpt(const wchar_t *optionname)
 {
-	wchar_t buf[ULISTMAXBUF]; // TODO VTMAXSEARCHBUF to optimize stack memory usage
+	wchar_t buf[INT64STRMAXBUF];
 	__int8 result;
 
-	GetPrivateProfileStringW(CLIPBOARDSECTION, optionname, ASKIP, buf, ULISTMAXBUF, inipath);
+	GetPrivateProfileStringW(CLIPBOARDSECTION, optionname, ASKIP, buf, INT64STRMAXBUF, inipath);
 	if (_wcsicmp(buf, AON) == 0) result = Opt::ON;
 	else if (_wcsicmp(buf, AOFF) == 0) result = Opt::OFF;
 	else result = Opt::SKIP;
@@ -307,10 +314,10 @@ __int8 ReadIniClipbOpt(const wchar_t *optionname)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 VTDWORD ReadIniClipbOptSpreadsheet(const wchar_t *optionname)
 {
-	wchar_t buf[ULISTMAXBUF]; // TODO VTMAXSEARCHBUF to optimize stack memory usage
+	wchar_t buf[INT64STRMAXBUF];
 	VTDWORD result;
 
-	GetPrivateProfileStringW(CLIPBOARDSECTION, optionname, ASKIP, buf, ULISTMAXBUF, inipath);
+	GetPrivateProfileStringW(CLIPBOARDSECTION, optionname, ASKIP, buf, INT64STRMAXBUF, inipath);
 	if (_wcsicmp(buf, L"rtf") == 0) result = SCCVW_CLIPSUBFORMAT_TABLE;
 	else if (_wcsicmp(buf, L"tabs") == 0) result = SCCVW_CLIPSUBFORMAT_TABS;
 	else if (_wcsicmp(buf, L"optimizedtabs") == 0) result = SCCVW_CLIPSUBFORMAT_OPTIMIZEDTABS;
@@ -341,7 +348,7 @@ void IniParse()
 	InitClipboardOpts();
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-bool GetLibPathVT(const wchar_t *libname, wchar_t *libpath, const int ntlev) { // TODO [OUT] *libpath to first (left) param-order
+bool GetLibPathVT(wchar_t *libpath, const wchar_t *libname, const int ntlev) {
 // OUT: build libpath and (!) check if it exists;   true=OK
 
 	GetModuleFileNameW(hInst, libpath, MAX_PATH);
@@ -367,7 +374,7 @@ HINSTANCE LoadLibVT(const wchar_t *libname) {
 	// if WinXP, first try to load library from "XPdist*"
 	if (NTLevel == WindowsNTLevel::WinNT5)
 	{
-		if (GetLibPathVT(libname, path, WindowsNTLevel::WinNT5))
+		if (GetLibPathVT(path, libname, WindowsNTLevel::WinNT5))
 		{
 			lib = LoadLibraryExW(path, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
 			if (lib == NULL) // DLL exist, but can't load...
@@ -378,7 +385,7 @@ HINSTANCE LoadLibVT(const wchar_t *libname) {
 	}
 
 	// anycase, load library from "redist*"
-	if (GetLibPathVT(libname, path, WindowsNTLevel::WinNT6))
+	if (GetLibPathVT(path, libname, WindowsNTLevel::WinNT6))
 	{
 		lib = LoadLibraryExW(path, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
 		if (lib == NULL) // DLL exist, but can't load...
@@ -393,8 +400,8 @@ HINSTANCE LoadLibVT(const wchar_t *libname) {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 unsigned long long REGCurrentBuildNumber()
 {
-	char readbuf[VTMAXSEARCHBUF];
-	DWORD readbytes = VTMAXSEARCHBUF - 1;
+	char readbuf[INT64STRMAXBUF];
+	DWORD readbytes = INT64STRMAXBUF - 1;
 
 	HKEY hKey = NULL;
 	unsigned long long CurrentBuildNumber = 0;

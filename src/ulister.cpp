@@ -45,7 +45,7 @@ const int MAXSEARCH = VTMAXSEARCHBUF - 1;
 std::map<HWND, char*> SearchStringPerWindowA;		// SearchStringW + SearchStringA + SearchParameter - into ALLMYDATA (TODO)
 std::map<HWND, wchar_t*> SearchStringPerWindowW;
 
-
+// Use [same] _wcsicmp [etc] everyweare to optimize .text dll-section memory usage
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 BOOL APIENTRY DllMain(HINSTANCE hinst, unsigned long reason, void* lpReserved) {
@@ -82,13 +82,13 @@ BOOL APIENTRY DllMain(HINSTANCE hinst, unsigned long reason, void* lpReserved) {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 extern "C" __declspec(dllexport) HWND __stdcall ListLoadW(HWND ParentWin, wchar_t* FileToLoad, int ShowFlags) {
 	HWND        hViewWnd;
-	if (!CheckFile(FileToLoad, inionlyloadtypes, ininoloadtypes)) return NULL;
+	if (!IsVTFileTypeAllowed(FileToLoad, inionlyloadtypes, ininoloadtypes)) return NULL;
 	hViewWnd = CreateLister(ParentWin);
 	if (!IsWindow(hViewWnd)) return NULL;
 	ALLMYDATA *mydata;
 	mydata = (ALLMYDATA *)GetWindowLongPtr(hViewWnd, GWLP_USERDATA);
 	if (mydata) {
-		LoadFile(mydata->oiWindow, FileToLoad);
+		LoadVTFile(mydata->oiWindow, FileToLoad);
 		numInstances++; // fix
 
 		SendVTOptions(mydata, &VTOptions);
@@ -103,11 +103,11 @@ extern "C" __declspec(dllexport) HWND __stdcall ListLoad(HWND ParentWin, char* F
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 extern "C" __declspec(dllexport) int __stdcall ListLoadNextW(HWND ParentWin, HWND ListWin, wchar_t* FileToLoad, int ShowFlags) {
-	if (!CheckFile(FileToLoad, inionlyloadtypes, ininoloadtypes)) return LISTPLUGIN_ERROR;
+	if (!IsVTFileTypeAllowed(FileToLoad, inionlyloadtypes, ininoloadtypes)) return LISTPLUGIN_ERROR;
 	ALLMYDATA *mydata;
 	mydata = (ALLMYDATA *)GetWindowLongPtr(ListWin, GWLP_USERDATA);
 	if (mydata) {
-		LoadFile(mydata->oiWindow, FileToLoad);
+		LoadVTFile(mydata->oiWindow, FileToLoad);
 		numInstances++; // fix
 
 		SendVTOptions(mydata, &VTOptions);
@@ -339,8 +339,8 @@ extern "C" __declspec(dllexport)int __stdcall ListSendCommand(HWND ListWin, int 
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 extern "C" __declspec(dllexport)HBITMAP __stdcall ListGetPreviewBitmapW(wchar_t* FileToLoad, int width, int height, char* contentbuf, int contentbuflen) {
-	if (!CheckFile(FileToLoad, inionlypreviewtypes, ininopreviewtypes))return NULL;
-	HBITMAP bitmap = GetPreview(FileToLoad, width, height);
+	if (!IsVTFileTypeAllowed(FileToLoad, inionlypreviewtypes, ininopreviewtypes)) return NULL;
+	HBITMAP bitmap = GetVTFilePreview(FileToLoad, width, height);
 	return bitmap;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
