@@ -177,7 +177,7 @@ extern "C" __declspec(dllexport)int __stdcall ListSearchText(HWND ListWin, char*
 		locOptionSpec.dwId = SCCID_SYSTEMFLAGS;
 		locOptionSpec.pData = &SystemFlags;
 		SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
-		SystemFlags = SystemFlags & (!SCCVW_SYSTEM_UNICODE); // reset the unicode bit
+		SystemFlags = SystemFlags & (~SCCVW_SYSTEM_UNICODE); // reset the unicode bit
 		SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 
 		WindowWithoutSearchStringYet = (SearchStringPerWindowA.count(ListWin) == 0);
