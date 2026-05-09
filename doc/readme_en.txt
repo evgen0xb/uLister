@@ -82,6 +82,17 @@ database=skip|rtf|tabs|optimizedtabs
 
 It is recommended to set all clipboard section parameters to "on" (especially for unicode).
 
+This setting in the [viewer] section indicates how the word processor/HTML/email display engine displays documents since 4.0.1.0
+(A.7.2 SCCID_WPDISPLAYMODE / SCCID_HTMLDISPLAYMODE / SCCID_EMAILDISPLAYMODE)
+
+wpdisplaymode=skip|draft|normal|preview|weblayout
+htmldisplaymode=skip|draft|normal|preview|weblayout
+emaildisplaymode=skip|draft|normal|preview|weblayout
+    draft - Display using only a single font and size (SCCID_DEFAULTDISPLAYFONT), do not display embedded graphics, do not display graphic or table borders, wrap the text to the size of the view window.
+    normal - Display all supported formatting, wrap the text to the size of the view window.
+    preview - Display all supported formatting, wrap the text as it will be printed.
+    weblayout - Display all supported formatting, wrap the text as it would appear in a browser.
+
 Options are set the first time you launch the plugin. Restart Total Commander for the changes to take effect.
 
 6. Installation
@@ -320,3 +331,4 @@ Finally, the search procedure has been rewritten:
 
 2026-05-09
     - clipboard setting for the database has been added to ulister.ini
+    - added [viewer] section and wpdisplaymode, htmldisplaymode and emaildisplaymode settings

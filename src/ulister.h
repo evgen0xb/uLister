@@ -82,12 +82,35 @@ public:
 }; // clsVTOptionsClipboard
 #endif
 
+#ifndef VTOPTIONSVIEWER
+#define VTOPTIONSVIEWER
+class clsVTDisplayMode
+{
+public:
+	VTDWORD DisplayMode;
+	clsVTDisplayMode();
+	VTDWORD Get_SCCVW_DISPLAYMODE(VTDWORD Mode) const;
+}; // clsVTDisplayMode
+
+class clsVTOptionsViewer
+{
+public:
+
+	clsVTDisplayMode WP;
+	clsVTDisplayMode HTML;
+	clsVTDisplayMode EMAIL;
+
+	// clsVTOptionsViewer();
+}; // clsVTOptionsViewer
+#endif
+
 #ifndef VTOPTIONS
 #define VTOPTIONS
 class clsVTOptions
 {
 public:
-	clsVTOptionsClipboard	VTOptionsClipboard;
+	clsVTOptionsClipboard	VTClipboard;
+	clsVTOptionsViewer		VTViewer;
 };
 #endif
 

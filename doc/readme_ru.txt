@@ -81,6 +81,17 @@ database=skip|rtf|tabs|optimizedtabs
 
 Рекомендуется установить "on" для всех параметров секции clipboard (особенно для unicode).
 
+В версии 4.0.1.0 плагина доступны настройки для изменения отображения документов текстового процессора, HTML и EMAIL в секции viewer
+(раздел A.7.2 SCCID_WPDISPLAYMODE / SCCID_HTMLDISPLAYMODE / SCCID_EMAILDISPLAYMODE)
+[viewer]
+wpdisplaymode=skip|draft|normal|preview|weblayout
+htmldisplaymode=skip|draft|normal|preview|weblayout
+emaildisplaymode=skip|draft|normal|preview|weblayout
+    draft - черновое отображение документа одним шрифтом одинакового размера без графики, без границ таблиц и т.п.
+    normal - использовать форматирование, но текст подгоняется под размер окна
+    preview - использовать форматирование, текст размещается на странице как при печати
+    weblayout - использовать форматирование, текст размещается как на странице браузера
+
 Параметры считываются при первом запуске плагина. Перезапустите Total Commander для применения изменений.
 
 6. Установка
@@ -319,3 +330,4 @@ https://github.com/avogelba/uLister
 
 2026-05-09
     - в ulister.ini добавлена настройка буфера обмена для database
+    - добавлена секция [viewer] и настройки wpdisplaymode, htmldisplaymode и emaildisplaymode

@@ -44,6 +44,7 @@ wchar_t *REDIST_NT5 = L"\\XPdist32\\";
 #endif
 
 const wchar_t *CLIPBOARDSECTION = L"clipboard";
+const wchar_t *VIEWERSECTION = L"viewer";
 const wchar_t *ASKIP = L"SKIP";
 const wchar_t *AON	 = L"ON";
 const wchar_t *AOFF  = L"OFF";
@@ -327,20 +328,43 @@ VTDWORD ReadIniClipbOptSSDB(const wchar_t *optionname)
 	return result;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+VTDWORD ReadIniViewOptDisplay(const wchar_t *optionname)
+{
+	// A.7.2 SCCID_WPDISPLAYMODE / SCCID_HTMLDISPLAYMODE / SCCID_EMAILDISPLAYMODE
+	wchar_t buf[INT64STRMAXBUF];
+	VTDWORD result;
+
+	GetPrivateProfileStringW(VIEWERSECTION, optionname, ASKIP, buf, INT64STRMAXBUF, inipath);
+	if (_wcsicmp(buf, L"draft") == 0) result = SCCVW_WPMODE_DRAFT;
+	else if (_wcsicmp(buf, L"normal") == 0) result = SCCVW_WPMODE_NORMAL;
+	else if (_wcsicmp(buf, L"preview") == 0) result = SCCVW_WPMODE_PREVIEW;
+	else if (_wcsicmp(buf, L"weblayout") == 0) result = SCCVW_WPMODE_WEBLAYOUT;
+	else result = Opt::SKIP;
+
+	return result;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void InitClipboardOpts()
 {
-	VTOptions.VTOptionsClipboard.FORMAT_TEXT = ReadIniClipbOpt(L"ascii");
-	VTOptions.VTOptionsClipboard.FORMAT_RTF = ReadIniClipbOpt(L"rtf");
-	VTOptions.VTOptionsClipboard.FORMAT_UNICODE = ReadIniClipbOpt(L"unicode");
-	VTOptions.VTOptionsClipboard.FORMAT_WINBITMAP = ReadIniClipbOpt(L"bitmap");
-	VTOptions.VTOptionsClipboard.FORMAT_WINDIB = ReadIniClipbOpt(L"windib");
-	VTOptions.VTOptionsClipboard.FORMAT_WINMETAFILE = ReadIniClipbOpt(L"metafile");
-	VTOptions.VTOptionsClipboard.FORMAT_WINPALETTE = ReadIniClipbOpt(L"palette");
+	VTOptions.VTClipboard.FORMAT_TEXT = ReadIniClipbOpt(L"ascii");
+	VTOptions.VTClipboard.FORMAT_RTF = ReadIniClipbOpt(L"rtf");
+	VTOptions.VTClipboard.FORMAT_UNICODE = ReadIniClipbOpt(L"unicode");
+	VTOptions.VTClipboard.FORMAT_WINBITMAP = ReadIniClipbOpt(L"bitmap");
+	VTOptions.VTClipboard.FORMAT_WINDIB = ReadIniClipbOpt(L"windib");
+	VTOptions.VTClipboard.FORMAT_WINMETAFILE = ReadIniClipbOpt(L"metafile");
+	VTOptions.VTClipboard.FORMAT_WINPALETTE = ReadIniClipbOpt(L"palette");
 
-	VTOptions.VTOptionsClipboard.OLE_ENABLEDRAGDROP = ReadIniClipbOpt(L"dragdrop");
+	VTOptions.VTClipboard.OLE_ENABLEDRAGDROP = ReadIniClipbOpt(L"dragdrop");
 
-	VTOptions.VTOptionsClipboard.SSCLIPBOARD = ReadIniClipbOptSSDB(L"spreadsheet");
-	VTOptions.VTOptionsClipboard.DBCLIPBOARD = ReadIniClipbOptSSDB(L"database");
+	VTOptions.VTClipboard.SSCLIPBOARD = ReadIniClipbOptSSDB(L"spreadsheet");
+	VTOptions.VTClipboard.DBCLIPBOARD = ReadIniClipbOptSSDB(L"database");
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void InitViewerOpts()
+{
+	VTOptions.VTViewer.WP.DisplayMode = ReadIniViewOptDisplay(L"wpdisplaymode");
+	VTOptions.VTViewer.HTML.DisplayMode = ReadIniViewOptDisplay(L"htmldisplaymode");
+	VTOptions.VTViewer.EMAIL.DisplayMode = ReadIniViewOptDisplay(L"emaildisplaymode");
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void IniParse()
@@ -348,6 +372,7 @@ void IniParse()
 	GetIniPath(inipath);
 	InitUlister();
 	InitClipboardOpts();
+	InitViewerOpts();
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 bool GetLibPathVT(wchar_t *libpath, const wchar_t *libname, const int ntlev) {
@@ -524,6 +549,25 @@ VTDWORD clsVTOptionsClipboard::Get_SCCVW_CLIPFORMAT(VTDWORD ClipFormat) const
 
 	return ClipFormat;
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+clsVTDisplayMode::clsVTDisplayMode()
+{
+	DisplayMode = Opt::SKIP;
+}
+VTDWORD clsVTDisplayMode::Get_SCCVW_DISPLAYMODE(VTDWORD Mode) const
+{
+	if (DisplayMode == Opt::SKIP) return Mode;
+	else return DisplayMode;
+}
+
+
+
+
+
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void SendVTOptions(const ALLMYDATA *mydata, const clsVTOptions *_VTOptions)
 {
@@ -537,33 +581,64 @@ void SendVTOptions(const ALLMYDATA *mydata, const clsVTOptions *_VTOptions)
 		VTDWORD OLEFlags;
 		VTDWORD SpreadsheetClipboard;
 		VTDWORD DatabaseClipboard;
+		VTDWORD WPdisplaymode;
+		VTDWORD HTMLdisplaymode;
+		VTDWORD EMAILdisplaymode;
 	};
 
 	// unicode clipboard:
 	locOptionSpec.dwId = SCCID_TOCLIPBOARD;
 	locOptionSpec.pData = &ClipFormat;
 	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
-	ClipFormat = _VTOptions->VTOptionsClipboard.Get_SCCVW_CLIPFORMAT(ClipFormat);
+	ClipFormat = _VTOptions->VTClipboard.Get_SCCVW_CLIPFORMAT(ClipFormat);
 	SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 
 	// drag-and-drop copying:
 	locOptionSpec.dwId = SCCID_OLEFLAGS;
 	//locOptionSpec.pData = &OLEFlags;
 	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
-	OLEFlags = _VTOptions->VTOptionsClipboard.Get_SCCVW_OLE(OLEFlags);
+	OLEFlags = _VTOptions->VTClipboard.Get_SCCVW_OLE(OLEFlags);
 	SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 
 	// spreadsheet copying:
 	locOptionSpec.dwId = SCCID_SSCLIPBOARD;
 	//locOptionSpec.pData = &SpreadsheetClipboard;
 	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
-	SpreadsheetClipboard = _VTOptions->VTOptionsClipboard.Get_SCCVW_CLIPSUBFORMAT_SS(SpreadsheetClipboard);
+	SpreadsheetClipboard = _VTOptions->VTClipboard.Get_SCCVW_CLIPSUBFORMAT_SS(SpreadsheetClipboard);
 	SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 
 	// database copying:
 	locOptionSpec.dwId = SCCID_DBCLIPBOARD;
 	//locOptionSpec.pData = &DatabaseClipboard;
 	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
-	DatabaseClipboard = _VTOptions->VTOptionsClipboard.Get_SCCVW_CLIPSUBFORMAT_DB(DatabaseClipboard);
+	DatabaseClipboard = _VTOptions->VTClipboard.Get_SCCVW_CLIPSUBFORMAT_DB(DatabaseClipboard);
+	SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+
+
+
+
+
+
+
+	// word processor display engine:
+	locOptionSpec.dwId = SCCID_WPDISPLAYMODE;
+	//locOptionSpec.pData = &WPdisplaymode;
+	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	WPdisplaymode = _VTOptions->VTViewer.WP.Get_SCCVW_DISPLAYMODE(WPdisplaymode);
+	SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+	// HTML display engine:
+	locOptionSpec.dwId = SCCID_HTMLDISPLAYMODE;
+	//locOptionSpec.pData = &HTMLdisplaymode;
+	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	HTMLdisplaymode = _VTOptions->VTViewer.HTML.Get_SCCVW_DISPLAYMODE(HTMLdisplaymode);
+	SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+	// email display engine:
+	locOptionSpec.dwId = SCCID_EMAILDISPLAYMODE;
+	//locOptionSpec.pData = &EMAILdisplaymode;
+	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	EMAILdisplaymode = _VTOptions->VTViewer.EMAIL.Get_SCCVW_DISPLAYMODE(EMAILdisplaymode);
 	SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 }
