@@ -312,8 +312,9 @@ __int8 ReadIniClipbOpt(const wchar_t *optionname)
 	return result;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-VTDWORD ReadIniClipbOptSpreadsheet(const wchar_t *optionname)
+VTDWORD ReadIniClipbOptSSDB(const wchar_t *optionname)
 {
+	// Spreadsheet Or Database Copy-Paste
 	wchar_t buf[INT64STRMAXBUF];
 	VTDWORD result;
 
@@ -338,7 +339,8 @@ void InitClipboardOpts()
 
 	VTOptions.VTOptionsClipboard.OLE_ENABLEDRAGDROP = ReadIniClipbOpt(L"dragdrop");
 
-	VTOptions.VTOptionsClipboard.SSCLIPBOARD = ReadIniClipbOptSpreadsheet(L"spreadsheet");
+	VTOptions.VTOptionsClipboard.SSCLIPBOARD = ReadIniClipbOptSSDB(L"spreadsheet");
+	VTOptions.VTOptionsClipboard.DBCLIPBOARD = ReadIniClipbOptSSDB(L"database");
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void IniParse()
@@ -461,12 +463,18 @@ clsVTOptionsClipboard::clsVTOptionsClipboard()
 	FORMAT_WINPALETTE = Opt::SKIP;
 	OLE_ENABLEDRAGDROP = Opt::SKIP;
 	SSCLIPBOARD = Opt::SKIP;
+	DBCLIPBOARD = Opt::SKIP;
 }
 
-VTDWORD clsVTOptionsClipboard::Get_SCCVW_CLIPSUBFORMAT(VTDWORD ClipSubFormat) const
+VTDWORD clsVTOptionsClipboard::Get_SCCVW_CLIPSUBFORMAT_SS(VTDWORD ClipSubFormat) const
 {
 	if (SSCLIPBOARD == Opt::SKIP) return ClipSubFormat;
 	else return SSCLIPBOARD;
+}
+VTDWORD clsVTOptionsClipboard::Get_SCCVW_CLIPSUBFORMAT_DB(VTDWORD ClipSubFormat) const
+{
+	if (DBCLIPBOARD == Opt::SKIP) return ClipSubFormat;
+	else return DBCLIPBOARD;
 }
 VTDWORD clsVTOptionsClipboard::Get_SCCVW_OLE(VTDWORD OLEFlags) const
 {
@@ -528,6 +536,7 @@ void SendVTOptions(const ALLMYDATA *mydata, const clsVTOptions *_VTOptions)
 		VTDWORD ClipFormat;
 		VTDWORD OLEFlags;
 		VTDWORD SpreadsheetClipboard;
+		VTDWORD DatabaseClipboard;
 	};
 
 	// unicode clipboard:
@@ -548,7 +557,13 @@ void SendVTOptions(const ALLMYDATA *mydata, const clsVTOptions *_VTOptions)
 	locOptionSpec.dwId = SCCID_SSCLIPBOARD;
 	//locOptionSpec.pData = &SpreadsheetClipboard;
 	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
-	SpreadsheetClipboard = _VTOptions->VTOptionsClipboard.Get_SCCVW_CLIPSUBFORMAT(SpreadsheetClipboard);
+	SpreadsheetClipboard = _VTOptions->VTOptionsClipboard.Get_SCCVW_CLIPSUBFORMAT_SS(SpreadsheetClipboard);
 	SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 
+	// database copying:
+	locOptionSpec.dwId = SCCID_DBCLIPBOARD;
+	//locOptionSpec.pData = &DatabaseClipboard;
+	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	DatabaseClipboard = _VTOptions->VTOptionsClipboard.Get_SCCVW_CLIPSUBFORMAT_DB(DatabaseClipboard);
+	SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 }

@@ -72,7 +72,9 @@ palette=skip|on|off
 dragdrop=skip|on|off
 
 Ќастройка задает формат копировани€ €чеек из электронных таблиц (SDK раздел A.4.8 SCCID_SSCLIPBOARD)
+или из баз данных (SDK раздел A.4.1 SCCID_DBCLIPBOARD)
 spreadsheet=skip|rtf|tabs|optimizedtabs
+database=skip|rtf|tabs|optimizedtabs
     rtf - копирование как таблицы в формате rtf
     tabs - как обычный текст, разделенный между €чейками символом табул€ции
     optimizedtabs - как в предыдущем случае, но пустые €чейки пропускаютс€
@@ -314,3 +316,6 @@ https://github.com/avogelba/uLister
 
 2026-04-25
     - рефакторинг и оптимизаци€ пам€ти
+
+2026-05-09
+    - в ulister.ini добавлена настройка буфера обмена дл€ database

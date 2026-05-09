@@ -63,6 +63,7 @@ class clsVTOptionsClipboard
 public:
 
 	VTDWORD SSCLIPBOARD;
+	VTDWORD DBCLIPBOARD;
 	__int8 FORMAT_TEXT;
 	__int8 FORMAT_RTF;
 	__int8 FORMAT_UNICODE;
@@ -75,7 +76,9 @@ public:
 	clsVTOptionsClipboard();
 	VTDWORD Get_SCCVW_CLIPFORMAT(VTDWORD ClipFormat) const;
 	VTDWORD Get_SCCVW_OLE(VTDWORD OLEFlags) const;
-	VTDWORD Get_SCCVW_CLIPSUBFORMAT(VTDWORD ClipSubFormat) const;
+	VTDWORD Get_SCCVW_CLIPSUBFORMAT_SS(VTDWORD ClipSubFormat) const;
+	VTDWORD Get_SCCVW_CLIPSUBFORMAT_DB(VTDWORD ClipSubFormat) const;
+
 }; // clsVTOptionsClipboard
 #endif
 
