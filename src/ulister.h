@@ -58,12 +58,21 @@ namespace Opt { // Outside In Technology option representation
 
 #ifndef VTOPTIONSCLIPBOARD
 #define VTOPTIONSCLIPBOARD
+
+class clsVTDWORDOption // simpest VTDWORD-wrapper for extra value 'SKIP'
+{
+public:
+	VTDWORD Option;
+	clsVTDWORDOption();
+	VTDWORD FilterSkip(VTDWORD val) const;
+};
+
 class clsVTOptionsClipboard
 {
 public:
 
-	VTDWORD SSCLIPBOARD;
-	VTDWORD DBCLIPBOARD;
+	clsVTDWORDOption SSCLIPBOARDSUBFORMAT;
+	clsVTDWORDOption DBCLIPBOARDSUBFORMAT;
 	__int8 FORMAT_TEXT;
 	__int8 FORMAT_RTF;
 	__int8 FORMAT_UNICODE;
@@ -76,31 +85,21 @@ public:
 	clsVTOptionsClipboard();
 	VTDWORD Get_SCCVW_CLIPFORMAT(VTDWORD ClipFormat) const;
 	VTDWORD Get_SCCVW_OLE(VTDWORD OLEFlags) const;
-	VTDWORD Get_SCCVW_CLIPSUBFORMAT_SS(VTDWORD ClipSubFormat) const;
-	VTDWORD Get_SCCVW_CLIPSUBFORMAT_DB(VTDWORD ClipSubFormat) const;
 
 }; // clsVTOptionsClipboard
 #endif
 
 #ifndef VTOPTIONSVIEWER
 #define VTOPTIONSVIEWER
-class clsVTDisplayMode
-{
-public:
-	VTDWORD DisplayMode;
-	clsVTDisplayMode();
-	VTDWORD Get_SCCVW_DISPLAYMODE(VTDWORD Mode) const;
-}; // clsVTDisplayMode
 
 class clsVTOptionsViewer
 {
 public:
 
-	clsVTDisplayMode WP;
-	clsVTDisplayMode HTML;
-	clsVTDisplayMode EMAIL;
+	clsVTDWORDOption WPDISPLAYMODE;
+	clsVTDWORDOption HTMLDISPLAYMODE;
+	clsVTDWORDOption EMAILDISPLAYMODE;
 
-	// clsVTOptionsViewer();
 }; // clsVTOptionsViewer
 #endif
 
