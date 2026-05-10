@@ -72,15 +72,15 @@ palette=skip|on|off
 The following setting enables or disables drag-and-drop copying of a selected block (SDK A.10.6 SCCID_OLEFLAGS).
 dragdrop=skip|on|off
 
-This setting specifies the format for copying cells from spreadsheets (SDK A.4.8 SCCID_SSCLIPBOARD)
+It is recommended to set all clipboard section parameters to "on" (especially for unicode).
+
+This settings specifies the format for copying cells from spreadsheets (SDK A.4.8 SCCID_SSCLIPBOARD)
 or from database (SDK A.4.1 SCCID_DBCLIPBOARD)
 spreadsheet=skip|rtf|tabs|optimizedtabs
 database=skip|rtf|tabs|optimizedtabs
     rtf - copy as a table using RTF format
     tabs - as plain text, separated between cells by tabs
     optimizedtabs - as in the previous case, but empty cells are skipped
-
-It is recommended to set all clipboard section parameters to "on" (especially for unicode).
 
 This setting in the [viewer] section indicates how the word processor/HTML/email display engine displays documents since 4.0.1.0
 (A.7.2 SCCID_WPDISPLAYMODE / SCCID_HTMLDISPLAYMODE / SCCID_EMAILDISPLAYMODE)
@@ -92,6 +92,18 @@ emaildisplaymode=skip|draft|normal|preview|weblayout
     normal - Display all supported formatting, wrap the text to the size of the view window.
     preview - Display all supported formatting, wrap the text as it will be printed.
     weblayout - Display all supported formatting, wrap the text as it would appear in a browser.
+
+This settings in the [viewer] section controls the size of word processor pages when using preview or weblayout mode
+(A.7.3 SCCID_WPFITMODE / SCCID_HTMLFITMODE / SCCID_EMAILFITMODE)
+These settings are applied correctly only from the second launch of ulister after
+changes in the .ini file due to an bug in the Outside In Viewer library (workaround).
+
+webprevwpfitmode=skip|original|width|window
+webprevhtmlfitmode=skip|original|width|window
+webprevemailfitmode=skip|original|width|window
+    original - sizes the preview page to the actual size
+    width - sizes the preview page to the width of the window
+    window - sizes the preview page to the window; sizes the weblayout to the width of the window
 
 Options are set the first time you launch the plugin. Restart Total Commander for the changes to take effect.
 
@@ -332,3 +344,7 @@ Finally, the search procedure has been rewritten:
 2026-05-09
     - clipboard setting for the database has been added to ulister.ini
     - added [viewer] section and wpdisplaymode, htmldisplaymode and emaildisplaymode settings
+
+2026-05-10 4.0.1.0
+    - refactoring and memory optimization
+    - added webprevwpfitmode, webprevhtmlfitmode, and webprevemailfitmode settings

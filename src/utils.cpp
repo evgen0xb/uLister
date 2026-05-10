@@ -344,6 +344,21 @@ VTDWORD ReadIniViewOptDisplay(const wchar_t *optionname)
 	return result;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+VTDWORD ReadIniViewOptWebPrevFitMode(const wchar_t *optionname)
+{
+	// A.7.3 SCCID_WPFITMODE / SCCID_HTMLFITMODE / SCCID_EMAILFITMODE
+	wchar_t buf[INT64STRMAXBUF];
+	VTDWORD result;
+
+	GetPrivateProfileStringW(VIEWERSECTION, optionname, ASKIP, buf, INT64STRMAXBUF, inipath);
+	if (_wcsicmp(buf, L"original") == 0) result = SCCVW_FITMODE_ORIGINAL;
+	else if (_wcsicmp(buf, L"width") == 0) result = SCCVW_FITMODE_WINDOWWIDTH;
+	else if (_wcsicmp(buf, L"window") == 0) result = SCCVW_FITMODE_WINDOW;
+	else result = Opt::SKIP;
+
+	return result;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void InitClipboardOpts()
 {
 	VTOptions.VTClipboard.FORMAT_TEXT = ReadIniClipbOpt(L"ascii");
@@ -365,6 +380,10 @@ void InitViewerOpts()
 	VTOptions.VTViewer.WPDISPLAYMODE.Option = ReadIniViewOptDisplay(L"wpdisplaymode");
 	VTOptions.VTViewer.HTMLDISPLAYMODE.Option = ReadIniViewOptDisplay(L"htmldisplaymode");
 	VTOptions.VTViewer.EMAILDISPLAYMODE.Option = ReadIniViewOptDisplay(L"emaildisplaymode");
+
+	VTOptions.VTViewer.WEBPREVWPFITMODE.Option = ReadIniViewOptWebPrevFitMode(L"webprevwpfitmode");
+	VTOptions.VTViewer.WEBPREVHTMLFITMODE.Option = ReadIniViewOptWebPrevFitMode(L"webprevhtmlfitmode");
+	VTOptions.VTViewer.WEBPREVEMAILFITMODE.Option = ReadIniViewOptWebPrevFitMode(L"webprevemailfitmode");
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void IniParse()
@@ -553,11 +572,17 @@ void SendVTOptions(const ALLMYDATA *mydata, const clsVTOptions *_VTOptions)
 	{
 		VTDWORD ClipFormat;
 		VTDWORD OLEFlags;
+
 		VTDWORD SpreadsheetClipboard;
 		VTDWORD DatabaseClipboard;
+
 		VTDWORD WPdisplaymode;
 		VTDWORD HTMLdisplaymode;
 		VTDWORD EMAILdisplaymode;
+
+		VTDWORD WebPrevWPfitmode;
+		VTDWORD WebPrevHTMLfitmode;
+		VTDWORD WebPrevEMAILfitmode;
 	};
 
 	// unicode clipboard:
@@ -608,4 +633,67 @@ void SendVTOptions(const ALLMYDATA *mydata, const clsVTOptions *_VTOptions)
 	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
 	EMAILdisplaymode = _VTOptions->VTViewer.EMAILDISPLAYMODE.FilterSkip(EMAILdisplaymode);
 	SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+	/*
+	It's not working propertly due Outside In Viewer library internal bug.
+	The last call SendMessage::SCCVW_SETOPTION always sets the settings for all document types, ignoring the SCCID_WPFITMODE, SCCID_HTMLFITMODE, and SCCID_EMAILFITMODE types.
+	However, after calling SendMessage::SCCVW_SETOPTION, these settings are stored inside the library (in the .oit directory).
+	Only settings later read by the library from the internal .oit storage work correctly.
+	A workaround would be to have SendMessage::SCCVW_SETOPTION settings sent to the library only if they have been changed in the ini file.
+	Thus, only the first call after the changes, due to the effect of SendMessage::SCCVW_SETOPTION, the view will be incorrect.
+
+	// size of word processor pages when using weblayout/preview mode:
+	locOptionSpec.dwId = SCCID_WPFITMODE;
+	//locOptionSpec.pData = &WebPrevWPfitmode;
+	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	WebPrevWPfitmode = _VTOptions->VTViewer.WEBPREVWPFITMODE.FilterSkip(WebPrevWPfitmode);
+	SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+	// size of HTML pages when using weblayout/preview mode:
+	locOptionSpec.dwId = SCCID_HTMLFITMODE;
+	//locOptionSpec.pData = &WebPrevHTMLfitmode;
+	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	WebPrevHTMLfitmode = _VTOptions->VTViewer.WEBPREVHTMLFITMODE.FilterSkip(WebPrevHTMLfitmode);
+	SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+	// size of EMAIL pages when using weblayout/preview mode:
+	locOptionSpec.dwId = SCCID_EMAILFITMODE;
+	//locOptionSpec.pData = &WebPrevEMAILfitmode;
+	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	WebPrevEMAILfitmode = _VTOptions->VTViewer.WEBPREVEMAILFITMODE.FilterSkip(WebPrevEMAILfitmode);
+	SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+	*/
+
+	/******************** WORKAROUND ********************/
+
+	// size of word processor pages when using weblayout/preview mode:
+	locOptionSpec.dwId = SCCID_WPFITMODE;
+	//locOptionSpec.pData = &WebPrevWPfitmode;
+	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	if (_VTOptions->VTViewer.WEBPREVWPFITMODE.Option != Opt::SKIP && _VTOptions->VTViewer.WEBPREVWPFITMODE.Option != WebPrevWPfitmode)
+	{
+		WebPrevWPfitmode = _VTOptions->VTViewer.WEBPREVWPFITMODE.Option;
+		SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+	}
+
+	// size of HTML pages when using weblayout/preview mode:
+	locOptionSpec.dwId = SCCID_HTMLFITMODE;
+	//locOptionSpec.pData = &WebPrevHTMLfitmode;
+	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	if (_VTOptions->VTViewer.WEBPREVHTMLFITMODE.Option != Opt::SKIP && _VTOptions->VTViewer.WEBPREVHTMLFITMODE.Option != WebPrevHTMLfitmode)
+	{
+		WebPrevHTMLfitmode = _VTOptions->VTViewer.WEBPREVHTMLFITMODE.Option;
+		SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+	}
+
+	// size of EMAIL pages when using weblayout/preview mode:
+	locOptionSpec.dwId = SCCID_EMAILFITMODE;
+	//locOptionSpec.pData = &WebPrevEMAILfitmode;
+	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	if (_VTOptions->VTViewer.WEBPREVEMAILFITMODE.Option != Opt::SKIP && _VTOptions->VTViewer.WEBPREVEMAILFITMODE.Option != WebPrevEMAILfitmode)
+	{
+		WebPrevEMAILfitmode = _VTOptions->VTViewer.WEBPREVEMAILFITMODE.Option;
+		SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+	}
+
 }

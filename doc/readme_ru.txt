@@ -71,6 +71,8 @@ palette=skip|on|off
 —ледующа€ настройка разрешает или запрещает копирование с помощью перетаскивани€ выделенного блока (drag-and-drop) (SDK раздел A.10.6 SCCID_OLEFLAGS).
 dragdrop=skip|on|off
 
+–екомендуетс€ установить "on" дл€ всех параметров секции clipboard (особенно дл€ unicode).
+
 Ќастройка задает формат копировани€ €чеек из электронных таблиц (SDK раздел A.4.8 SCCID_SSCLIPBOARD)
 или из баз данных (SDK раздел A.4.1 SCCID_DBCLIPBOARD)
 spreadsheet=skip|rtf|tabs|optimizedtabs
@@ -79,10 +81,8 @@ database=skip|rtf|tabs|optimizedtabs
     tabs - как обычный текст, разделенный между €чейками символом табул€ции
     optimizedtabs - как в предыдущем случае, но пустые €чейки пропускаютс€
 
-–екомендуетс€ установить "on" дл€ всех параметров секции clipboard (особенно дл€ unicode).
-
 ¬ версии 4.0.1.0 плагина доступны настройки дл€ изменени€ отображени€ документов текстового процессора, HTML и EMAIL в секции viewer
-(раздел A.7.2 SCCID_WPDISPLAYMODE / SCCID_HTMLDISPLAYMODE / SCCID_EMAILDISPLAYMODE)
+(SDK раздел A.7.2 SCCID_WPDISPLAYMODE / SCCID_HTMLDISPLAYMODE / SCCID_EMAILDISPLAYMODE)
 [viewer]
 wpdisplaymode=skip|draft|normal|preview|weblayout
 htmldisplaymode=skip|draft|normal|preview|weblayout
@@ -91,6 +91,18 @@ emaildisplaymode=skip|draft|normal|preview|weblayout
     normal - использовать форматирование, но текст подгон€етс€ под размер окна
     preview - использовать форматирование, текст размещаетс€ на странице как при печати
     weblayout - использовать форматирование, текст размещаетс€ как на странице браузера
+
+”правление размером страницы в режимах preview и weblayout дл€ класса форматов Word/HTML/EMAIL
+(SDK раздел A.7.3 SCCID_WPFITMODE / SCCID_HTMLFITMODE / SCCID_EMAILFITMODE)
+Ёти настройки корректно примен€ютс€ только после второго запуска ulister после внесени€ изменений
+в файл .ini (workaround) из-за ошибки в библиотеке Outside In Viewer.
+
+webprevwpfitmode=skip|original|width|window
+webprevhtmlfitmode=skip|original|width|window
+webprevemailfitmode=skip|original|width|window
+    original - задает актуальный размер страницы в режиме preview
+    width - размер страницы по ширине окна в режиме preview
+    window - вписать страницу в окно в режиме preview; в режиме weblayout по ширине окна.
 
 ѕараметры считываютс€ при первом запуске плагина. ѕерезапустите Total Commander дл€ применени€ изменений.
 
@@ -331,3 +343,7 @@ https://github.com/avogelba/uLister
 2026-05-09
     - в ulister.ini добавлена настройка буфера обмена дл€ database
     - добавлена секци€ [viewer] и настройки wpdisplaymode, htmldisplaymode и emaildisplaymode
+
+2026-05-10 4.0.1.0
+    - рефакторинг
+    - добавлены настройки webprevwpfitmode, webprevhtmlfitmode, webprevemailfitmode
