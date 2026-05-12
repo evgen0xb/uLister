@@ -114,63 +114,60 @@ void LoadVTFile(const HWND hViewWnd, const wchar_t* FileToLoad) {
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+// This message is sent from the view window to the developer when another file should be viewed.
+// Currently, this occurs is when the user double - clicks or hits return on a file entry in an Archive view and on a hyperlink to a referenced document.
+// In the case of the archive formats, the display engine decompresses the file then sends a SCCVW_VIEWTHISFILE message to the developer.
+DWORD ViewThisFileHandler(const LPARAM lParam) // 4.74 SCCVW_VIEWTHISFILE
+#define ULISTMAXARGS (MAX_PATH * 2 + 15) // [/S=L "" /I=""] + ini_path + target_path + '\0'
+{
+	union
+	{
+		PSCCVWVIEWTHISFILE40    locVTFPtr40;
+		PSCCVWVIEWTHISFILE80    locVTFPtr80;
+	}; locVTFPtr40 = (PSCCVWVIEWTHISFILE40)lParam; // locVTFPtr80 = (PSCCVWVIEWTHISFILE80)lParam;
 
+	if (locVTFPtr40->sViewFile.dwSpecType == IOTYPE_ANSIPATH)
+	{
+		char TotalcmdExePath[MAX_PATH];
+		char TotalcmdIniPath[MAX_PATH];
+		char TotalArgs[ULISTMAXARGS];
 
+		if (!GetModuleFileNameA(NULL, TotalcmdExePath, MAX_PATH)) return ERROR_EXE_MARKED_INVALID;
+		TotalcmdExePath[MAX_PATH - 1] = '\0'; // Windows XP fix: The string is truncated to nSize characters and is not null-terminated
+		if (!GetEnvironmentVariableA("COMMANDER_INI", TotalcmdIniPath, MAX_PATH)) return GetLastError();
 
-/*
-int LoadThisFile(const LPARAM lParam) { // TODO refactor
-    PSCCVWVIEWTHISFILE40    locVTFPtr40;
-    PSCCVWVIEWTHISFILE80    locVTFPtr80;
-    locVTFPtr40 = (PSCCVWVIEWTHISFILE40)lParam;
-    locVTFPtr80 = (PSCCVWVIEWTHISFILE80)lParam;
+		TotalArgs[0] = '\0';
+		strcat_s(TotalArgs, ULISTMAXARGS, "/S=L \""); // switch to run TC as lister mode
+		strcat_s(TotalArgs, ULISTMAXARGS, (char *)locVTFPtr40->sViewFile.pSpec); // path to the file to view
+		strcat_s(TotalArgs, ULISTMAXARGS, "\" /I=\"");
+		strcat_s(TotalArgs, ULISTMAXARGS, TotalcmdIniPath); // current TC ini file
+		strcat_s(TotalArgs, ULISTMAXARGS, "\"");
 
-	if (GetFileAttributesA((char *)locVTFPtr40->sViewFile.pSpec) != INVALID_FILE_ATTRIBUTES) {
-		char compath[MAX_PATH] = "";
-		char comdir[MAX_PATH] = "";
-		GetEnvironmentVariable("COMMANDER_PATH", comdir, MAX_PATH);
-		char tcinipath[MAX_PATH] = "";
-		GetEnvironmentVariable("COMMANDER_INI", tcinipath, MAX_PATH);
-		if (comdir == NULL)return 1;
-		strcat_s(compath, MAX_PATH, comdir);
-#ifdef ULISTER64
-		strcat_s(compath, MAX_PATH, "\\TOTALCMD64.EXE");
-#else
-		strcat_s(compath, MAX_PATH, "\\TOTALCMD.EXE");
-#endif
-		char allpar[MAX_PATH * 2 + 15] = "/S=L ";
-		strcat_s(allpar, MAX_PATH * 2 + 15, (char *)locVTFPtr40->sViewFile.pSpec);
-		strcat_s(allpar, MAX_PATH * 2 + 15, " /I=\"");
-		strcat_s(allpar, MAX_PATH * 2 + 15, tcinipath);
-		strcat_s(allpar, MAX_PATH * 2 + 15, "\"");
-		ShellExecuteA(NULL, "open", compath, allpar, NULL, SW_RESTORE);
+		ShellExecuteA(NULL, "open", TotalcmdExePath, TotalArgs, NULL, SW_RESTORE);
 	}
-	else
-		if (GetFileAttributesW((wchar_t *)locVTFPtr80->sViewFile.pSpec) != INVALID_FILE_ATTRIBUTES) {
-			MessageBoxW(0, (wchar_t *)locVTFPtr80->sViewFile.pSpec, 0, 0);
-			wchar_t compath[MAX_PATH] = L"";
-			wchar_t comdir[MAX_PATH] = L"";
-			GetEnvironmentVariableW(L"COMMANDER_PATH", comdir, MAX_PATH);
-			wchar_t tcinipath[MAX_PATH] = L"";
-			GetEnvironmentVariableW(L"COMMANDER_INI", tcinipath, MAX_PATH);
-			if (comdir == NULL)return 1;
-			wcscat_s(compath, MAX_PATH, comdir);
-#ifdef ULISTER64
-			wcscat_s(compath, MAX_PATH, L"\\TOTALCMD64.EXE");
-#else
-			wcscat_s(compath, MAX_PATH, L"\\TOTALCMD.EXE");
-#endif
-			wchar_t allpar[MAX_PATH * 2 + 15] = L"/S=L ";
-			wcscat_s(allpar, MAX_PATH * 2 + 15, (wchar_t *)locVTFPtr80->sViewFile.pSpec);
-			wcscat_s(allpar, MAX_PATH * 2 + 15, L" /I=\"");
-			wcscat_s(allpar, MAX_PATH * 2 + 15, tcinipath);
-			wcscat_s(allpar, MAX_PATH * 2 + 15, L"\"");
-			ShellExecuteW(NULL, L"open", compath, allpar, NULL, SW_RESTORE);
-		}
-    return GetLastError();
+	else if (locVTFPtr80->sViewFile.dwSpecType == IOTYPE_UNICODEPATH)
+	{
+		wchar_t TotalcmdExePath[MAX_PATH];
+		wchar_t TotalcmdIniPath[MAX_PATH];
+		wchar_t TotalArgs[ULISTMAXARGS];
+
+		if (!GetModuleFileNameW(NULL, TotalcmdExePath, MAX_PATH)) return ERROR_EXE_MARKED_INVALID;
+		TotalcmdExePath[MAX_PATH - 1] = L'\0'; // Windows XP fix: The string is truncated to nSize characters and is not null-terminated
+		if (!GetEnvironmentVariableW(L"COMMANDER_INI", TotalcmdIniPath, MAX_PATH)) return GetLastError();
+
+		TotalArgs[0] = L'\0';
+		wcscat_s(TotalArgs, ULISTMAXARGS, L"/S=L \""); // switch to run TC as lister mode
+		wcscat_s(TotalArgs, ULISTMAXARGS, (wchar_t *)locVTFPtr80->sViewFile.pSpec); // path to the file to view
+		wcscat_s(TotalArgs, ULISTMAXARGS, L"\" /I=\"");
+		wcscat_s(TotalArgs, ULISTMAXARGS, TotalcmdIniPath); // current TC ini file
+		wcscat_s(TotalArgs, ULISTMAXARGS, L"\"");
+
+		ShellExecuteW(NULL, L"open", TotalcmdExePath, TotalArgs, NULL, SW_RESTORE);
+	}
+	else return ERROR_BAD_LENGTH;
+
+	return GetLastError();
 }
-*/
-
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 HBITMAP GetVTFilePreview(const wchar_t* FileToLoad, const int width, const int height) {
