@@ -104,6 +104,9 @@ public:
 	clsVTDWORDOption WEBPREVHTMLFITMODE;
 	clsVTDWORDOption WEBPREVEMAILFITMODE;
 
+	clsVTDWORDOption VECTORFITMODE;
+	clsVTDWORDOption BITMAPFITMODE;
+
 }; // clsVTOptionsViewer
 #endif
 
@@ -122,7 +125,7 @@ public:
 void IniParse();
 HINSTANCE LoadLibVT(const wchar_t *libname);
 void zoom(HWND hWnd, int dir);
-// int LoadThisFile(LPARAM lParam);
+//DWORD ViewThisFileHandler(const LPARAM lParam);
 LRESULT CALLBACK ParentWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK ViewWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 HWND CreateLister(HWND ParentWin);

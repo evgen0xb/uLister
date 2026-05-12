@@ -66,8 +66,8 @@ LRESULT CALLBACK ParentWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 				ShowWindow(mydata->oiWindow, SW_SHOW);
 			}
 			break;
-		// case SCCVW_VIEWTHISFILE:
-		//	return (LoadThisFile(lParam) == 0) ? SCCVWERR_MESSAGEHANDLED : 0;
+		//case SCCVW_VIEWTHISFILE:
+		//	return (ViewThisFileHandler(lParam) == 0) ? SCCVWERR_MESSAGEHANDLED : 0;
 		}
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }

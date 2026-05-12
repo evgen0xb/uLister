@@ -78,8 +78,8 @@ This settings specifies the format for copying cells from spreadsheets (SDK A.4.
 or from database (SDK A.4.1 SCCID_DBCLIPBOARD)
 spreadsheet=skip|rtf|tabs|optimizedtabs
 database=skip|rtf|tabs|optimizedtabs
-    rtf - copy as a table using RTF format
-    tabs - as plain text, separated between cells by tabs
+    rtf         - copy as a table using RTF format
+    tabs        - as plain text, separated between cells by tabs
     optimizedtabs - as in the previous case, but empty cells are skipped
 
 This setting in the [viewer] section indicates how the word processor/HTML/email display engine displays documents since 4.0.1.0
@@ -88,10 +88,10 @@ This setting in the [viewer] section indicates how the word processor/HTML/email
 wpdisplaymode=skip|draft|normal|preview|weblayout
 htmldisplaymode=skip|draft|normal|preview|weblayout
 emaildisplaymode=skip|draft|normal|preview|weblayout
-    draft - Display using only a single font and size (SCCID_DEFAULTDISPLAYFONT), do not display embedded graphics, do not display graphic or table borders, wrap the text to the size of the view window.
-    normal - Display all supported formatting, wrap the text to the size of the view window.
-    preview - Display all supported formatting, wrap the text as it will be printed.
-    weblayout - Display all supported formatting, wrap the text as it would appear in a browser.
+    draft       - Display using only a single font and size (SCCID_DEFAULTDISPLAYFONT), do not display embedded graphics, do not display graphic or table borders, wrap the text to the size of the view window.
+    normal      - Display all supported formatting, wrap the text to the size of the view window.
+    preview     - Display all supported formatting, wrap the text as it will be printed.
+    weblayout   - Display all supported formatting, wrap the text as it would appear in a browser.
 
 This settings in the [viewer] section controls the size of word processor pages when using preview or weblayout mode
 (A.7.3 SCCID_WPFITMODE / SCCID_HTMLFITMODE / SCCID_EMAILFITMODE)
@@ -101,9 +101,25 @@ changes in the .ini file due to an bug in the Outside In Viewer library (workaro
 webprevwpfitmode=skip|original|width|window
 webprevhtmlfitmode=skip|original|width|window
 webprevemailfitmode=skip|original|width|window
-    original - sizes the preview page to the actual size
-    width - sizes the preview page to the width of the window
-    window - sizes the preview page to the window; sizes the weblayout to the width of the window
+    original    - sizes the preview page to the actual size
+    width       - sizes the preview page to the width of the window
+    window      - sizes the preview page to the window; sizes the weblayout to the width of the window
+
+Version 4.0.2.0 of the plugin now includes settings for controlling the display of bitmap and vector graphics.
+(A.5.11 SCCID_VECFITMODE, A.5.4 SCCID_BMPFITMODE)
+Some image containers, such as Macintosh Pict, can contain both bitmap and vector graphics.
+For some reason, the Outside In Technology library classifies such files as vector.
+vectorfitmode=skip|best|original|window|height|width|stretch
+bitmapfitmode=skip|best|original|window|height|width|stretch***|imagesize
+    best        - If the view window is smaller than the original image, this option will fit it to the window. If the view window is larger than the original image, the image will be displayed at its original size.
+    original    - The image is displayed one pixel on the screen for every unit in the images coordinate system for vector image or
+                picel for pixel on the screen for bitmap; size of the window has no effect.
+    window      - The image will be stretched to fill as much of the window as possible while maintaining its proper aspect ratio.
+    height      - The image will be stretched so its full height fits in the height of the window. Depending on the image, its full width may or may not fit inside the window.
+    width       - The image will be stretched so its full width fits in the width of the window. Depending on the image, its full height may or may not fit inside the window.
+    stretch     - The image will be stretched to fill the window. The images aspect ratio is not maintained.
+                Although the stretch parameter is defined in the SDK for bitmap graphics too, it has no effect for them.
+    imagesize   - Scale to image size.
 
 Options are set the first time you launch the plugin. Restart Total Commander for the changes to take effect.
 
@@ -138,6 +154,10 @@ Find Next/Previous - F3/Shift+F3
 (Search is not available in some formats; case-insensitive search option is supported)
 For some formats, mainly tabular and vector ones, you can zoom in/out - Ctrl "+" / Ctrl "-"
 For some formats, you can select a block and copy it to the clipboard, or drag-and-drop copy.
+For database and spreadsheet formats, you can switch between sheets using Ctrl+PgDn/Ctrl+PgUp.
+For Visio/PowerPoint/Lotus Freelance presentations, etc., slide switching is performed using the PgDn/PgUp keys or the mouse wheel.
+For graphics, zooming is done using either the Ctrl "+" / Ctrl "-" keys or Ctrl + mouse wheel.
+Thus, keys are mainly processed internally by the library and are strictly dependent on the document type and viewing mode.
 
 8. Compilation.
 Use the vs2015.sln file to edit the project's source code in modern versions of Visual Studio.
@@ -346,5 +366,9 @@ Finally, the search procedure has been rewritten:
     - added [viewer] section and wpdisplaymode, htmldisplaymode and emaildisplaymode settings
 
 2026-05-10 4.0.1.0
-    - refactoring and memory optimization
+    - refactoring and code optimization
     - added webprevwpfitmode, webprevhtmlfitmode, and webprevemailfitmode settings
+
+2026-05-12
+    - added vectorfitmode and bitmapfitmode settings
+    - refactoring of the SCCVW_VIEWTHISFILE event handling procedure (should now work on FreeCommander/Double Commander as well)

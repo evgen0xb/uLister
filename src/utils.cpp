@@ -172,8 +172,6 @@ int LoadThisFile(const LPARAM lParam) { // TODO refactor
 
 
 
-
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 HBITMAP GetVTFilePreview(const wchar_t* FileToLoad, const int width, const int height) {
 
@@ -249,7 +247,7 @@ void GetIniPath(wchar_t *_inipath)
 	int retlength;
 
 	GetModuleFileNameW(hInst, _inipath, MAX_PATH); // самый высокий приоритет расположения ulister.ini в каталоге с плагином
-	_inipath[MAX_PATH - 1] = L'\0'; // Windows XP fix: Строка усечена до символов nSize НО не завершается значением NULL
+	_inipath[MAX_PATH - 1] = L'\0'; // Windows XP fix: The string is truncated to nSize characters and is not null-terminated
 	if (pathposition = wcsrchr(_inipath, L'\\'))
 		*pathposition = L'\0';
 	wcscat_s(_inipath, MAX_PATH, ULISTERINI);
@@ -359,6 +357,25 @@ VTDWORD ReadIniViewOptWebPrevFitMode(const wchar_t *optionname)
 	return result;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+VTDWORD ReadIniViewOptGraphicFitMode(const wchar_t *optionname)
+{
+	// A.5.11 SCCID_VECFITMODE, A.5.4 SCCID_BMPFITMODE
+	wchar_t buf[INT64STRMAXBUF];
+	VTDWORD result;
+
+	GetPrivateProfileStringW(VIEWERSECTION, optionname, ASKIP, buf, INT64STRMAXBUF, inipath);
+	if (_wcsicmp(buf, L"best") == 0) result = SCCVW_FITMODE_BEST;
+	else if (_wcsicmp(buf, L"original") == 0) result = SCCVW_FITMODE_ORIGINAL;
+	else if (_wcsicmp(buf, L"window") == 0) result = SCCVW_FITMODE_WINDOW;
+	else if (_wcsicmp(buf, L"height") == 0) result = SCCVW_FITMODE_WINDOWHEIGHT;
+	else if (_wcsicmp(buf, L"width") == 0) result = SCCVW_FITMODE_WINDOWWIDTH;
+	else if (_wcsicmp(buf, L"stretch") == 0) result = SCCVW_FITMODE_STRETCHWINDOW;
+	else if (_wcsicmp(buf, L"imagesize") == 0) result = SCCVW_FITMODE_IMAGESIZE;
+	else result = Opt::SKIP;
+
+	return result;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void InitClipboardOpts()
 {
 	VTOptions.VTClipboard.FORMAT_TEXT = ReadIniClipbOpt(L"ascii");
@@ -384,6 +401,9 @@ void InitViewerOpts()
 	VTOptions.VTViewer.WEBPREVWPFITMODE.Option = ReadIniViewOptWebPrevFitMode(L"webprevwpfitmode");
 	VTOptions.VTViewer.WEBPREVHTMLFITMODE.Option = ReadIniViewOptWebPrevFitMode(L"webprevhtmlfitmode");
 	VTOptions.VTViewer.WEBPREVEMAILFITMODE.Option = ReadIniViewOptWebPrevFitMode(L"webprevemailfitmode");
+
+	VTOptions.VTViewer.VECTORFITMODE.Option = ReadIniViewOptGraphicFitMode(L"vectorfitmode");
+	VTOptions.VTViewer.BITMAPFITMODE.Option = ReadIniViewOptGraphicFitMode(L"bitmapfitmode");
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void IniParse()
@@ -583,6 +603,9 @@ void SendVTOptions(const ALLMYDATA *mydata, const clsVTOptions *_VTOptions)
 		VTDWORD WebPrevWPfitmode;
 		VTDWORD WebPrevHTMLfitmode;
 		VTDWORD WebPrevEMAILfitmode;
+
+		VTDWORD Vectorfitmode;
+		VTDWORD Bitmapfitmode;
 	};
 
 	// unicode clipboard:
@@ -696,4 +719,19 @@ void SendVTOptions(const ALLMYDATA *mydata, const clsVTOptions *_VTOptions)
 		SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 	}
 
+	/****************************************************/
+
+	// vector display engine:
+	locOptionSpec.dwId = SCCID_VECFITMODE;
+	//locOptionSpec.pData = &Vectorfitmode;
+	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	Vectorfitmode = _VTOptions->VTViewer.VECTORFITMODE.FilterSkip(Vectorfitmode);
+	SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+	// bitmap display engine:
+	locOptionSpec.dwId = SCCID_BMPFITMODE;
+	//locOptionSpec.pData = &Bitmapfitmode;
+	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	Bitmapfitmode = _VTOptions->VTViewer.BITMAPFITMODE.FilterSkip(Bitmapfitmode);
+	SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 }
