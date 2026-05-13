@@ -53,9 +53,14 @@ Some patched versions of this file are located in the "OIT_DATA_PATH support" di
 If the optionsdir parameter is not specified, the library creates ".oit" in %APPDATA%; if this value is undefined, it creates it in %LOCALAPPDATA%;
 if this value is also undefined, it creates it in the library directory.
 
-Version 4.0.0.7 of the plugin introduces additional parameters related to Outside In Technology library copying to the clipboard.
-These parameters should be located in the [clipboard] section and are set to "SKIP" by default, meaning they use the settings stored
-in Outside In Technology (".oit" directory) rather than the INI file.
+In version 4.0.0.7 of the plugin, additional parameters related to the Outside In Technology library's clipboard copy-paste settings are available.
+These parameters should be located in the clipboard section and are set to "skip" by default, meaning they "skip" this setting from the INI file and
+use the library's internal settings stored in Outside In Technology (the ".oit" directory).
+However, if a setting is explicitly set in the INI file, the library (not the plugin) overwrites its value in the .oit storage.
+Some settings can be changed from the context menu. Some users may want these settings to be remembered; for this purpose, they
+should be set as "skip" in the INI file. Others may want these settings to be restored to their original state
+by restarting Total Commander, so that they cannot be overwritten from the menu; in this case, they should be explicitly
+set in the INI file. However, most other options are not available in the context menu and can only be changed from the INI file.
 
 The main group is what can be accessed by right-clicking Options->Clipboard in an open document.
 These parameters determine the format in which blocks can be placed on the clipboard (SDK A.10.10 SCCID_TOCLIPBOARD).
@@ -111,12 +116,15 @@ Some image containers, such as Macintosh Pict, can contain both bitmap and vecto
 For some reason, the Outside In Technology library classifies such files as vector.
 vectorfitmode=skip|best|original|window|height|width|stretch
 bitmapfitmode=skip|best|original|window|height|width|stretch***|imagesize
-    best        - If the view window is smaller than the original image, this option will fit it to the window. If the view window is larger than the original image, the image will be displayed at its original size.
+    best        - If the view window is smaller than the original image, this option will fit it to the window.
+                If the view window is larger than the original image, the image will be displayed at its original size.
     original    - The image is displayed one pixel on the screen for every unit in the images coordinate system for vector image or
-                picel for pixel on the screen for bitmap; size of the window has no effect.
+                pixel for pixel on the screen for bitmap; size of the window has no effect.
     window      - The image will be stretched to fill as much of the window as possible while maintaining its proper aspect ratio.
-    height      - The image will be stretched so its full height fits in the height of the window. Depending on the image, its full width may or may not fit inside the window.
-    width       - The image will be stretched so its full width fits in the width of the window. Depending on the image, its full height may or may not fit inside the window.
+    height      - The image will be stretched so its full height fits in the height of the window.
+                Depending on the image, its full width may or may not fit inside the window.
+    width       - The image will be stretched so its full width fits in the width of the window.
+                Depending on the image, its full height may or may not fit inside the window.
     stretch     - The image will be stretched to fill the window. The images aspect ratio is not maintained.
                 Although the stretch parameter is defined in the SDK for bitmap graphics too, it has no effect for them.
     imagesize   - Scale to image size.
@@ -158,6 +166,9 @@ For database and spreadsheet formats, you can switch between sheets using Ctrl+P
 For Visio/PowerPoint/Lotus Freelance presentations, etc., slide switching is performed using the PgDn/PgUp keys or the mouse wheel.
 For graphics, zooming is done using either the Ctrl "+" / Ctrl "-" keys or Ctrl + mouse wheel.
 Thus, keys are mainly processed internally by the library and are strictly dependent on the document type and viewing mode.
+
+Outside In Viewer can work with simple containers such as ZIP files, MS ZIP-compressed MS CAB files, Outlook Personal Storage Table (*.pst), and so on.
+Double-click a link or file contained within it will unzip the file to a temporary directory and open it in a new viewing window.
 
 8. Compilation.
 Use the vs2015.sln file to edit the project's source code in modern versions of Visual Studio.
