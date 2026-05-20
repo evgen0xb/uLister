@@ -190,6 +190,19 @@ LRESULT CALLBACK SccviewerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 		case WM_TIMER:
 			// update WindowProc adress of SCCDISPLAY child window if the sheet change (after event on SCCSECLIST child window)
 
+			// to hook MOUSEHWHEEL:
+
+			//	TLister Window
+			//	|
+			//	+-WAwc
+			//		|
+			//		+-SCCVIEWER
+			//			|
+			//			+-SCCDISPLAY (CHILD WITH MOUSEHWHEEL MESSAGES IS HERE!)
+			//			+-SCCSCROLL
+			//			+-SCCSCROLL
+			//			+-SCCSECLIST
+
 			_SccdisplayWindow = FindWindowExA(mydata->SccviewerWindow, NULL, WNDCLASSNAME_SCCDISPLAY, NULL); // get child window
 			_SccdisplayWindowProc = (WNDPROC)GetWindowLongPtrA(_SccdisplayWindow, GWLP_WNDPROC);
 
@@ -330,28 +343,15 @@ HWND CreateLister(HWND ParentWin)
 	return waWnd;
 }
 
+/*
 void SetSccdisplayChildWndProc(HWND waWnd)
 {
-	// to hook MOUSEHWHEEL:
-
-	//	TLister Window
-	//	|
-	//	+-WAwc
-	//		|
-	//		+-SCCVIEWER
-	//			|
-	//			+-SCCDISPLAY (CHILD WITH MOUSEHWHEEL MESSAGES IS HERE!)
-	//			+-SCCSCROLL
-	//			+-SCCSCROLL
-	//			+-SCCSECLIST
-
 	ALLMYDATA *mydata;
 	mydata = (ALLMYDATA *)GetWindowLongPtr(waWnd, GWLP_USERDATA);
 
 	mydata->SccdisplayWindow = FindWindowExA(mydata->SccviewerWindow, NULL, WNDCLASSNAME_SCCDISPLAY, NULL); // get child window
 	if (mydata->SccdisplayWindow) mydata->OriginalSccdisplayWindowProc = (WNDPROC)SetWindowLongPtrA(mydata->SccdisplayWindow, GWLP_WNDPROC, (LONG_PTR)SccdisplayWindowProc);
 
-	/*
 	std::string msg;
 	OutputDebugStringA("------------------------------------------------");
 	OutputDebugStringA("GetSccdisplayChild:");
@@ -366,8 +366,8 @@ void SetSccdisplayChildWndProc(HWND waWnd)
 	msg = "OriginalSccdisplayWindowProc=" + std::to_string(reinterpret_cast<uintptr_t>(mydata->OriginalSccdisplayWindowProc));
 	OutputDebugStringA(msg.c_str());
 	OutputDebugStringA("------------------------------------------------");
-	*/
 }
+*/
 
 
 	

@@ -93,7 +93,7 @@ extern "C" __declspec(dllexport) HWND __stdcall ListLoadW(HWND ParentWin, wchar_
 
 		SendVTOptions(mydata, &VTOptions);
 
-		SetSccdisplayChildWndProc(hViewWnd);
+		//SetSccdisplayChildWndProc(hViewWnd);
 	}
 	return hViewWnd;
 }
@@ -114,7 +114,7 @@ extern "C" __declspec(dllexport) int __stdcall ListLoadNextW(HWND ParentWin, HWN
 
 		SendVTOptions(mydata, &VTOptions);
 
-		SetSccdisplayChildWndProc(mydata->waWindow);
+		//SetSccdisplayChildWndProc(mydata->waWindow);
 	}
 	return LISTPLUGIN_OK;
 }

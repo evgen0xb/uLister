@@ -142,7 +142,7 @@ void LoadVTFile(HWND hViewWnd, const wchar_t* FileToLoad);
 void ErrMsgIssue(const int issuetype, const wchar_t *path, const DWORD dwError);
 unsigned long long REGCurrentBuildNumber();
 void SendVTOptions(const ALLMYDATA *mydata, const clsVTOptions *_VTOptions);
-void SetSccdisplayChildWndProc(HWND waWnd);
+//void SetSccdisplayChildWndProc(HWND waWnd);
 LRESULT CALLBACK SccdisplayWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 #define ULISTMAXBUF 1024
