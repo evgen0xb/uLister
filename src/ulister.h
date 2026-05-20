@@ -28,10 +28,16 @@
 
 struct ALLMYDATA
 {
-    WNDPROC ViewWindowProc;
-    HWND ListerWindow;
-    HWND oiWindow;
-    HWND waWindow;
+	HWND ListerWindow;
+	HWND waWindow; // WTF-naming
+	
+	WNDPROC OriginalSccviewerWindowProc;
+	HWND SccviewerWindow;
+
+	WNDPROC OriginalSccdisplayWindowProc;
+	HWND SccdisplayWindow;
+
+	ALLMYDATA();
 };
 
 namespace WindowsNTLevel {
@@ -124,10 +130,10 @@ public:
 
 void IniParse();
 HINSTANCE LoadLibVT(const wchar_t *libname);
-void zoom(HWND hWnd, int dir);
+void ZoomBitmapVecFont(const HWND hWnd, const VTDWORD DispEng, const int dir);
 DWORD ViewThisFileHandler(const LPARAM lParam);
 LRESULT CALLBACK ParentWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-LRESULT CALLBACK ViewWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+LRESULT CALLBACK SccviewerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 HWND CreateLister(HWND ParentWin);
 VTWORD GetVTFileType(const wchar_t* FileToLoad);
 bool IsVTFileTypeAllowed(const wchar_t* FileToLoad, const wchar_t* onlyload, const wchar_t* noload);
@@ -136,6 +142,8 @@ void LoadVTFile(HWND hViewWnd, const wchar_t* FileToLoad);
 void ErrMsgIssue(const int issuetype, const wchar_t *path, const DWORD dwError);
 unsigned long long REGCurrentBuildNumber();
 void SendVTOptions(const ALLMYDATA *mydata, const clsVTOptions *_VTOptions);
+void SetSccdisplayChildWndProc(HWND waWnd);
+LRESULT CALLBACK SccdisplayWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 #define ULISTMAXBUF 1024
 

@@ -513,6 +513,20 @@ void ErrMsgIssue(const int issuetype, const wchar_t *path, const DWORD dwError)
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+ALLMYDATA::ALLMYDATA()
+{
+	ListerWindow = NULL;
+	waWindow = NULL;
+
+	OriginalSccviewerWindowProc = NULL;
+	SccviewerWindow = NULL;
+
+	OriginalSccdisplayWindowProc = NULL;
+	SccdisplayWindow = NULL;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
 clsVTDWORDOption::clsVTDWORDOption() { Option = Opt::SKIP; }
 VTDWORD clsVTDWORDOption::FilterSkip(VTDWORD val) const { if (Option == Opt::SKIP) return val; else return Option; }
 
@@ -608,51 +622,51 @@ void SendVTOptions(const ALLMYDATA *mydata, const clsVTOptions *_VTOptions)
 	// unicode clipboard:
 	locOptionSpec.dwId = SCCID_TOCLIPBOARD;
 	locOptionSpec.pData = &ClipFormat;
-	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
 	ClipFormat = _VTOptions->VTClipboard.Get_SCCVW_CLIPFORMAT(ClipFormat);
-	SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+	SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 
 	// drag-and-drop copying:
 	locOptionSpec.dwId = SCCID_OLEFLAGS;
 	//locOptionSpec.pData = &OLEFlags;
-	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
 	OLEFlags = _VTOptions->VTClipboard.Get_SCCVW_OLE(OLEFlags);
-	SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+	SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 
 	// spreadsheet copying:
 	locOptionSpec.dwId = SCCID_SSCLIPBOARD;
 	//locOptionSpec.pData = &SpreadsheetClipboard;
-	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
 	SpreadsheetClipboard = _VTOptions->VTClipboard.SSCLIPBOARDSUBFORMAT.FilterSkip(SpreadsheetClipboard);
-	SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+	SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 
 	// database copying:
 	locOptionSpec.dwId = SCCID_DBCLIPBOARD;
 	//locOptionSpec.pData = &DatabaseClipboard;
-	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
 	DatabaseClipboard = _VTOptions->VTClipboard.DBCLIPBOARDSUBFORMAT.FilterSkip(DatabaseClipboard);
-	SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+	SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 
 	// word processor display engine:
 	locOptionSpec.dwId = SCCID_WPDISPLAYMODE;
 	//locOptionSpec.pData = &WPdisplaymode;
-	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
 	WPdisplaymode = _VTOptions->VTViewer.WPDISPLAYMODE.FilterSkip(WPdisplaymode);
-	SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+	SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 
 	// HTML display engine:
 	locOptionSpec.dwId = SCCID_HTMLDISPLAYMODE;
 	//locOptionSpec.pData = &HTMLdisplaymode;
-	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
 	HTMLdisplaymode = _VTOptions->VTViewer.HTMLDISPLAYMODE.FilterSkip(HTMLdisplaymode);
-	SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+	SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 
 	// email display engine:
 	locOptionSpec.dwId = SCCID_EMAILDISPLAYMODE;
 	//locOptionSpec.pData = &EMAILdisplaymode;
-	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
 	EMAILdisplaymode = _VTOptions->VTViewer.EMAILDISPLAYMODE.FilterSkip(EMAILdisplaymode);
-	SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+	SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 
 	/*
 	It's not working propertly due Outside In Viewer library internal bug.
@@ -689,31 +703,31 @@ void SendVTOptions(const ALLMYDATA *mydata, const clsVTOptions *_VTOptions)
 	// size of word processor pages when using weblayout/preview mode:
 	locOptionSpec.dwId = SCCID_WPFITMODE;
 	//locOptionSpec.pData = &WebPrevWPfitmode;
-	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
 	if (_VTOptions->VTViewer.WEBPREVWPFITMODE.Option != Opt::SKIP && _VTOptions->VTViewer.WEBPREVWPFITMODE.Option != WebPrevWPfitmode)
 	{
 		WebPrevWPfitmode = _VTOptions->VTViewer.WEBPREVWPFITMODE.Option;
-		SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 	}
 
 	// size of HTML pages when using weblayout/preview mode:
 	locOptionSpec.dwId = SCCID_HTMLFITMODE;
 	//locOptionSpec.pData = &WebPrevHTMLfitmode;
-	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
 	if (_VTOptions->VTViewer.WEBPREVHTMLFITMODE.Option != Opt::SKIP && _VTOptions->VTViewer.WEBPREVHTMLFITMODE.Option != WebPrevHTMLfitmode)
 	{
 		WebPrevHTMLfitmode = _VTOptions->VTViewer.WEBPREVHTMLFITMODE.Option;
-		SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 	}
 
 	// size of EMAIL pages when using weblayout/preview mode:
 	locOptionSpec.dwId = SCCID_EMAILFITMODE;
 	//locOptionSpec.pData = &WebPrevEMAILfitmode;
-	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
 	if (_VTOptions->VTViewer.WEBPREVEMAILFITMODE.Option != Opt::SKIP && _VTOptions->VTViewer.WEBPREVEMAILFITMODE.Option != WebPrevEMAILfitmode)
 	{
 		WebPrevEMAILfitmode = _VTOptions->VTViewer.WEBPREVEMAILFITMODE.Option;
-		SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 	}
 
 	/****************************************************/
@@ -721,14 +735,14 @@ void SendVTOptions(const ALLMYDATA *mydata, const clsVTOptions *_VTOptions)
 	// vector display engine:
 	locOptionSpec.dwId = SCCID_VECFITMODE;
 	//locOptionSpec.pData = &Vectorfitmode;
-	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
 	Vectorfitmode = _VTOptions->VTViewer.VECTORFITMODE.FilterSkip(Vectorfitmode);
-	SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+	SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 
 	// bitmap display engine:
 	locOptionSpec.dwId = SCCID_BMPFITMODE;
 	//locOptionSpec.pData = &Bitmapfitmode;
-	SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
 	Bitmapfitmode = _VTOptions->VTViewer.BITMAPFITMODE.FilterSkip(Bitmapfitmode);
-	SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+	SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 }

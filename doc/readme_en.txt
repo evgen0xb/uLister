@@ -17,6 +17,8 @@ Outside In Viewer (C) 1991, 2026 Oracle(R)
 (C) 2024 Vogelbacher Andreas (aka avogelba)
 (C) 2026 evgen_b (aka evgen_b)
 
+Main README.md by (C) 2026 yozhic
+
 4. Libraries Used
 Oracle(R) Outside In Technology: Viewer Technology.
 
@@ -53,10 +55,14 @@ Some patched versions of this file are located in the "OIT_DATA_PATH support" di
 If the optionsdir parameter is not specified, the library creates ".oit" in %APPDATA%; if this value is undefined, it creates it in %LOCALAPPDATA%;
 if this value is also undefined, it creates it in the library directory.
 
-In version 4.0.0.7 of the plugin, additional parameters related to the Outside In Technology library's clipboard copy-paste settings are available.
-These parameters should be located in the clipboard section and are set to "skip" by default, meaning they "skip" this setting from the INI file and
-use the library's internal settings stored in Outside In Technology (the ".oit" directory).
-However, if a setting is explicitly set in the INI file, the library (not the plugin) overwrites its value in the .oit storage.
+Since version 4.0.0.7 of the plugin, ulister.ini can be used to write some useful internal settings of the Outside In Technology
+library, stored in a proprietary binary representation in the ".oit" directory.
+
+Almost all such options by default have a special reserved value "skip", i.e. skip this setting from the ini-file
+and use the internal library setting stored in Outside In Technology (directory ".oit").
+However, if the option in the ini is explicitly set to a different value, then the library (not the plugin) overwrites this value in .oit storage.
+
+The first part of these parameters is related to the copying to the clipboard engine of Outside In Technology library, and the options should be located in the clipboard section.
 Some settings can be changed from the context menu. Some users may want these settings to be remembered; for this purpose, they
 should be set as "skip" in the INI file. Others may want these settings to be restored to their original state
 by restarting Total Commander, so that they cannot be overwritten from the menu; in this case, they should be explicitly
@@ -160,11 +166,18 @@ older library versions are also unnecessary, and everything will work as before 
 Enter a search string - Ctrl+F/F7
 Find Next/Previous - F3/Shift+F3
 (Search is not available in some formats; case-insensitive search option is supported)
-For some formats, mainly tabular and vector ones, you can zoom in/out - Ctrl "+" / Ctrl "-"
+You can zoom in or out using Ctrl "+" / Ctrl "-" or Ctrl + Mouse Wheel (not available for some viewing modes).
+Keyboard shortcut Ctrl+NUM*/Ctrl+8 - reset zoom to 100%.
+Use Shift + mouse wheel (or special horizontal mouse wheel) to scroll horizontally.
+
+For non-graphical documents, zooming is only achieved by changing the font size, which in certain situations will result in
+some formatting issues in the document, but it's still better than nothing at all.
+Outside In Technology never implemented full scaling for non-graphical documents, and it appears that the mouse message interface
+for scaling and horizontal scrolling was deliberately blocked in the library due to rendering artifacts.
+
 For some formats, you can select a block and copy it to the clipboard, or drag-and-drop copy.
-For database and spreadsheet formats, you can switch between sheets using Ctrl+PgDn/Ctrl+PgUp.
-For Visio/PowerPoint/Lotus Freelance presentations, etc., slide switching is performed using the PgDn/PgUp keys or the mouse wheel.
-For graphics, zooming is done using either the Ctrl "+" / Ctrl "-" keys or Ctrl + mouse wheel.
+For Visio, database and spreadsheet formats, you can switch between sheets using Ctrl+PgDn/Ctrl+PgUp.
+For PowerPoint/Lotus Freelance presentations, etc., slide switching is performed using the PgDn/PgUp keys, cursor keys or the mouse wheel.
 Thus, keys are mainly processed internally by the library and are strictly dependent on the document type and viewing mode.
 
 Outside In Viewer can work with simple containers such as ZIP files, MS ZIP-compressed MS CAB files, Outlook Personal Storage Table (*.pst), and so on.
@@ -383,3 +396,11 @@ Finally, the search procedure has been rewritten:
 2026-05-12
     - added vectorfitmode and bitmapfitmode settings
     - refactoring of the SCCVW_VIEWTHISFILE event handling procedure (should now work on FreeCommander/Double Commander as well)
+
+2026-05-20 4.0.2.0
+    - Complete redesign for windows messages handling
+    - Separate zoom settings for graphics and documents
+    - Added: Ctrl+NUM*/Ctrl+8 - Reset zoom to 100%
+    - Oracle bug fix: Ctrl + Mouse Wheel (zoom) now works on all documents (but not in all viewing modes; in the original, it only works on graphics)
+    - Oracle bug fix: Shift + Mouse Wheel - Added horizontal scrolling
+    - Documentation update

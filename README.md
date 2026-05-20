@@ -1,3 +1,5 @@
+(draft version, with some errors)
+
 # uLister
 
 ## О программе
@@ -493,7 +495,9 @@ Outside In Viewer может работать с простыми контейн
 © 2026 evgen\_b (aka evgen\_b)  
 
 Сторонние библиотеки Oracle, необходимые для полноценной работы плагина, доступны под лицензией [Oracle Technology Network License Agreement](https://www.oracle.com/downloads/licenses/standard-license.html)  
-Outside In Viewer © 1991, 2026 Oracle®  
+Outside In Viewer © 1991, 2026 Oracle®
+
+Оформление документации © 2026 yozhic
 
 ## История
 

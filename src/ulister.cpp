@@ -88,10 +88,12 @@ extern "C" __declspec(dllexport) HWND __stdcall ListLoadW(HWND ParentWin, wchar_
 	ALLMYDATA *mydata;
 	mydata = (ALLMYDATA *)GetWindowLongPtr(hViewWnd, GWLP_USERDATA);
 	if (mydata) {
-		LoadVTFile(mydata->oiWindow, FileToLoad);
+		LoadVTFile(mydata->SccviewerWindow, FileToLoad);
 		numInstances++; // fix
 
 		SendVTOptions(mydata, &VTOptions);
+
+		SetSccdisplayChildWndProc(hViewWnd);
 	}
 	return hViewWnd;
 }
@@ -107,10 +109,12 @@ extern "C" __declspec(dllexport) int __stdcall ListLoadNextW(HWND ParentWin, HWN
 	ALLMYDATA *mydata;
 	mydata = (ALLMYDATA *)GetWindowLongPtr(ListWin, GWLP_USERDATA);
 	if (mydata) {
-		LoadVTFile(mydata->oiWindow, FileToLoad);
+		LoadVTFile(mydata->SccviewerWindow, FileToLoad);
 		numInstances++; // fix
 
 		SendVTOptions(mydata, &VTOptions);
+
+		SetSccdisplayChildWndProc(mydata->waWindow);
 	}
 	return LISTPLUGIN_OK;
 }
@@ -127,9 +131,9 @@ extern "C" __declspec(dllexport)void __stdcall ListCloseWindow(HWND ListWin) {
 		ALLMYDATA *mydata;
 		mydata = (ALLMYDATA *)GetWindowLongPtr(ListWin, GWLP_USERDATA);
 		if (mydata) {
-			SendMessage(mydata->oiWindow, SCCVW_SAVEOPTIONS, 0, 0L);
-			SendMessage(mydata->oiWindow, SCCVW_CLOSEFILE, 0, 0L);
-			DestroyWindow(mydata->oiWindow);
+			SendMessage(mydata->SccviewerWindow, SCCVW_SAVEOPTIONS, 0, 0L);
+			SendMessage(mydata->SccviewerWindow, SCCVW_CLOSEFILE, 0, 0L);
+			DestroyWindow(mydata->SccviewerWindow);
 			DestroyWindow(mydata->waWindow);
 			numInstances--;
 			if ((hViewerLibrary != NULL) && (keepinmemory == 0) && (numInstances == 0)) {
@@ -176,9 +180,9 @@ extern "C" __declspec(dllexport)int __stdcall ListSearchText(HWND ListWin, char*
 		locOptionSpec.dwFlags = SCCVWOPTION_CURRENT;
 		locOptionSpec.dwId = SCCID_SYSTEMFLAGS;
 		locOptionSpec.pData = &SystemFlags;
-		SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+		SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
 		SystemFlags = SystemFlags & (~SCCVW_SYSTEM_UNICODE); // reset the unicode bit
-		SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 
 		WindowWithoutSearchStringYet = (SearchStringPerWindowA.count(ListWin) == 0);
 
@@ -219,17 +223,17 @@ extern "C" __declspec(dllexport)int __stdcall ListSearchText(HWND ListWin, char*
 
 			//Updated for find to work
 			//if(SendMessage(mydata->oiWindow,SCCVW_SEARCH,0,(LPARAM)(PSCCVWSEARCHINFO40)&locSearchInfo)!=0)
-			if (SendMessage(mydata->oiWindow, SCCVW_SEARCH, 0, (LPARAM)(PSCCVWSEARCHINFO80)&locSearchInfo40) != 0) // hack!
-				MessageBox(mydata->oiWindow, WindSearchStr, ANOTFOUND, MB_OK);
+			if (SendMessage(mydata->SccviewerWindow, SCCVW_SEARCH, 0, (LPARAM)(PSCCVWSEARCHINFO80)&locSearchInfo40) != 0) // hack!
+				MessageBox(mydata->SccviewerWindow, WindSearchStr, ANOTFOUND, MB_OK);
 		}
 		else
 			if (SearchParameter & lcs_backwards) {
-				if (SendMessage(mydata->oiWindow, SCCVW_SEARCHNEXT, SCCVW_SEARCHBACK, 0) != 0)
-					MessageBox(mydata->oiWindow, WindSearchStr, ANOTFOUND, MB_OK);
+				if (SendMessage(mydata->SccviewerWindow, SCCVW_SEARCHNEXT, SCCVW_SEARCHBACK, 0) != 0)
+					MessageBox(mydata->SccviewerWindow, WindSearchStr, ANOTFOUND, MB_OK);
 			}
 			else
-				if (SendMessage(mydata->oiWindow, SCCVW_SEARCHNEXT, SCCVW_SEARCHFORWARD, 0) != 0)
-					MessageBox(mydata->oiWindow, WindSearchStr, ANOTFOUND, MB_OK);
+				if (SendMessage(mydata->SccviewerWindow, SCCVW_SEARCHNEXT, SCCVW_SEARCHFORWARD, 0) != 0)
+					MessageBox(mydata->SccviewerWindow, WindSearchStr, ANOTFOUND, MB_OK);
 	}
 	return LISTPLUGIN_OK;
 #pragma warning( pop ) 
@@ -256,9 +260,9 @@ extern "C" __declspec(dllexport)int __stdcall ListSearchTextW(HWND ListWin, WCHA
 		locOptionSpec.dwFlags = SCCVWOPTION_CURRENT;
 		locOptionSpec.dwId = SCCID_SYSTEMFLAGS;
 		locOptionSpec.pData = &SystemFlags;
-		SendMessage(mydata->oiWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+		SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
 		SystemFlags = SystemFlags | SCCVW_SYSTEM_UNICODE; // set the unicode bit
-		SendMessage(mydata->oiWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 
 		WindowWithoutSearchStringYet = (SearchStringPerWindowW.count(ListWin) == 0);
 
@@ -296,17 +300,17 @@ extern "C" __declspec(dllexport)int __stdcall ListSearchTextW(HWND ListWin, WCHA
 			locSearchInfo80.siFrom = SCCVW_SEARCHCURRENT;
 			locSearchInfo80.siDirection = (SearchParameter & lcs_backwards) ? SCCVW_SEARCHBACK : SCCVW_SEARCHFORWARD;
 
-			if (SendMessageW(mydata->oiWindow, SCCVW_SEARCH, 0, (LPARAM)(PSCCVWSEARCHINFO80)&locSearchInfo80) != 0)
-				MessageBoxW(mydata->oiWindow, WindSearchStr, WNOTFOUND, MB_OK);
+			if (SendMessageW(mydata->SccviewerWindow, SCCVW_SEARCH, 0, (LPARAM)(PSCCVWSEARCHINFO80)&locSearchInfo80) != 0)
+				MessageBoxW(mydata->SccviewerWindow, WindSearchStr, WNOTFOUND, MB_OK);
 		}
 		else
 			if (SearchParameter & lcs_backwards) {
-				if (SendMessageW(mydata->oiWindow, SCCVW_SEARCHNEXT, SCCVW_SEARCHBACK, 0) != 0)
-					MessageBoxW(mydata->oiWindow, WindSearchStr, WNOTFOUND, MB_OK);
+				if (SendMessageW(mydata->SccviewerWindow, SCCVW_SEARCHNEXT, SCCVW_SEARCHBACK, 0) != 0)
+					MessageBoxW(mydata->SccviewerWindow, WindSearchStr, WNOTFOUND, MB_OK);
 			}
 			else
-				if (SendMessageW(mydata->oiWindow, SCCVW_SEARCHNEXT, SCCVW_SEARCHFORWARD, 0) != 0)
-					MessageBoxW(mydata->oiWindow, WindSearchStr, WNOTFOUND, MB_OK);
+				if (SendMessageW(mydata->SccviewerWindow, SCCVW_SEARCHNEXT, SCCVW_SEARCHFORWARD, 0) != 0)
+					MessageBoxW(mydata->SccviewerWindow, WindSearchStr, WNOTFOUND, MB_OK);
 	}
 	return LISTPLUGIN_OK;
 #pragma warning( pop ) 
@@ -319,7 +323,7 @@ extern "C" __declspec(dllexport)int __stdcall ListPrint(HWND ListWin, char* File
 	ALLMYDATA *mydata;
 	mydata = (ALLMYDATA *)GetWindowLongPtr(ListWin, GWLP_USERDATA);
 	if (mydata)
-		SendMessage(mydata->oiWindow, SCCVW_PRINT, 0, 0);
+		SendMessage(mydata->SccviewerWindow, SCCVW_PRINT, 0, 0);
 	return LISTPLUGIN_OK;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -329,10 +333,10 @@ extern "C" __declspec(dllexport)int __stdcall ListSendCommand(HWND ListWin, int 
 	if (mydata)
 		switch (Command) {
 		case lc_copy:
-			SendMessage(mydata->oiWindow, SCCVW_COPYTOCLIP, 0, 0);
+			SendMessage(mydata->SccviewerWindow, SCCVW_COPYTOCLIP, 0, 0);
 			return LISTPLUGIN_OK;
 		case lc_selectall:
-			SendMessage(mydata->oiWindow, SCCVW_SELECTALL, 0, 0);
+			SendMessage(mydata->SccviewerWindow, SCCVW_SELECTALL, 0, 0);
 			return LISTPLUGIN_OK;
 		}
 	return LISTPLUGIN_ERROR;
