@@ -28,9 +28,11 @@
 #include "ulister.h"
 //#include <string>
 
-extern HINSTANCE  hInst;
-extern HANDLE     hViewerLibrary;
-extern int        numInstances;
+extern HINSTANCE	hInst;
+extern HANDLE		hViewerLibrary;
+extern int			numInstances;
+extern clsVTOptions	VTOptions;
+extern int			keepinmemory;
 
 const char *WNDCLASSNAME_WAWC			= "WAwc";
 const char *WNDCLASSNAME_SCCVIEWER		= "SCCVIEWER";
@@ -183,6 +185,15 @@ LRESULT CALLBACK SccviewerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			if ((GetKeyState(VK_CONTROL) < 0) && ((lParam == VK_OEM_PLUS) || (lParam == VK_ADD))) { ZoomBitmapVecFont(hWnd, DisplayEngineType, 1); return 0; }
 			if ((GetKeyState(VK_CONTROL) < 0) && ((lParam == VK_OEM_MINUS) || (lParam == VK_SUBTRACT))) { ZoomBitmapVecFont(hWnd, DisplayEngineType, -1); return 0; }
 			if ((GetKeyState(VK_CONTROL) < 0) && ((lParam == VK_MULTIPLY) || (lParam == '8'))) { ZoomReset(hWnd, DisplayEngineType); return 0; }
+
+			if ((GetKeyState(VK_CONTROL) < 0) && (GetKeyState(VK_SHIFT) < 0) && (lParam == 'R'))
+			{
+				// OutputDebugStringA("Reload ini-file");
+				int _keepinmemory = keepinmemory; IniParse(); keepinmemory = _keepinmemory;
+				SendVTOptions(mydata, &VTOptions);
+				return 0;
+			}
+
 			PostMessage(mydata->ListerWindow, WM_KEYDOWN, lParam, 0); // TC Lister Handler: (Ctrl+F/F7, F3/Shift+F3, ESC)
 			break;
 		

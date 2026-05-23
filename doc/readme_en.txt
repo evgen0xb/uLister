@@ -183,6 +183,8 @@ Thus, keys are mainly processed internally by the library and are strictly depen
 Outside In Viewer can work with simple containers such as ZIP files, MS ZIP-compressed MS CAB files, Outlook Personal Storage Table (*.pst), and so on.
 Double-click a link or file contained within it will unzip the file to a temporary directory and open it in a new viewing window.
 
+The keyboard shortcut Ctrl+Shift+R reload the configuration parameters from the ini file (some of them may take effect immediately).
+
 8. Compilation.
 Use the vs2015.sln file to edit the project's source code in modern versions of Visual Studio.
 Use the vs2005.sln file to compile the project into compact code with Windows XP 32/64 support using
@@ -407,3 +409,4 @@ Finally, the search procedure has been rewritten:
 
 2026-05-23
     - added: Ctrl + middle mouse button - reset zoom to 100%
+    - added: Ctrl+Shift+R reload the configuration options from the ini file
