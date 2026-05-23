@@ -279,7 +279,10 @@ LRESULT CALLBACK SccdisplayWindowProc(HWND hWnd, UINT message, WPARAM wParam, LP
 		switch (message)
 		{
 		case WM_MOUSEHWHEEL:
-			PostMessage(mydata->SccviewerWindow, SCCVW_HSCROLL, (GET_WHEEL_DELTA_WPARAM(wParam) > 0) ? SCCSB_LINERIGHT : SCCSB_LINELEFT, 0);
+			if (UlisterOptions.mwhscrollinvert)
+				PostMessage(mydata->SccviewerWindow, SCCVW_HSCROLL, (GET_WHEEL_DELTA_WPARAM(wParam) > 0) ? SCCSB_LINELEFT : SCCSB_LINERIGHT, 0); // invert
+			else
+				PostMessage(mydata->SccviewerWindow, SCCVW_HSCROLL, (GET_WHEEL_DELTA_WPARAM(wParam) > 0) ? SCCSB_LINERIGHT : SCCSB_LINELEFT, 0);
 			return 0;
 		case WM_MOUSEWHEEL:
 			// OutputDebugStringA("***WM_MOUSEWHEEL***");
@@ -293,7 +296,10 @@ LRESULT CALLBACK SccdisplayWindowProc(HWND hWnd, UINT message, WPARAM wParam, LP
 			else if (GetKeyState(VK_SHIFT) < 0)
 			{
 				// SHIFT+MOUSEHWHEEL : horizontal scroll for spreadsheet and database
-				PostMessage(mydata->SccviewerWindow, SCCVW_HSCROLL, (GET_WHEEL_DELTA_WPARAM(wParam) > 0) ? SCCSB_LINERIGHT : SCCSB_LINELEFT, 0);
+				if (UlisterOptions.mwhscrollinvert)
+					PostMessage(mydata->SccviewerWindow, SCCVW_HSCROLL, (GET_WHEEL_DELTA_WPARAM(wParam) > 0) ? SCCSB_LINELEFT : SCCSB_LINERIGHT, 0); // invert
+				else
+					PostMessage(mydata->SccviewerWindow, SCCVW_HSCROLL, (GET_WHEEL_DELTA_WPARAM(wParam) > 0) ? SCCSB_LINERIGHT : SCCSB_LINELEFT, 0);
 				return 0;
 			}
 			// MOUSEHWHEEL : Up-Down scroll

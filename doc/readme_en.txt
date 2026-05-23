@@ -49,11 +49,14 @@ optionsdir          path to the directory in which the ".oit" subdirectory is cr
                     environment %variables% are supported;
                     Windows limitation - path length is 260 characters maximum;
                     For optionsdir to work correctly, you must use a patched version of the sccut.dll file.
-
-Some patched versions of this file are located in the "OIT_DATA_PATH support" directory (for example, the latest versions supporting Windows XP).
+                    Some patched versions of this file are located in the "OIT_DATA_PATH support"
+                    directory (for example, the latest versions supporting Windows XP).
 
 If the optionsdir parameter is not specified, the library creates ".oit" in %APPDATA%; if this value is undefined, it creates it in %LOCALAPPDATA%;
 if this value is also undefined, it creates it in the library directory.
+
+mwhscrollinvert     (default on) - invert mouse wheel horizontal scroll,
+                    off - do not invert; this option is available starting with version 4.0.3.0.
 
 Since version 4.0.0.7 of the plugin, ulister.ini can be used to write some useful internal settings of the Outside In Technology
 library, stored in a proprietary binary representation in the ".oit" directory.
@@ -411,3 +414,4 @@ Finally, the search procedure has been rewritten:
     - added: Ctrl + middle mouse button - reset zoom to 100%
     - added: Ctrl+Shift+R reload the configuration options from the ini file
     - refactoring
+    - added option mwhscrollinvert (invert mouse wheel horizontal scroll)

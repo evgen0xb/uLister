@@ -272,6 +272,9 @@ void InitUlister()
 	GetPrivateProfileStringW(ULISTERSECTION, L"keepinmemory", L"1", buf, INT64STRMAXBUF, UlisterOptions.inipath);
 	if (_wcsicmp(buf, L"1") == 0) UlisterOptions.keepinmemory = 1; else UlisterOptions.keepinmemory = 0;
 
+	GetPrivateProfileStringW(ULISTERSECTION, L"mwhscrollinvert", AON, buf, INT64STRMAXBUF, UlisterOptions.inipath);
+	if (_wcsicmp(buf, AON) == 0) UlisterOptions.mwhscrollinvert = true; else UlisterOptions.mwhscrollinvert = false;
+
 	GetPrivateProfileStringW(ULISTERSECTION, L"optionsdir", L"", inioptdir, MAX_PATH, UlisterOptions.inipath);
 
 	GetPrivateProfileStringW(ULISTERSECTION, L"noloadtypes", L"", UlisterOptions.ininoloadtypes, ULISTMAXBUF, UlisterOptions.inipath);

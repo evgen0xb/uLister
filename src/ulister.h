@@ -55,6 +55,7 @@ struct clsUlisterOptions
 	wchar_t	ininopreviewtypes[ULISTMAXBUF];
 	wchar_t	inionlypreviewtypes[ULISTMAXBUF];
 	int		keepinmemory;
+	bool	mwhscrollinvert;
 };
 
 class clsUlisterInstance
