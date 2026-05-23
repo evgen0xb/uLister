@@ -418,3 +418,4 @@ https://github.com/avogelba/uLister
 2026-05-24
     - обход ошибки Oracle: масштабирование не работает в режимах preview или weblayout на типах документов Word Processor / HTML / EMAIL (A.10.5 SCCID_FONTSCALINGFACTOR Note)
     - оптимизация кода
+    - оптимизация просмотра при обходе ошибки Oracle
