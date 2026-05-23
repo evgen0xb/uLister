@@ -65,13 +65,9 @@ VTDWORD GetDisplayEngineVT(const HWND hWnd)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void ZoomBitmapVecFont(const HWND hWnd, const int dir)
 {
-	union
-	{
-		ALLMYDATA *mydata;
-		VTDWORD DispEng;
-	};
+	ALLMYDATA *mydata;
+	VTDWORD DispEng;
 	mydata = (ALLMYDATA *)GetWindowLongPtr(hWnd, GWLP_USERDATA);
-	DispEng = GetDisplayEngineVT(mydata->SccviewerWindow); // call only from user-level defined messages!!!
 
 	SCCVWOPTIONSPEC40 locOptionSpec;
 	VTDWORD zoom;
@@ -79,6 +75,7 @@ void ZoomBitmapVecFont(const HWND hWnd, const int dir)
 	locOptionSpec.dwFlags = SCCVWOPTION_CURRENT;
 	locOptionSpec.pData = &zoom;
 
+	DispEng = GetDisplayEngineVT(mydata->SccviewerWindow); // call only from user-level defined messages!!!
 	if (DispEng == SCCVWTYPE_IMAGE)
 	{
 		locOptionSpec.dwId = SCCID_BMPZOOMEVENT;
@@ -91,12 +88,72 @@ void ZoomBitmapVecFont(const HWND hWnd, const int dir)
 		zoom = (dir > 0) ? SCCVW_ZOOM_IN : SCCVW_ZOOM_OUT;
 		SendMessage(hWnd, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 	}
-	else if (DispEng == SCCVWTYPE_WP || DispEng == SCCVWTYPE_SS || DispEng == SCCVWTYPE_DB ||
-		DispEng == SCCVWTYPE_HEX || DispEng == SCCVWTYPE_ARCHIVE || DispEng == SCCVWTYPE_HTML || DispEng == SCCVWTYPE_EMAIL)
+	else if (DispEng == SCCVWTYPE_WP || DispEng == SCCVWTYPE_HTML || DispEng == SCCVWTYPE_EMAIL)
 	{
-		// For word processor/HTML/EMAIL documents,
-		// this only affects normal and draft modes.
-		// BUT! need redraw to take effect!
+		// oracle bug: SCCID_FONTSCALINGFACTOR not working if SCCVW_WPMODE_PREVIEW or SCCVW_WPMODE_WEBLAYOUT mode of Word Processor / HTML / EMAIL!
+		// From A.10.5 SCCID_FONTSCALINGFACTOR Note:
+		// For word processor documents, this only affects normal and draft modes.
+
+		VTDWORD WPdisplaymode;
+		locOptionSpec.dwId = SCCID_WPDISPLAYMODE;
+		locOptionSpec.pData = &WPdisplaymode;
+		SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+
+		VTDWORD HTMLdisplaymode;
+		locOptionSpec.dwId = SCCID_HTMLDISPLAYMODE;
+		locOptionSpec.pData = &HTMLdisplaymode;
+		SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+
+		VTDWORD EMAILdisplaymode;
+		locOptionSpec.dwId = SCCID_EMAILDISPLAYMODE;
+		locOptionSpec.pData = &EMAILdisplaymode;
+		SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+
+		locOptionSpec.pData = &zoom;
+		locOptionSpec.dwId = SCCID_FONTSCALINGFACTOR;
+		SendMessage(hWnd, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+		zoom = (dir > 0) ? zoom * 10 / 8 : zoom * 8 / 10;
+		SendMessage(hWnd, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+		// workaround:
+		if (WPdisplaymode == SCCVW_WPMODE_PREVIEW || WPdisplaymode == SCCVW_WPMODE_WEBLAYOUT ||
+			HTMLdisplaymode == SCCVW_WPMODE_PREVIEW || HTMLdisplaymode == SCCVW_WPMODE_WEBLAYOUT ||
+			EMAILdisplaymode == SCCVW_WPMODE_PREVIEW || EMAILdisplaymode == SCCVW_WPMODE_WEBLAYOUT)
+		{ 
+			// temporarily switch to draft mode
+			zoom = SCCVW_WPMODE_DRAFT;
+
+			ShowWindow(hWnd, SW_HIDE);
+
+			locOptionSpec.dwId = SCCID_WPDISPLAYMODE;
+			SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+			locOptionSpec.dwId = SCCID_HTMLDISPLAYMODE;
+			SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+			locOptionSpec.dwId = SCCID_EMAILDISPLAYMODE;
+			SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+			// and switch back
+
+			locOptionSpec.dwId = SCCID_WPDISPLAYMODE;
+			locOptionSpec.pData = &WPdisplaymode;
+			SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+			locOptionSpec.dwId = SCCID_HTMLDISPLAYMODE;
+			locOptionSpec.pData = &HTMLdisplaymode;
+			SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+			locOptionSpec.dwId = SCCID_EMAILDISPLAYMODE;
+			locOptionSpec.pData = &EMAILdisplaymode;
+			SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+			ShowWindow(hWnd, SW_SHOW);
+		}
+	}
+	else if (DispEng == SCCVWTYPE_SS || DispEng == SCCVWTYPE_DB ||
+		DispEng == SCCVWTYPE_HEX || DispEng == SCCVWTYPE_ARCHIVE)
+	{
 		locOptionSpec.dwId = SCCID_FONTSCALINGFACTOR;
 		SendMessage(hWnd, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
 		zoom = (dir > 0) ? zoom * 10 / 8 : zoom * 8 / 10;
@@ -109,13 +166,9 @@ void ZoomBitmapVecFont(const HWND hWnd, const int dir)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void ZoomReset(const HWND hWnd)
 {
-	union
-	{
-		ALLMYDATA *mydata;
-		VTDWORD DispEng;
-	};
+	ALLMYDATA *mydata;
+	VTDWORD DispEng;
 	mydata = (ALLMYDATA *)GetWindowLongPtr(hWnd, GWLP_USERDATA);
-	DispEng = GetDisplayEngineVT(mydata->SccviewerWindow); // call only from user-level defined messages!!!
 
 	SCCVWOPTIONSPEC40 locOptionSpec;
 	VTDWORD zoom;
@@ -123,6 +176,7 @@ void ZoomReset(const HWND hWnd)
 	locOptionSpec.dwFlags = SCCVWOPTION_CURRENT;
 	locOptionSpec.pData = &zoom;
 
+	DispEng = GetDisplayEngineVT(mydata->SccviewerWindow); // call only from user-level defined messages!!!
 	if (DispEng == SCCVWTYPE_IMAGE)
 	{
 		locOptionSpec.dwId = SCCID_BMPZOOMEVENT;

@@ -415,3 +415,6 @@ Finally, the search procedure has been rewritten:
     - added: Ctrl+Shift+R reload the configuration options from the ini file
     - refactoring
     - added option mwhscrollinvert (invert mouse wheel horizontal scroll)
+
+2026-05-24
+    - oracle bug workaround: zoom not working if preview or weblayout mode of Word Processor / HTML / EMAIL (A.10.5 SCCID_FONTSCALINGFACTOR Note)
