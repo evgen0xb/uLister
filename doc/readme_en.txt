@@ -418,3 +418,4 @@ Finally, the search procedure has been rewritten:
 
 2026-05-24
     - oracle bug workaround: zoom not working if preview or weblayout mode of Word Processor / HTML / EMAIL (A.10.5 SCCID_FONTSCALINGFACTOR Note)
+    - code optimization

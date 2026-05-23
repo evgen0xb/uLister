@@ -93,6 +93,14 @@ namespace Opt { // Outside In Technology option representation
 	};
 } // VS2005 fix
 
+namespace UlisterZoom {
+	enum Type {
+		ZOUT = -1,
+		ZRESET = 0,
+		ZIN = 1
+	};
+} // VS2005 fix
+
 #ifndef VTOPTIONSCLIPBOARD
 #define VTOPTIONSCLIPBOARD
 
@@ -162,7 +170,6 @@ public:
 void IniParse();
 HINSTANCE LoadLibVT(const wchar_t *libname);
 void ZoomBitmapVecFont(const HWND hWnd, const int dir);
-void ZoomReset(const HWND hWnd);
 DWORD ViewThisFileHandler(const LPARAM lParam);
 LRESULT CALLBACK ParentWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK SccviewerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

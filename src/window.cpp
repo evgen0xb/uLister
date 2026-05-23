@@ -65,6 +65,10 @@ VTDWORD GetDisplayEngineVT(const HWND hWnd)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void ZoomBitmapVecFont(const HWND hWnd, const int dir)
 {
+	// dir =  1		- zoom in
+	// dir = -1		- zoom out
+	// dir =  0		- zoom reset to 100%
+
 	ALLMYDATA *mydata;
 	VTDWORD DispEng;
 	mydata = (ALLMYDATA *)GetWindowLongPtr(hWnd, GWLP_USERDATA);
@@ -79,13 +83,15 @@ void ZoomBitmapVecFont(const HWND hWnd, const int dir)
 	if (DispEng == SCCVWTYPE_IMAGE)
 	{
 		locOptionSpec.dwId = SCCID_BMPZOOMEVENT;
-		zoom = (dir > 0) ? SCCVW_ZOOM_IN : SCCVW_ZOOM_OUT;
+		if (dir == UlisterZoom::ZRESET) zoom = SCCVW_ZOOM_RESET;
+		else zoom = (dir == UlisterZoom::ZIN) ? SCCVW_ZOOM_IN : SCCVW_ZOOM_OUT;
 		SendMessage(hWnd, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 	}
 	else if (DispEng == SCCVWTYPE_VECTOR)
 	{
 		locOptionSpec.dwId = SCCID_VECZOOMEVENT;
-		zoom = (dir > 0) ? SCCVW_ZOOM_IN : SCCVW_ZOOM_OUT;
+		if (dir == UlisterZoom::ZRESET) zoom = SCCVW_ZOOM_RESET;
+		else zoom = (dir == UlisterZoom::ZIN) ? SCCVW_ZOOM_IN : SCCVW_ZOOM_OUT;
 		SendMessage(hWnd, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 	}
 	else if (DispEng == SCCVWTYPE_WP || DispEng == SCCVWTYPE_HTML || DispEng == SCCVWTYPE_EMAIL)
@@ -112,7 +118,8 @@ void ZoomBitmapVecFont(const HWND hWnd, const int dir)
 		locOptionSpec.pData = &zoom;
 		locOptionSpec.dwId = SCCID_FONTSCALINGFACTOR;
 		SendMessage(hWnd, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
-		zoom = (dir > 0) ? zoom * 10 / 8 : zoom * 8 / 10;
+		if (dir == UlisterZoom::ZRESET) zoom = 100; // percent
+		else zoom = (dir == UlisterZoom::ZIN) ? zoom * 10 / 8 : zoom * 8 / 10;
 		SendMessage(hWnd, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 
 		// workaround:
@@ -156,44 +163,8 @@ void ZoomBitmapVecFont(const HWND hWnd, const int dir)
 	{
 		locOptionSpec.dwId = SCCID_FONTSCALINGFACTOR;
 		SendMessage(hWnd, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
-		zoom = (dir > 0) ? zoom * 10 / 8 : zoom * 8 / 10;
-		SendMessage(hWnd, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
-	}
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void ZoomReset(const HWND hWnd)
-{
-	ALLMYDATA *mydata;
-	VTDWORD DispEng;
-	mydata = (ALLMYDATA *)GetWindowLongPtr(hWnd, GWLP_USERDATA);
-
-	SCCVWOPTIONSPEC40 locOptionSpec;
-	VTDWORD zoom;
-	locOptionSpec.dwSize = sizeof(SCCVWOPTIONSPEC40);
-	locOptionSpec.dwFlags = SCCVWOPTION_CURRENT;
-	locOptionSpec.pData = &zoom;
-
-	DispEng = GetDisplayEngineVT(mydata->SccviewerWindow); // call only from user-level defined messages!!!
-	if (DispEng == SCCVWTYPE_IMAGE)
-	{
-		locOptionSpec.dwId = SCCID_BMPZOOMEVENT;
-		zoom = SCCVW_ZOOM_RESET;
-		SendMessage(hWnd, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
-	}
-	else if (DispEng == SCCVWTYPE_VECTOR)
-	{
-		locOptionSpec.dwId = SCCID_VECZOOMEVENT;
-		zoom = SCCVW_ZOOM_RESET;
-		SendMessage(hWnd, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
-	}
-	else if (DispEng == SCCVWTYPE_WP || DispEng == SCCVWTYPE_SS || DispEng == SCCVWTYPE_DB ||
-		DispEng == SCCVWTYPE_HEX || DispEng == SCCVWTYPE_ARCHIVE || DispEng == SCCVWTYPE_HTML || DispEng == SCCVWTYPE_EMAIL)
-	{
-		locOptionSpec.dwId = SCCID_FONTSCALINGFACTOR;
-		zoom = 100; // percent
+		if (dir == UlisterZoom::ZRESET) zoom = 100; // percent
+		else zoom = (dir == UlisterZoom::ZIN) ? zoom * 10 / 8 : zoom * 8 / 10;
 		SendMessage(hWnd, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 	}
 }
@@ -248,9 +219,9 @@ LRESULT CALLBACK SccviewerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 		switch (message)
 		{
 		case SCCVW_KEYDOWN:
-			if ((GetKeyState(VK_CONTROL) < 0) && ((lParam == VK_OEM_PLUS) || (lParam == VK_ADD))) { ZoomBitmapVecFont(hWnd, 1); return 0; }
-			if ((GetKeyState(VK_CONTROL) < 0) && ((lParam == VK_OEM_MINUS) || (lParam == VK_SUBTRACT))) { ZoomBitmapVecFont(hWnd, -1); return 0; }
-			if ((GetKeyState(VK_CONTROL) < 0) && ((lParam == VK_MULTIPLY) || (lParam == '8'))) { ZoomReset(hWnd); return 0; }
+			if ((GetKeyState(VK_CONTROL) < 0) && ((lParam == VK_OEM_PLUS) || (lParam == VK_ADD))) { ZoomBitmapVecFont(hWnd, UlisterZoom::ZIN); return 0; }
+			if ((GetKeyState(VK_CONTROL) < 0) && ((lParam == VK_OEM_MINUS) || (lParam == VK_SUBTRACT))) { ZoomBitmapVecFont(hWnd, UlisterZoom::ZOUT); return 0; }
+			if ((GetKeyState(VK_CONTROL) < 0) && ((lParam == VK_MULTIPLY) || (lParam == '8'))) { ZoomBitmapVecFont(hWnd, UlisterZoom::ZRESET); return 0; }
 
 			if ((GetKeyState(VK_CONTROL) < 0) && (GetKeyState(VK_SHIFT) < 0) && (lParam == 'R'))
 			{
@@ -358,7 +329,7 @@ LRESULT CALLBACK SccdisplayWindowProc(HWND hWnd, UINT message, WPARAM wParam, LP
 			if (GetKeyState(VK_CONTROL) < 0 && DisplayEngineType != SCCVWTYPE_IMAGE && DisplayEngineType != SCCVWTYPE_VECTOR)
 			{
 				// CTRL+MOUSEHWHEEL : Zoom-In/Zoom-Out
-				if (GET_WHEEL_DELTA_WPARAM(wParam) > 0) ZoomBitmapVecFont(mydata->SccviewerWindow, 1); else ZoomBitmapVecFont(mydata->SccviewerWindow, -1);
+				if (GET_WHEEL_DELTA_WPARAM(wParam) > 0) ZoomBitmapVecFont(mydata->SccviewerWindow, UlisterZoom::ZIN); else ZoomBitmapVecFont(mydata->SccviewerWindow, UlisterZoom::ZOUT);
 				return 0;
 			}
 			else if (GetKeyState(VK_SHIFT) < 0)
@@ -375,7 +346,7 @@ LRESULT CALLBACK SccdisplayWindowProc(HWND hWnd, UINT message, WPARAM wParam, LP
 		case WM_MBUTTONDOWN:
 			//OutputDebugStringA("WM_MBUTTONDOWN");
 			DisplayEngineType = GetDisplayEngineVT(mydata->SccviewerWindow);
-			if (wParam & MK_CONTROL) { ZoomReset(mydata->SccviewerWindow); return 0; }
+			if (wParam & MK_CONTROL) { ZoomBitmapVecFont(mydata->SccviewerWindow, UlisterZoom::ZRESET); return 0; }
 			break;
 		}
 		return CallWindowProc(mydata->OriginalSccdisplayWindowProc, hWnd, message, wParam, lParam);
