@@ -31,8 +31,9 @@
 extern HINSTANCE	hInst;
 extern HANDLE		hViewerLibrary;
 extern int			numInstances;
-extern clsVTOptions	VTOptions;
-extern int			keepinmemory;
+
+extern clsVTOptions			VTOptions;
+extern clsUlisterOptions	UlisterOptions;
 
 const char *WNDCLASSNAME_WAWC			= "WAwc";
 const char *WNDCLASSNAME_SCCVIEWER		= "SCCVIEWER";
@@ -189,7 +190,7 @@ LRESULT CALLBACK SccviewerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			if ((GetKeyState(VK_CONTROL) < 0) && (GetKeyState(VK_SHIFT) < 0) && (lParam == 'R'))
 			{
 				// OutputDebugStringA("Reload ini-file");
-				int _keepinmemory = keepinmemory; IniParse(); keepinmemory = _keepinmemory;
+				int _keepinmemory = UlisterOptions.keepinmemory; IniParse(); UlisterOptions.keepinmemory = _keepinmemory;
 				SendVTOptions(mydata, &VTOptions);
 				return 0;
 			}

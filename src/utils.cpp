@@ -26,14 +26,9 @@ extern HINSTANCE	hInst;
 extern HANDLE		hViewerLibrary;
 extern int			numInstances;
 extern int			NTLevel;
-extern clsVTOptions VTOptions;
 
-int keepinmemory;
-wchar_t ininoloadtypes[ULISTMAXBUF];
-wchar_t inionlyloadtypes[ULISTMAXBUF];
-wchar_t ininopreviewtypes[ULISTMAXBUF];
-wchar_t inionlypreviewtypes[ULISTMAXBUF];
-wchar_t inipath[MAX_PATH];
+extern clsVTOptions			VTOptions;
+extern clsUlisterOptions	UlisterOptions;
 
 #ifdef ULISTER64
 wchar_t *REDIST_NT6 = L"\\redist64\\";
@@ -230,7 +225,7 @@ HBITMAP GetVTFilePreview(const wchar_t* FileToLoad, const int width, const int h
 	SendMessage(hViewWnd, SCCVW_CLOSEFILE, 0, 0L);
 	DestroyWindow(hViewWnd);
 	numInstances--;
-	if ((hViewerLibrary != NULL) && (keepinmemory == 0) && (numInstances == 0)) {
+	if ((hViewerLibrary != NULL) && (UlisterOptions.keepinmemory == 0) && (numInstances == 0)) {
 		FreeLibrary((HINSTANCE)hViewerLibrary);
 		hViewerLibrary = NULL;
 	}
@@ -278,15 +273,15 @@ void InitUlister()
 
 	wchar_t buf[INT64STRMAXBUF];
 
-	GetPrivateProfileStringW(ULISTERSECTION, L"keepinmemory", L"1", buf, INT64STRMAXBUF, inipath);
-	if (_wcsicmp(buf, L"1") == 0) keepinmemory = 1; else keepinmemory = 0;
+	GetPrivateProfileStringW(ULISTERSECTION, L"keepinmemory", L"1", buf, INT64STRMAXBUF, UlisterOptions.inipath);
+	if (_wcsicmp(buf, L"1") == 0) UlisterOptions.keepinmemory = 1; else UlisterOptions.keepinmemory = 0;
 
-	GetPrivateProfileStringW(ULISTERSECTION, L"optionsdir", L"", inioptdir, MAX_PATH, inipath);
+	GetPrivateProfileStringW(ULISTERSECTION, L"optionsdir", L"", inioptdir, MAX_PATH, UlisterOptions.inipath);
 
-	GetPrivateProfileStringW(ULISTERSECTION, L"noloadtypes", L"", ininoloadtypes, ULISTMAXBUF, inipath);
-	GetPrivateProfileStringW(ULISTERSECTION, L"onlyloadtypes", L"", inionlyloadtypes, ULISTMAXBUF, inipath);
-	GetPrivateProfileStringW(ULISTERSECTION, L"nopreviewtypes", L"", ininopreviewtypes, ULISTMAXBUF, inipath);
-	GetPrivateProfileStringW(ULISTERSECTION, L"onlypreviewtypes", L"", inionlypreviewtypes, ULISTMAXBUF, inipath);
+	GetPrivateProfileStringW(ULISTERSECTION, L"noloadtypes", L"", UlisterOptions.ininoloadtypes, ULISTMAXBUF, UlisterOptions.inipath);
+	GetPrivateProfileStringW(ULISTERSECTION, L"onlyloadtypes", L"", UlisterOptions.inionlyloadtypes, ULISTMAXBUF, UlisterOptions.inipath);
+	GetPrivateProfileStringW(ULISTERSECTION, L"nopreviewtypes", L"", UlisterOptions.ininopreviewtypes, ULISTMAXBUF, UlisterOptions.inipath);
+	GetPrivateProfileStringW(ULISTERSECTION, L"onlypreviewtypes", L"", UlisterOptions.inionlypreviewtypes, ULISTMAXBUF, UlisterOptions.inipath);
 
 	if (wcslen(inioptdir) > 0) {
 		ExpandEnvironmentStringsW(inioptdir, oitdatapath, MAX_PATH);
@@ -300,7 +295,7 @@ __int8 ReadIniClipbOpt(const wchar_t *optionname)
 	wchar_t buf[INT64STRMAXBUF];
 	__int8 result;
 
-	GetPrivateProfileStringW(CLIPBOARDSECTION, optionname, ASKIP, buf, INT64STRMAXBUF, inipath);
+	GetPrivateProfileStringW(CLIPBOARDSECTION, optionname, ASKIP, buf, INT64STRMAXBUF, UlisterOptions.inipath);
 	if (_wcsicmp(buf, AON) == 0) result = Opt::ON;
 	else if (_wcsicmp(buf, AOFF) == 0) result = Opt::OFF;
 	else result = Opt::SKIP;
@@ -314,7 +309,7 @@ VTDWORD ReadIniClipbSubFormat(const wchar_t *optionname)
 	wchar_t buf[INT64STRMAXBUF];
 	VTDWORD result;
 
-	GetPrivateProfileStringW(CLIPBOARDSECTION, optionname, ASKIP, buf, INT64STRMAXBUF, inipath);
+	GetPrivateProfileStringW(CLIPBOARDSECTION, optionname, ASKIP, buf, INT64STRMAXBUF, UlisterOptions.inipath);
 	if (_wcsicmp(buf, L"rtf") == 0) result = SCCVW_CLIPSUBFORMAT_TABLE;
 	else if (_wcsicmp(buf, L"tabs") == 0) result = SCCVW_CLIPSUBFORMAT_TABS;
 	else if (_wcsicmp(buf, L"optimizedtabs") == 0) result = SCCVW_CLIPSUBFORMAT_OPTIMIZEDTABS;
@@ -329,7 +324,7 @@ VTDWORD ReadIniViewOptDisplay(const wchar_t *optionname)
 	wchar_t buf[INT64STRMAXBUF];
 	VTDWORD result;
 
-	GetPrivateProfileStringW(VIEWERSECTION, optionname, ASKIP, buf, INT64STRMAXBUF, inipath);
+	GetPrivateProfileStringW(VIEWERSECTION, optionname, ASKIP, buf, INT64STRMAXBUF, UlisterOptions.inipath);
 	if (_wcsicmp(buf, L"draft") == 0) result = SCCVW_WPMODE_DRAFT;
 	else if (_wcsicmp(buf, L"normal") == 0) result = SCCVW_WPMODE_NORMAL;
 	else if (_wcsicmp(buf, L"preview") == 0) result = SCCVW_WPMODE_PREVIEW;
@@ -345,7 +340,7 @@ VTDWORD ReadIniViewOptWebPrevFitMode(const wchar_t *optionname)
 	wchar_t buf[INT64STRMAXBUF];
 	VTDWORD result;
 
-	GetPrivateProfileStringW(VIEWERSECTION, optionname, ASKIP, buf, INT64STRMAXBUF, inipath);
+	GetPrivateProfileStringW(VIEWERSECTION, optionname, ASKIP, buf, INT64STRMAXBUF, UlisterOptions.inipath);
 	if (_wcsicmp(buf, L"original") == 0) result = SCCVW_FITMODE_ORIGINAL;
 	else if (_wcsicmp(buf, L"width") == 0) result = SCCVW_FITMODE_WINDOWWIDTH;
 	else if (_wcsicmp(buf, L"window") == 0) result = SCCVW_FITMODE_WINDOW;
@@ -360,7 +355,7 @@ VTDWORD ReadIniViewOptGraphicFitMode(const wchar_t *optionname)
 	wchar_t buf[INT64STRMAXBUF];
 	VTDWORD result;
 
-	GetPrivateProfileStringW(VIEWERSECTION, optionname, ASKIP, buf, INT64STRMAXBUF, inipath);
+	GetPrivateProfileStringW(VIEWERSECTION, optionname, ASKIP, buf, INT64STRMAXBUF, UlisterOptions.inipath);
 	if (_wcsicmp(buf, L"best") == 0) result = SCCVW_FITMODE_BEST;
 	else if (_wcsicmp(buf, L"original") == 0) result = SCCVW_FITMODE_ORIGINAL;
 	else if (_wcsicmp(buf, L"window") == 0) result = SCCVW_FITMODE_WINDOW;
@@ -405,7 +400,7 @@ void InitViewerOpts()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void IniParse()
 {
-	GetIniPath(inipath);
+	GetIniPath(UlisterOptions.inipath);
 	InitUlister();
 	InitClipboardOpts();
 	InitViewerOpts();
@@ -507,7 +502,7 @@ void ErrMsgIssue(const int issuetype, const wchar_t *path, const DWORD dwError)
 		L"Error code: 0x%08X   (%lu)\n"
 		L"INI=[%s]\n\n"
 		L"Check Outside In dlls in plugin dir.\n"
-		L"See readme.txt, install section.", issuename, path, dwError, dwError, inipath);
+		L"See readme.txt, install section.", issuename, path, dwError, dwError, UlisterOptions.inipath);
 
 	MessageBoxW(NULL, buf, title, MB_OK);
 }

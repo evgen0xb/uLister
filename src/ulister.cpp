@@ -24,17 +24,13 @@
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-HINSTANCE		hInst;
-HANDLE			hViewerLibrary; // extern
-int				numInstances;
-int				NTLevel;
-clsVTOptions	VTOptions;
+HINSTANCE			hInst;
+HANDLE				hViewerLibrary; // extern
+int					numInstances;
+int					NTLevel;
 
-extern int		keepinmemory;
-extern wchar_t	ininoloadtypes[ULISTMAXBUF];
-extern wchar_t	inionlyloadtypes[ULISTMAXBUF];
-extern wchar_t	ininopreviewtypes[ULISTMAXBUF];
-extern wchar_t	inionlypreviewtypes[ULISTMAXBUF];
+clsUlisterOptions	UlisterOptions;
+clsVTOptions		VTOptions;
 
 const char *ANOTFOUND = "Not found:";
 const wchar_t *WNOTFOUND = L"Not found:";
@@ -82,7 +78,7 @@ BOOL APIENTRY DllMain(HINSTANCE hinst, unsigned long reason, void* lpReserved) {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 extern "C" __declspec(dllexport) HWND __stdcall ListLoadW(HWND ParentWin, wchar_t* FileToLoad, int ShowFlags) {
 	HWND        hViewWnd;
-	if (!IsVTFileTypeAllowed(FileToLoad, inionlyloadtypes, ininoloadtypes)) return NULL;
+	if (!IsVTFileTypeAllowed(FileToLoad, UlisterOptions.inionlyloadtypes, UlisterOptions.ininoloadtypes)) return NULL;
 	hViewWnd = CreateLister(ParentWin);
 	if (!IsWindow(hViewWnd)) return NULL;
 	ALLMYDATA *mydata;
@@ -105,7 +101,7 @@ extern "C" __declspec(dllexport) HWND __stdcall ListLoad(HWND ParentWin, char* F
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 extern "C" __declspec(dllexport) int __stdcall ListLoadNextW(HWND ParentWin, HWND ListWin, wchar_t* FileToLoad, int ShowFlags) {
-	if (!IsVTFileTypeAllowed(FileToLoad, inionlyloadtypes, ininoloadtypes)) return LISTPLUGIN_ERROR;
+	if (!IsVTFileTypeAllowed(FileToLoad, UlisterOptions.inionlyloadtypes, UlisterOptions.ininoloadtypes)) return LISTPLUGIN_ERROR;
 	ALLMYDATA *mydata;
 	mydata = (ALLMYDATA *)GetWindowLongPtr(ListWin, GWLP_USERDATA);
 	if (mydata) {
@@ -136,7 +132,7 @@ extern "C" __declspec(dllexport)void __stdcall ListCloseWindow(HWND ListWin) {
 			DestroyWindow(mydata->SccviewerWindow);
 			DestroyWindow(mydata->waWindow);
 			numInstances--;
-			if ((hViewerLibrary != NULL) && (keepinmemory == 0) && (numInstances == 0)) {
+			if ((hViewerLibrary != NULL) && (UlisterOptions.keepinmemory == 0) && (numInstances == 0)) {
 				FreeLibrary((HINSTANCE)hViewerLibrary);
 				hViewerLibrary = NULL;
 			}
@@ -343,7 +339,7 @@ extern "C" __declspec(dllexport)int __stdcall ListSendCommand(HWND ListWin, int 
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 extern "C" __declspec(dllexport)HBITMAP __stdcall ListGetPreviewBitmapW(wchar_t* FileToLoad, int width, int height, char* contentbuf, int contentbuflen) {
-	if (!IsVTFileTypeAllowed(FileToLoad, inionlypreviewtypes, ininopreviewtypes)) return NULL;
+	if (!IsVTFileTypeAllowed(FileToLoad, UlisterOptions.inionlypreviewtypes, UlisterOptions.ininopreviewtypes)) return NULL;
 	HBITMAP bitmap = GetVTFilePreview(FileToLoad, width, height);
 	return bitmap;
 }

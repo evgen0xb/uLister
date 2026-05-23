@@ -21,7 +21,12 @@
 #if defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || defined(__x86_64) || defined(_M_X64) || defined (_M_AMD64) || defined(_AMD64_)
 #define ULISTER64
 #endif
+
 #include <sccvw.h>
+
+#define ULISTMAXBUF 1024
+#define VTMAXSEARCHBUF 80
+#define INT64STRMAXBUF 24
 
 // VS2005 fix:
 #define member_size(type, member) sizeof(((type *)0)->member)
@@ -39,6 +44,20 @@ struct ALLMYDATA
 
 	ALLMYDATA();
 };
+
+#ifndef ULISTEROPTIONS
+#define ULISTEROPTIONS
+struct clsUlisterOptions
+{
+	wchar_t inipath[MAX_PATH];
+	wchar_t	ininoloadtypes[ULISTMAXBUF];
+	wchar_t	inionlyloadtypes[ULISTMAXBUF];
+	wchar_t	ininopreviewtypes[ULISTMAXBUF];
+	wchar_t	inionlypreviewtypes[ULISTMAXBUF];
+	int		keepinmemory;
+};
+
+#endif
 
 namespace WindowsNTLevel {
 	enum Type {
@@ -144,9 +163,3 @@ unsigned long long REGCurrentBuildNumber();
 void SendVTOptions(const ALLMYDATA *mydata, const clsVTOptions *_VTOptions);
 //void SetSccdisplayChildWndProc(HWND waWnd);
 LRESULT CALLBACK SccdisplayWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-
-#define ULISTMAXBUF 1024
-
-#define VTMAXSEARCHBUF 80
-
-#define INT64STRMAXBUF 24

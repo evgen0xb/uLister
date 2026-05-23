@@ -410,3 +410,4 @@ Finally, the search procedure has been rewritten:
 2026-05-23
     - added: Ctrl + middle mouse button - reset zoom to 100%
     - added: Ctrl+Shift+R reload the configuration options from the ini file
+    - refactoring
