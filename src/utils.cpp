@@ -22,13 +22,9 @@
 #include <stdio.h>
 #include "ulister.h"
 
-extern HINSTANCE	hInst;
-extern HANDLE		hViewerLibrary;
-extern int			numInstances;
-extern int			NTLevel;
-
-extern clsVTOptions			VTOptions;
+extern clsUlisterInstance	UlisterInstance;
 extern clsUlisterOptions	UlisterOptions;
+extern clsVTOptions			VTOptions;
 
 #ifdef ULISTER64
 wchar_t *REDIST_NT6 = L"\\redist64\\";
@@ -167,12 +163,12 @@ DWORD ViewThisFileHandler(const LPARAM lParam) // 4.74 SCCVW_VIEWTHISFILE
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 HBITMAP GetVTFilePreview(const wchar_t* FileToLoad, const int width, const int height) {
 
-	if (!hViewerLibrary)hViewerLibrary = LoadLibVT(L"SCCVW.DLL");
-	if (!hViewerLibrary)return NULL;
-	numInstances++; // TODO: numInstances not needed
-	HWND hViewWnd = CreateWindow("SCCVIEWER", NULL, WS_CLIPCHILDREN, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, 0, hInst, NULL);
+	if (!UlisterInstance.hViewerLibrary) UlisterInstance.hViewerLibrary = LoadLibVT(L"SCCVW.DLL");
+	if (!UlisterInstance.hViewerLibrary) return NULL;
+	UlisterInstance.numInstances++; // TODO: numInstances not needed
+	HWND hViewWnd = CreateWindow("SCCVIEWER", NULL, WS_CLIPCHILDREN, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, 0, UlisterInstance.hInst, NULL);
 	if (!IsWindow(hViewWnd)) {
-		numInstances--;
+		UlisterInstance.numInstances--;
 		return NULL;
 	}
 	LoadVTFile(hViewWnd, FileToLoad);
@@ -224,10 +220,10 @@ HBITMAP GetVTFilePreview(const wchar_t* FileToLoad, const int width, const int h
 	SendMessage(hViewWnd, SCCVW_DEINITDRAWPAGE, 0, 0);
 	SendMessage(hViewWnd, SCCVW_CLOSEFILE, 0, 0L);
 	DestroyWindow(hViewWnd);
-	numInstances--;
-	if ((hViewerLibrary != NULL) && (UlisterOptions.keepinmemory == 0) && (numInstances == 0)) {
-		FreeLibrary((HINSTANCE)hViewerLibrary);
-		hViewerLibrary = NULL;
+	UlisterInstance.numInstances--;
+	if ((UlisterInstance.hViewerLibrary != NULL) && (UlisterOptions.keepinmemory == 0) && (UlisterInstance.numInstances == 0)) {
+		FreeLibrary((HINSTANCE)UlisterInstance.hViewerLibrary);
+		UlisterInstance.hViewerLibrary = NULL;
 	}
 	return bitmap;
 }
@@ -238,7 +234,7 @@ void GetIniPath(wchar_t *_inipath)
 	wchar_t *pathposition;
 	int retlength;
 
-	GetModuleFileNameW(hInst, _inipath, MAX_PATH); // самый высокий приоритет расположения ulister.ini в каталоге с плагином
+	GetModuleFileNameW(UlisterInstance.hInst, _inipath, MAX_PATH); // highest priority is to place ulister.ini in the plugin directory
 	_inipath[MAX_PATH - 1] = L'\0'; // Windows XP fix: The string is truncated to nSize characters and is not null-terminated
 	if (pathposition = wcsrchr(_inipath, L'\\'))
 		*pathposition = L'\0';
@@ -246,7 +242,7 @@ void GetIniPath(wchar_t *_inipath)
 
 	if (GetFileAttributesW(_inipath) == INVALID_FILE_ATTRIBUTES)
 	{
-		retlength = GetEnvironmentVariableW(L"COMMANDER_INI", _inipath, MAX_PATH); // иначе посмотреть ulister.ini там же, где и wincmd.ini
+		retlength = GetEnvironmentVariableW(L"COMMANDER_INI", _inipath, MAX_PATH); // otherwise, look for ulister.ini in the same place as wincmd.ini
 		if ((retlength < MAX_PATH) && retlength)
 		{
 			if (pathposition = wcsrchr(_inipath, L'\\'))
@@ -256,7 +252,7 @@ void GetIniPath(wchar_t *_inipath)
 
 		if (GetFileAttributesW(_inipath) == INVALID_FILE_ATTRIBUTES)
 		{
-			GetEnvironmentVariableW(L"APPDATA", _inipath, MAX_PATH); // самый низкий приоритет ulister.ini в %APPDATA%
+			GetEnvironmentVariableW(L"APPDATA", _inipath, MAX_PATH); // lowest priority ulister.ini placed in %APPDATA%
 			wcscat_s(_inipath, MAX_PATH, ULISTERINI);
 		}
 	}
@@ -409,7 +405,7 @@ void IniParse()
 bool GetLibPathVT(wchar_t *libpath, const wchar_t *libname, const int ntlev) {
 // OUT: build libpath and (!) check if it exists;   true=OK
 
-	GetModuleFileNameW(hInst, libpath, MAX_PATH);
+	GetModuleFileNameW(UlisterInstance.hInst, libpath, MAX_PATH);
 
 	wchar_t *pathposition;
 	if (pathposition = wcsrchr(libpath, L'\\'))
@@ -430,7 +426,7 @@ HINSTANCE LoadLibVT(const wchar_t *libname) {
 	wchar_t path[MAX_PATH];
 
 	// if WinXP, first try to load library from "XPdist*"
-	if (NTLevel == WindowsNTLevel::WinNT5)
+	if (UlisterInstance.NTLevel == WindowsNTLevel::WinNT5)
 	{
 		if (GetLibPathVT(path, libname, WindowsNTLevel::WinNT5))
 		{
@@ -518,6 +514,20 @@ ALLMYDATA::ALLMYDATA()
 
 	OriginalSccdisplayWindowProc = NULL;
 	SccdisplayWindow = NULL;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+void clsUlisterInstance::Init(const HINSTANCE _hInst)
+{
+	hInst = _hInst;
+	hViewerLibrary = NULL;
+	numInstances = 0;
+
+	if (REGCurrentBuildNumber() < WINDOWS7BETABUILDNUMBER)
+		NTLevel = WindowsNTLevel::WinNT5;
+	else
+		NTLevel = WindowsNTLevel::WinNT6;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

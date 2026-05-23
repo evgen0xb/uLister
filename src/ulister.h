@@ -57,6 +57,17 @@ struct clsUlisterOptions
 	int		keepinmemory;
 };
 
+class clsUlisterInstance
+{
+public:
+	HINSTANCE	hInst;
+	HANDLE		hViewerLibrary;
+	int			numInstances;
+	int			NTLevel;
+
+	void Init(const HINSTANCE _hInst);
+};
+
 #endif
 
 namespace WindowsNTLevel {

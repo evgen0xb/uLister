@@ -28,12 +28,9 @@
 #include "ulister.h"
 //#include <string>
 
-extern HINSTANCE	hInst;
-extern HANDLE		hViewerLibrary;
-extern int			numInstances;
-
-extern clsVTOptions			VTOptions;
+extern clsUlisterInstance	UlisterInstance;
 extern clsUlisterOptions	UlisterOptions;
+extern clsVTOptions			VTOptions;
 
 const char *WNDCLASSNAME_WAWC			= "WAwc";
 const char *WNDCLASSNAME_SCCVIEWER		= "SCCVIEWER";
@@ -323,9 +320,9 @@ HWND CreateLister(HWND ParentWin)
 	ALLMYDATA	*mydata;
 
 	mydata = new ALLMYDATA();
-	numInstances++;
-	if (!hViewerLibrary) hViewerLibrary = LoadLibVT(L"SCCVW.DLL");
-	if (!hViewerLibrary) return NULL;
+	UlisterInstance.numInstances++;
+	if (!UlisterInstance.hViewerLibrary) UlisterInstance.hViewerLibrary = LoadLibVT(L"SCCVW.DLL");
+	if (!UlisterInstance.hViewerLibrary) return NULL;
 	mydata->ListerWindow = ParentWin;
 
 	bool quickview = WS_CHILD & GetWindowLongPtr(ParentWin, GWL_STYLE);
@@ -334,7 +331,7 @@ HWND CreateLister(HWND ParentWin)
 	wc.lpfnWndProc = (WNDPROC)ParentWindowProc;
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
-	wc.hInstance = hInst;
+	wc.hInstance = UlisterInstance.hInst;
 	wc.hIcon = NULL;
 	wc.hCursor = NULL;
 	wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
@@ -343,11 +340,11 @@ HWND CreateLister(HWND ParentWin)
 	RegisterClass(&wc);
 
 	GetClientRect(ParentWin, &r);
-	waWnd = CreateWindow	(WNDCLASSNAME_WAWC,		NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN, r.left, r.top, r.right - r.left, r.bottom - r.top, ParentWin,	0, hInst, NULL);
+	waWnd = CreateWindow	(WNDCLASSNAME_WAWC,		NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN, r.left, r.top, r.right - r.left, r.bottom - r.top, ParentWin,	0, UlisterInstance.hInst, NULL);
 	mydata->waWindow = waWnd;
 
 	GetClientRect(waWnd, &r);
-	hViewWnd = CreateWindow(WNDCLASSNAME_SCCVIEWER,	NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN, r.left, r.top, r.right - r.left, r.bottom - r.top, waWnd,		0, hInst, NULL);
+	hViewWnd = CreateWindow(WNDCLASSNAME_SCCVIEWER,	NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN, r.left, r.top, r.right - r.left, r.bottom - r.top, waWnd,		0, UlisterInstance.hInst, NULL);
 	mydata->SccviewerWindow = hViewWnd;
 
 	if (!IsWindow(hViewWnd)) return NULL;
