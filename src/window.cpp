@@ -289,6 +289,11 @@ LRESULT CALLBACK SccdisplayWindowProc(HWND hWnd, UINT message, WPARAM wParam, LP
 			}
 			// MOUSEHWHEEL : Up-Down scroll
 			break;
+		case WM_MBUTTONDOWN:
+			//OutputDebugStringA("WM_MBUTTONDOWN");
+			DisplayEngineType = GetDisplayEngineVT(mydata->SccviewerWindow);
+			if (wParam & MK_CONTROL) { ZoomReset(mydata->SccviewerWindow, DisplayEngineType); return 0; }
+			break;
 		}
 		return CallWindowProc(mydata->OriginalSccdisplayWindowProc, hWnd, message, wParam, lParam);
 	}

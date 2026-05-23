@@ -167,7 +167,7 @@ Enter a search string - Ctrl+F/F7
 Find Next/Previous - F3/Shift+F3
 (Search is not available in some formats; case-insensitive search option is supported)
 You can zoom in or out using Ctrl "+" / Ctrl "-" or Ctrl + Mouse Wheel (not available for some viewing modes).
-Keyboard shortcut Ctrl+NUM*/Ctrl+8 - reset zoom to 100%.
+Keyboard shortcut Ctrl+NUM*/Ctrl+8 or Ctrl + middle mouse button - reset zoom to 100%.
 Use Shift + mouse wheel (or special horizontal mouse wheel) to scroll horizontally.
 
 For non-graphical documents, zooming is only achieved by changing the font size, which in certain situations will result in
@@ -404,3 +404,6 @@ Finally, the search procedure has been rewritten:
     - Oracle bug fix: Ctrl + Mouse Wheel (zoom) now works on all documents (but not in all viewing modes; in the original, it only works on graphics)
     - Oracle bug fix: Shift + Mouse Wheel - Added horizontal scrolling
     - Documentation update
+
+2026-05-23
+    - added: Ctrl + middle mouse button - reset zoom to 100%
