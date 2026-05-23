@@ -63,8 +63,16 @@ VTDWORD GetDisplayEngineVT(const HWND hWnd)
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void ZoomBitmapVecFont(const HWND hWnd, const VTDWORD DispEng, const int dir)
+void ZoomBitmapVecFont(const HWND hWnd, const int dir)
 {
+	union
+	{
+		ALLMYDATA *mydata;
+		VTDWORD DispEng;
+	};
+	mydata = (ALLMYDATA *)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+	DispEng = GetDisplayEngineVT(mydata->SccviewerWindow); // call only from user-level defined messages!!!
+
 	SCCVWOPTIONSPEC40 locOptionSpec;
 	VTDWORD zoom;
 	locOptionSpec.dwSize = sizeof(SCCVWOPTIONSPEC40);
@@ -99,8 +107,16 @@ void ZoomBitmapVecFont(const HWND hWnd, const VTDWORD DispEng, const int dir)
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void ZoomReset(const HWND hWnd, const VTDWORD DispEng)
+void ZoomReset(const HWND hWnd)
 {
+	union
+	{
+		ALLMYDATA *mydata;
+		VTDWORD DispEng;
+	};
+	mydata = (ALLMYDATA *)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+	DispEng = GetDisplayEngineVT(mydata->SccviewerWindow); // call only from user-level defined messages!!!
+
 	SCCVWOPTIONSPEC40 locOptionSpec;
 	VTDWORD zoom;
 	locOptionSpec.dwSize = sizeof(SCCVWOPTIONSPEC40);
@@ -165,7 +181,6 @@ LRESULT CALLBACK SccviewerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 
 	_control87(MCW_EM, MCW_EM);
 	ALLMYDATA *mydata;
-	VTDWORD DisplayEngineType;
 	mydata = (ALLMYDATA *)GetWindowLongPtr(hWnd, GWLP_USERDATA);
 	if (mydata)
 	{
@@ -179,10 +194,9 @@ LRESULT CALLBACK SccviewerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 		switch (message)
 		{
 		case SCCVW_KEYDOWN:
-			DisplayEngineType = GetDisplayEngineVT(mydata->SccviewerWindow); // call only in user-level defined messages!!!
-			if ((GetKeyState(VK_CONTROL) < 0) && ((lParam == VK_OEM_PLUS) || (lParam == VK_ADD))) { ZoomBitmapVecFont(hWnd, DisplayEngineType, 1); return 0; }
-			if ((GetKeyState(VK_CONTROL) < 0) && ((lParam == VK_OEM_MINUS) || (lParam == VK_SUBTRACT))) { ZoomBitmapVecFont(hWnd, DisplayEngineType, -1); return 0; }
-			if ((GetKeyState(VK_CONTROL) < 0) && ((lParam == VK_MULTIPLY) || (lParam == '8'))) { ZoomReset(hWnd, DisplayEngineType); return 0; }
+			if ((GetKeyState(VK_CONTROL) < 0) && ((lParam == VK_OEM_PLUS) || (lParam == VK_ADD))) { ZoomBitmapVecFont(hWnd, 1); return 0; }
+			if ((GetKeyState(VK_CONTROL) < 0) && ((lParam == VK_OEM_MINUS) || (lParam == VK_SUBTRACT))) { ZoomBitmapVecFont(hWnd, -1); return 0; }
+			if ((GetKeyState(VK_CONTROL) < 0) && ((lParam == VK_MULTIPLY) || (lParam == '8'))) { ZoomReset(hWnd); return 0; }
 
 			if ((GetKeyState(VK_CONTROL) < 0) && (GetKeyState(VK_SHIFT) < 0) && (lParam == 'R'))
 			{
@@ -290,7 +304,7 @@ LRESULT CALLBACK SccdisplayWindowProc(HWND hWnd, UINT message, WPARAM wParam, LP
 			if (GetKeyState(VK_CONTROL) < 0 && DisplayEngineType != SCCVWTYPE_IMAGE && DisplayEngineType != SCCVWTYPE_VECTOR)
 			{
 				// CTRL+MOUSEHWHEEL : Zoom-In/Zoom-Out
-				if (GET_WHEEL_DELTA_WPARAM(wParam) > 0) ZoomBitmapVecFont(mydata->SccviewerWindow, DisplayEngineType, 1); else ZoomBitmapVecFont(mydata->SccviewerWindow, DisplayEngineType, -1);
+				if (GET_WHEEL_DELTA_WPARAM(wParam) > 0) ZoomBitmapVecFont(mydata->SccviewerWindow, 1); else ZoomBitmapVecFont(mydata->SccviewerWindow, -1);
 				return 0;
 			}
 			else if (GetKeyState(VK_SHIFT) < 0)
@@ -307,7 +321,7 @@ LRESULT CALLBACK SccdisplayWindowProc(HWND hWnd, UINT message, WPARAM wParam, LP
 		case WM_MBUTTONDOWN:
 			//OutputDebugStringA("WM_MBUTTONDOWN");
 			DisplayEngineType = GetDisplayEngineVT(mydata->SccviewerWindow);
-			if (wParam & MK_CONTROL) { ZoomReset(mydata->SccviewerWindow, DisplayEngineType); return 0; }
+			if (wParam & MK_CONTROL) { ZoomReset(mydata->SccviewerWindow); return 0; }
 			break;
 		}
 		return CallWindowProc(mydata->OriginalSccdisplayWindowProc, hWnd, message, wParam, lParam);
