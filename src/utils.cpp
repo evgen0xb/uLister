@@ -486,7 +486,8 @@ void ErrMsgIssue(const int issuetype, const wchar_t *path, const DWORD dwError)
 		L"[%s].\n"
 		L"Error code: 0x%08X   (%lu)\n"
 		L"INI=[%s]\n\n"
-		L"Check Outside In dlls in plugin dir.\n"
+		L"1. Check Outside In dlls in plugin dir.\n"
+		L"2. Install the required version of Microsoft Visual C++ Redistributable.\n"
 		L"See readme.txt, install section.", issuename, path, dwError, dwError, UlisterOptions.inipath);
 
 	MessageBoxW(NULL, buf, title, MB_OK);
