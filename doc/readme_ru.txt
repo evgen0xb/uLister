@@ -6,7 +6,7 @@
 Полный список можно посмотреть в файле OutsideIn_8.5.7_Supported_File_Formats.pdf
 
 3. Лицензия
-Плагин поставляется как есть и без всяких гарантий.
+Плагин поставляется как есть и без всяких гарантий под лицензией GPLv3.
 Хотя плагин является freeware, он использует сторонние библиотеки Oracle, ознакомьтесь с лицензией перед началом использования.
 https://www.oracle.com/downloads/licenses/standard-license.html
 
@@ -19,8 +19,15 @@ Outside In Viewer (C) 1991, 2026 Oracle(R)
 
 Main README.md by (C) 2026 yozhic
 
+Дополнительное разрешение согласно Разделу 7 лицензии GPLv3 (https://github.com/microsoft/WindowsAppSDK/discussions/3511#discussioncomment-10121323):
+В порядке исключения, правообладатели данного ПО разрешают связывать этот продукт с библиотеками Microsoft Visual C++ Redistributable, Windows SDK
+(и их производными версиями) и распространять полученный результат.
+
+Исходный код плагина доступен по адресу https://github.com/evgen0xb/uLister
+
 4. Используемые библиотеки
 Oracle(R) Outside In Technology: Viewer Technology.
+Эта библиотека, в свою очередь, использует файлы Microsoft Visual C++ Redistributable.
 
 5. Настройка
 Параметры хранятся в файле ulister.ini, поиск которого производится в следующем порядке:
@@ -419,3 +426,7 @@ https://github.com/avogelba/uLister
     - обход ошибки Oracle: масштабирование не работает в режимах preview или weblayout на типах документов Word Processor / HTML / EMAIL (A.10.5 SCCID_FONTSCALINGFACTOR Note)
     - оптимизация кода
     - оптимизация просмотра при обходе ошибки Oracle
+
+2026-05-28 4.0.3.0
+    - добавлен SDK PDF "OIVWR 854.pdf", ссылки из readme ведут в его разделы
+    - уточнение лицензии (разрешено распространение даже при связывании с библиотеками MS, т.к. они являются неотемлемой частью компилятора)

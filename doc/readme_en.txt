@@ -6,7 +6,7 @@ Many popular word processor, spreadsheet, presentation, raster, and vector image
 A complete list can be found in OutsideIn_8.5.7_Supported_File_Formats.pdf
 
 3. License
-The plugin is provided as-is and without any warranty.
+The plugin is provided as-is and without any warranty under the GPLv3 license.
 Although the plugin is freeware, it uses third-party Oracle libraries. Please read the license before using it.
 https://www.oracle.com/downloads/licenses/standard-license.html
 
@@ -19,8 +19,15 @@ Outside In Viewer (C) 1991, 2026 Oracle(R)
 
 Main README.md by (C) 2026 yozhic
 
+Additional permission under GNU GPL version 3 section 7 (https://github.com/microsoft/WindowsAppSDK/discussions/3511#discussioncomment-10121323):
+If you modify this Program, or any covered work, by linking or combining it with the Microsoft Visual C++ Redistributable, Windows SDK (or a modified version of these libraries), containing
+parts covered by the terms of the Microsoft Software License, the licensors of this Program grant you additional permission to convey the resulting work.
+
+The plugin's source code is available at https://github.com/evgen0xb/uLister
+
 4. Libraries Used
 Oracle(R) Outside In Technology: Viewer Technology.
+This library, in turn, uses Microsoft Visual C++ Redistributable files.
 
 5. Configuration
 The settings are stored in the ulister.ini file, which is searched in the following order:
@@ -420,3 +427,7 @@ Finally, the search procedure has been rewritten:
     - oracle bug workaround: zoom not working if preview or weblayout mode of Word Processor / HTML / EMAIL (A.10.5 SCCID_FONTSCALINGFACTOR Note)
     - code optimization
     - view optimization
+
+2026-05-28 4.0.3.0
+    - added SDK PDF "OIVWR 854.pdf", links from the readme lead to its sections
+    - clarifying the license
