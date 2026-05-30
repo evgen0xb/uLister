@@ -26,9 +26,13 @@ const wchar_t *ASKIP = L"SKIP";
 const wchar_t *AON	 = L"ON";
 const wchar_t *AOFF  = L"OFF";
 
+extern const char *WNDCLASSNAME_SCCVIEWER;
+
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-VTWORD GetVTFileType(const wchar_t* FileToLoad) {
+VTWORD GetVTFileType(const wchar_t* FileToLoad)
+{
 	typedef VTDWORD(*FIInitFUNC)(VTVOID);
 	typedef VTWORD(*FIIdFileExFUNC)(VTDWORD, const VTVOID *, VTDWORD, VTWORD *, VTLPTSTR, VTWORD);
 	typedef VTDWORD(*FIDeInitFUNC)(VTVOID);
@@ -63,7 +67,8 @@ VTWORD GetVTFileType(const wchar_t* FileToLoad) {
 	return 	wType;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-bool IsVTFileTypeAllowed(const wchar_t* FileToLoad, const wchar_t* onlyload, const wchar_t* noload) {
+bool IsVTFileTypeAllowed(const wchar_t* FileToLoad, const wchar_t* onlyload, const wchar_t* noload)
+{
 	// TRUE = OK
 	// FALSE = refuse
 	VTWORD  wType = GetVTFileType(FileToLoad);
@@ -76,7 +81,10 @@ bool IsVTFileTypeAllowed(const wchar_t* FileToLoad, const wchar_t* onlyload, con
 	if (wcslen(noload) > 0 && wcsstr(noload, FTypeStr)) return false; else return true;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void LoadVTFile(const HWND hViewWnd, const wchar_t* FileToLoad) {
+bool LoadVTFile(const HWND hViewWnd, const wchar_t* FileToLoad)
+{
+	// TRUE - file load OK
+	// FALSE - the file could not be loaded
 	SCCVWVIEWFILE80  locViewFile;
 	locViewFile.dwSize = sizeof(SCCVWVIEWFILE80);
 	locViewFile.dwSpecType = IOTYPE_UNICODEPATH;
@@ -87,7 +95,7 @@ void LoadVTFile(const HWND hViewWnd, const wchar_t* FileToLoad) {
 	locViewFile.dwFlags = 0;
 	locViewFile.dwReserved1 = 0;
 	locViewFile.dwReserved2 = 0;
-	SendMessage(hViewWnd, SCCVW_VIEWFILE, 0, (LPARAM)&locViewFile);
+	return (SendMessage(hViewWnd, SCCVW_VIEWFILE, 0, (LPARAM)&locViewFile) == SCCVWERR_OK);
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -147,23 +155,36 @@ DWORD ViewThisFileHandler(const LPARAM lParam) // 4.74 SCCVW_VIEWTHISFILE
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-HBITMAP GetVTFilePreview(const wchar_t* FileToLoad, const int width, const int height) {
+HBITMAP GetVTFilePreview(const wchar_t* FileToLoad, const int width, const int height)
+{
+	if (!UlisterInstance.ViewerLibraryInstanceInc()) return NULL;
 
-	if (!UlisterInstance.hViewerLibrary) UlisterInstance.hViewerLibrary = LoadLibVT(L"SCCVW.DLL");
-	if (!UlisterInstance.hViewerLibrary) return NULL;
-	UlisterInstance.numInstances++; // TODO: numInstances not needed
-	HWND hViewWnd = CreateWindow("SCCVIEWER", NULL, WS_CLIPCHILDREN, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, 0, UlisterInstance.hInst, NULL);
-	if (!IsWindow(hViewWnd)) {
-		UlisterInstance.numInstances--;
+	HWND hViewWnd = CreateWindow(WNDCLASSNAME_SCCVIEWER, NULL, WS_CLIPCHILDREN, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, 0, UlisterInstance.hInstWLX, NULL);
+	if (!IsWindow(hViewWnd))
+	{
+		UlisterInstance.ViewerLibraryInstanceDec(UlisterOptions.keepinmemory);
 		return NULL;
 	}
+
+	// old (depricated)
 	LoadVTFile(hViewWnd, FileToLoad);
 
-	HDC OutputDC,FormatDC;
-	HBITMAP bitmap,oldbitmap;
+	// TC SDK:
+	// Return a handle to your window if load succeeds, NULL otherwise.If NULL is returned, Lister will try the next plugin.
+	// new:
+	/*
+	if (!LoadVTFile(hViewWnd, FileToLoad))
+	{
+		DestroyWindow(hViewWnd);
+		UlisterInstance.ViewerLibraryInstanceDec(UlisterOptions.keepinmemory);
+		return NULL;
+	}
+	*/
+
+	HDC OutputDC, FormatDC;
+	HBITMAP bitmap, oldbitmap;
 	SCCVWDRAWPAGE41  locDrawPage;
 	BITMAPINFOHEADER  locBIH;
-
 
 	FormatDC = GetDC(hViewWnd);
 	OutputDC = CreateCompatibleDC(FormatDC);
@@ -198,29 +219,30 @@ HBITMAP GetVTFilePreview(const wchar_t* FileToLoad, const int width, const int h
 	locDrawPage.lRight = width;
 	locDrawPage.hOutputDC = OutputDC;
 	locDrawPage.hFormatDC = FormatDC;
+
 	SendMessage(hViewWnd, SCCVW_INITDRAWPAGE, 0, 0);
 	SendMessage(hViewWnd, SCCVW_DRAWPAGE, 0, (LPARAM)(PSCCVWDRAWPAGE41)&locDrawPage);
 	SelectObject(OutputDC, oldbitmap);
 	DeleteDC(OutputDC);
 	ReleaseDC(hViewWnd, FormatDC);
+
 	SendMessage(hViewWnd, SCCVW_DEINITDRAWPAGE, 0, 0);
 	SendMessage(hViewWnd, SCCVW_CLOSEFILE, 0, 0L);
 	DestroyWindow(hViewWnd);
-	UlisterInstance.numInstances--;
-	if ((UlisterInstance.hViewerLibrary != NULL) && (UlisterOptions.keepinmemory == 0) && (UlisterInstance.numInstances == 0)) {
-		FreeLibrary((HINSTANCE)UlisterInstance.hViewerLibrary);
-		UlisterInstance.hViewerLibrary = NULL;
-	}
+
+	UlisterInstance.ViewerLibraryInstanceDec(UlisterOptions.keepinmemory);
+
 	return bitmap;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
 void GetIniPath(wchar_t *_inipath)
 {
 	const wchar_t *ULISTERINI = L"\\ulister.ini";
 	wchar_t *pathposition;
 	int retlength;
 
-	GetModuleFileNameW(UlisterInstance.hInst, _inipath, MAX_PATH); // highest priority is to place ulister.ini in the plugin directory
+	GetModuleFileNameW(UlisterInstance.hInstWLX, _inipath, MAX_PATH); // highest priority is to place ulister.ini in the plugin directory
 	_inipath[MAX_PATH - 1] = L'\0'; // Windows XP fix: The string is truncated to nSize characters and is not null-terminated
 	if (pathposition = wcsrchr(_inipath, L'\\'))
 		*pathposition = L'\0';
@@ -391,10 +413,11 @@ void IniParse()
 	InitViewerOpts();
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-bool GetLibPathVT(wchar_t *libpath, const wchar_t *libname, const int ntlev) {
+bool GetLibPathVT(wchar_t *libpath, const wchar_t *libname, const int ntlev)
+{
 // OUT: build libpath and (!) check if it exists;   true=OK
 
-	GetModuleFileNameW(UlisterInstance.hInst, libpath, MAX_PATH);
+	GetModuleFileNameW(UlisterInstance.hInstWLX, libpath, MAX_PATH);
 
 	wchar_t *pathposition;
 	if (pathposition = wcsrchr(libpath, L'\\'))
@@ -410,8 +433,9 @@ bool GetLibPathVT(wchar_t *libpath, const wchar_t *libname, const int ntlev) {
 	return (GetFileAttributesW(libpath) != INVALID_FILE_ATTRIBUTES);
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-HINSTANCE LoadLibVT(const wchar_t *libname) {
-	HANDLE lib = NULL;
+HINSTANCE LoadLibVT(const wchar_t *libname)
+{
+	HINSTANCE lib = NULL;
 	wchar_t path[MAX_PATH];
 
 	// if WinXP, first try to load library from "XPdist*"
@@ -423,7 +447,7 @@ HINSTANCE LoadLibVT(const wchar_t *libname) {
 			if (lib == NULL) // DLL exist, but can't load...
 				ErrMsgIssue(FileErrIssue::CantLoad, path, GetLastError());
 
-			return (HINSTANCE)lib;
+			return lib;
 		}
 	}
 
@@ -437,7 +461,7 @@ HINSTANCE LoadLibVT(const wchar_t *libname) {
 	else
 		ErrMsgIssue(FileErrIssue::CantFind, path, GetLastError());
 
-	return (HINSTANCE)lib;
+	return lib;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -510,7 +534,7 @@ ALLMYDATA::ALLMYDATA()
 
 void clsUlisterInstance::Init(const HINSTANCE _hInst)
 {
-	hInst = _hInst;
+	hInstWLX = _hInst;
 	hViewerLibrary = NULL;
 	numInstances = 0;
 
@@ -519,6 +543,36 @@ void clsUlisterInstance::Init(const HINSTANCE _hInst)
 	else
 		NTLevel = WindowsNTLevel::WinNT6;
 }
+
+clsUlisterInstance::~clsUlisterInstance()
+{
+	if (hViewerLibrary) FreeLibrary((HINSTANCE)hViewerLibrary);
+}
+
+void clsUlisterInstance::ViewerLibraryInstanceDec(int _keepinmemory)
+{
+	// unload the "SCCVW.DLL" if needed
+
+	if (numInstances > 0) numInstances--; else return;
+
+	if ((hViewerLibrary != NULL) && (_keepinmemory == 0) && (numInstances == 0))
+	{
+		FreeLibrary((HINSTANCE)UlisterInstance.hViewerLibrary);
+		UlisterInstance.hViewerLibrary = NULL;
+	}
+}
+
+HINSTANCE clsUlisterInstance::ViewerLibraryInstanceInc()
+{
+	// load the "SCCVW.DLL" if needed
+
+	if (!hViewerLibrary) hViewerLibrary = LoadLibVT(L"SCCVW.DLL");
+	if (!hViewerLibrary) return NULL;
+
+	UlisterInstance.numInstances++;
+	return hViewerLibrary;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 

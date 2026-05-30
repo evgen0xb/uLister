@@ -27,7 +27,8 @@ std::map<HWND, wchar_t*> SearchStringPerWindowW;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 BOOL APIENTRY DllMain(HINSTANCE hinst, unsigned long reason, void* lpReserved) {
-	switch (reason) {
+	switch (reason)
+	{
 	case DLL_PROCESS_ATTACH:
 
 		UlisterInstance.Init(hinst);
@@ -36,8 +37,8 @@ BOOL APIENTRY DllMain(HINSTANCE hinst, unsigned long reason, void* lpReserved) {
 		break;
 
 	case DLL_PROCESS_DETACH:
-		if (UlisterInstance.hViewerLibrary) FreeLibrary((HINSTANCE)UlisterInstance.hViewerLibrary);
-		UlisterInstance.hViewerLibrary = NULL;
+
+		// UlisterInstance.~clsUlisterInstance();
 
 		std::map<HWND, wchar_t*>::iterator itW; // VS2005 fix
 		for (itW = SearchStringPerWindowW.begin(); itW != SearchStringPerWindowW.end(); ++itW)
@@ -55,13 +56,13 @@ BOOL APIENTRY DllMain(HINSTANCE hinst, unsigned long reason, void* lpReserved) {
 extern "C" __declspec(dllexport) HWND __stdcall ListLoadW(HWND ParentWin, wchar_t* FileToLoad, int ShowFlags) {
 	HWND        hViewWnd;
 	if (!IsVTFileTypeAllowed(FileToLoad, UlisterOptions.inionlyloadtypes, UlisterOptions.ininoloadtypes)) return NULL;
-	hViewWnd = CreateLister(ParentWin);
+	hViewWnd = CreateListerWindow(ParentWin);
 	if (!IsWindow(hViewWnd)) return NULL;
 	ALLMYDATA *mydata;
 	mydata = (ALLMYDATA *)GetWindowLongPtr(hViewWnd, GWLP_USERDATA);
 	if (mydata) {
+		// old (depricated) TODO
 		LoadVTFile(mydata->SccviewerWindow, FileToLoad);
-		UlisterInstance.numInstances++; // fix
 
 		SendVTOptions(mydata, &VTOptions);
 
@@ -81,8 +82,8 @@ extern "C" __declspec(dllexport) int __stdcall ListLoadNextW(HWND ParentWin, HWN
 	ALLMYDATA *mydata;
 	mydata = (ALLMYDATA *)GetWindowLongPtr(ListWin, GWLP_USERDATA);
 	if (mydata) {
+		// old (depricated) TODO
 		LoadVTFile(mydata->SccviewerWindow, FileToLoad);
-		UlisterInstance.numInstances++; // fix
 
 		SendVTOptions(mydata, &VTOptions);
 
@@ -107,11 +108,9 @@ extern "C" __declspec(dllexport)void __stdcall ListCloseWindow(HWND ListWin) {
 			SendMessage(mydata->SccviewerWindow, SCCVW_CLOSEFILE, 0, 0L);
 			DestroyWindow(mydata->SccviewerWindow);
 			DestroyWindow(mydata->waWindow);
-			UlisterInstance.numInstances--;
-			if ((UlisterInstance.hViewerLibrary != NULL) && (UlisterOptions.keepinmemory == 0) && (UlisterInstance.numInstances == 0)) {
-				FreeLibrary((HINSTANCE)UlisterInstance.hViewerLibrary);
-				UlisterInstance.hViewerLibrary = NULL;
-			}
+
+			UlisterInstance.ViewerLibraryInstanceDec(UlisterOptions.keepinmemory);
+
 			delete mydata;
 
 			if (SearchStringPerWindowW.count(ListWin) != 0)

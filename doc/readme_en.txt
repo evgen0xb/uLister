@@ -431,3 +431,6 @@ Finally, the search procedure has been rewritten:
 2026-05-28 4.0.3.0
     - added SDK PDF "OIVWR 854.pdf", links from the readme lead to its sections
     - clarifying the license
+
+2026-05-30
+    - refactoring keepinmemory option

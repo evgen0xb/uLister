@@ -47,12 +47,20 @@ struct clsUlisterOptions
 class clsUlisterInstance
 {
 public:
-	HINSTANCE	hInst;
-	HANDLE		hViewerLibrary;
-	int			numInstances;
+	
+	HINSTANCE	hInstWLX;
 	int			NTLevel;
 
 	void Init(const HINSTANCE _hInst);
+	~clsUlisterInstance();
+
+	HINSTANCE ViewerLibraryInstanceInc();
+	void ViewerLibraryInstanceDec(int _keepinmemory);
+
+private:
+	
+	HINSTANCE	hViewerLibrary;
+	int			numInstances;
 };
 
 #endif
@@ -159,11 +167,11 @@ void ZoomBitmapVecFont(const HWND hWnd, const int dir);
 DWORD ViewThisFileHandler(const LPARAM lParam);
 LRESULT CALLBACK ParentWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK SccviewerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-HWND CreateLister(HWND ParentWin);
+HWND CreateListerWindow(HWND ParentWin);
 VTWORD GetVTFileType(const wchar_t* FileToLoad);
 bool IsVTFileTypeAllowed(const wchar_t* FileToLoad, const wchar_t* onlyload, const wchar_t* noload);
 HBITMAP GetVTFilePreview(const wchar_t* FileToLoad, const int width, const int height);
-void LoadVTFile(HWND hViewWnd, const wchar_t* FileToLoad);
+bool LoadVTFile(HWND hViewWnd, const wchar_t* FileToLoad);
 void ErrMsgIssue(const int issuetype, const wchar_t *path, const DWORD dwError);
 unsigned long long REGCurrentBuildNumber();
 void SendVTOptions(const ALLMYDATA *mydata, const clsVTOptions *_VTOptions);
