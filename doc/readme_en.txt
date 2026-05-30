@@ -435,3 +435,6 @@ Finally, the search procedure has been rewritten:
 2026-05-30
     - refactoring keepinmemory option
     - refactoring keepinmemory for SCCFI.DLL
+
+2026-05-31
+    - in accordance with the TC SDK standard, ListLoadW and ListLoadNext now actually return an error if the document format is not supported

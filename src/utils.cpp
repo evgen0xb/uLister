@@ -167,20 +167,15 @@ HBITMAP GetVTFilePreview(const wchar_t* FileToLoad, const int width, const int h
 		return NULL;
 	}
 
-	// old (depricated)
-	LoadVTFile(hViewWnd, FileToLoad);
-
 	// TC SDK:
-	// Return a handle to your window if load succeeds, NULL otherwise.If NULL is returned, Lister will try the next plugin.
-	// new:
-	/*
+	// Return a handle to your window if load succeeds, NULL otherwise. If NULL is returned, Lister will try the next plugin.
+
 	if (!LoadVTFile(hViewWnd, FileToLoad))
 	{
 		DestroyWindow(hViewWnd);
 		UlisterInstance.ViewerLibraryInstanceDec(UlisterOptions.keepinmemory);
 		return NULL;
 	}
-	*/
 
 	HDC OutputDC, FormatDC;
 	HBITMAP bitmap, oldbitmap;

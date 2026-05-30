@@ -53,21 +53,38 @@ BOOL APIENTRY DllMain(HINSTANCE hinst, unsigned long reason, void* lpReserved) {
 	return TRUE;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __declspec(dllexport) HWND __stdcall ListLoadW(HWND ParentWin, wchar_t* FileToLoad, int ShowFlags) {
-	HWND        hViewWnd;
+extern "C" __declspec(dllexport) HWND __stdcall ListLoadW(HWND ParentWin, wchar_t* FileToLoad, int ShowFlags)
+{
+
 	if (!IsVTFileTypeAllowed(FileToLoad, UlisterOptions.inionlyloadtypes, UlisterOptions.ininoloadtypes)) return NULL;
-	hViewWnd = CreateListerWindow(ParentWin);
+
+	if (!UlisterInstance.ViewerLibraryInstanceInc()) return NULL;
+
+	HWND hViewWnd = CreateListerWindow(ParentWin);
 	if (!IsWindow(hViewWnd)) return NULL;
-	ALLMYDATA *mydata;
-	mydata = (ALLMYDATA *)GetWindowLongPtr(hViewWnd, GWLP_USERDATA);
-	if (mydata) {
-		// old (depricated) TODO
-		LoadVTFile(mydata->SccviewerWindow, FileToLoad);
+
+	ALLMYDATA *mydata = (ALLMYDATA *)GetWindowLongPtr(hViewWnd, GWLP_USERDATA);
+	if (mydata)
+	{
+
+		if (!LoadVTFile(mydata->SccviewerWindow, FileToLoad))
+		{
+			// TC SDK:
+			// Return a handle to your window if load succeeds, NULL otherwise. If NULL is returned, Lister will try the next plugin.
+
+			UlisterInstance.ViewerLibraryInstanceDec(UlisterOptions.keepinmemory); // или при ret=ERROR TC сам вызовет ListCloseWindow???
+			return NULL;
+		}
 
 		SendVTOptions(mydata, &VTOptions);
 
 		//SetSccdisplayChildWndProc(hViewWnd);
 	}
+	else
+	{
+		return NULL;
+	}
+
 	return hViewWnd;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -77,29 +94,52 @@ extern "C" __declspec(dllexport) HWND __stdcall ListLoad(HWND ParentWin, char* F
 	return ListLoadW(ParentWin, path, ShowFlags);
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __declspec(dllexport) int __stdcall ListLoadNextW(HWND ParentWin, HWND ListWin, wchar_t* FileToLoad, int ShowFlags) {
+extern "C" __declspec(dllexport) int __stdcall ListLoadNextW(HWND ParentWin, HWND ListWin, wchar_t* FileToLoad, int ShowFlags)
+{
 	if (!IsVTFileTypeAllowed(FileToLoad, UlisterOptions.inionlyloadtypes, UlisterOptions.ininoloadtypes)) return LISTPLUGIN_ERROR;
-	ALLMYDATA *mydata;
-	mydata = (ALLMYDATA *)GetWindowLongPtr(ListWin, GWLP_USERDATA);
-	if (mydata) {
-		// old (depricated) TODO
-		LoadVTFile(mydata->SccviewerWindow, FileToLoad);
+
+	ALLMYDATA *mydata = (ALLMYDATA *)GetWindowLongPtr(ListWin, GWLP_USERDATA);
+	if (mydata)
+	{
+		if (!UlisterInstance.ViewerLibraryInstanceInc()) return LISTPLUGIN_ERROR; // pair call ViewerLibraryInstanceDec() in ListCloseWindow()
+
+		// TC SDK:
+		// Return LISTPLUGIN_OK if load succeeds, LISTPLUGIN_ERROR otherwise.
+		// If LISTPLUGIN_ERROR is returned, Lister will try to load the file with the normal ListLoad function
+		// (also with other plugins).
+
+		if (!LoadVTFile(mydata->SccviewerWindow, FileToLoad))
+		{
+			UlisterInstance.ViewerLibraryInstanceDec(UlisterOptions.keepinmemory); // или при ret=ERROR TC сам вызовет ListCloseWindow???
+			return LISTPLUGIN_ERROR;
+		}
 
 		SendVTOptions(mydata, &VTOptions);
 
 		//SetSccdisplayChildWndProc(mydata->waWindow);
 	}
+	else
+	{
+		return LISTPLUGIN_ERROR;
+	}
+
 	return LISTPLUGIN_OK;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __declspec(dllexport) int __stdcall ListLoadNext(HWND ParentWin, HWND ListWin, char* FileToLoad, int ShowFlags) {
+extern "C" __declspec(dllexport) int __stdcall ListLoadNext(HWND ParentWin, HWND ListWin, char* FileToLoad, int ShowFlags)
+{
 	wchar_t path[MAX_PATH] = L"";
 	MultiByteToWideChar(CP_ACP, 0, FileToLoad, -1, path, MAX_PATH);
-	ListLoadNextW(ParentWin, ListWin, path, ShowFlags);
-	return LISTPLUGIN_OK;
+	return ListLoadNextW(ParentWin, ListWin, path, ShowFlags);
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __declspec(dllexport)void __stdcall ListCloseWindow(HWND ListWin) {
+extern "C" __declspec(dllexport)void __stdcall ListCloseWindow(HWND ListWin)
+{
+	// Is ListCloseWindow called before every ListLoadNextW?
+	// TC SDK:
+	// ListCloseWindow is called when a user closes lister, or loads a different file.
+	// If ListCloseWindow isn't present, DestroyWindow() is called.
+
 	if (IsWindow(ListWin)) {
 		ALLMYDATA *mydata;
 		mydata = (ALLMYDATA *)GetWindowLongPtr(ListWin, GWLP_USERDATA);
