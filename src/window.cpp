@@ -212,7 +212,7 @@ LRESULT CALLBACK SccviewerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			if ((GetKeyState(VK_CONTROL) < 0) && (GetKeyState(VK_SHIFT) < 0) && (lParam == 'R'))
 			{
 				// OutputDebugStringA("Reload ini-file");
-				int _keepinmemory = UlisterOptions.keepinmemory; IniParse(); UlisterOptions.keepinmemory = _keepinmemory;
+				bool _keepinmemory = UlisterOptions.keepinmemory; IniParse(); UlisterOptions.keepinmemory = _keepinmemory;
 				SendVTOptions(mydata, &VTOptions);
 				return 0;
 			}

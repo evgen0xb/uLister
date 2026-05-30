@@ -279,7 +279,7 @@ void InitUlister()
 	wchar_t buf[INT64STRMAXBUF];
 
 	GetPrivateProfileStringW(ULISTERSECTION, L"keepinmemory", L"1", buf, INT64STRMAXBUF, UlisterOptions.inipath);
-	if (_wcsicmp(buf, L"1") == 0) UlisterOptions.keepinmemory = 1; else UlisterOptions.keepinmemory = 0;
+	if (_wcsicmp(buf, L"1") == 0) UlisterOptions.keepinmemory = true; else UlisterOptions.keepinmemory = false;
 
 	GetPrivateProfileStringW(ULISTERSECTION, L"mwhscrollinvert", AON, buf, INT64STRMAXBUF, UlisterOptions.inipath);
 	if (_wcsicmp(buf, AON) == 0) UlisterOptions.mwhscrollinvert = true; else UlisterOptions.mwhscrollinvert = false;
@@ -555,13 +555,13 @@ clsUlisterInstance::~clsUlisterInstance()
 	if (hFileIdentLibrary) FreeLibrary(hFileIdentLibrary);
 }
 
-void clsUlisterInstance::ViewerLibraryInstanceDec(int _keepinmemory)
+void clsUlisterInstance::ViewerLibraryInstanceDec(bool _keepinmemory)
 {
 	// unload the "SCCVW.DLL" if needed
 
 	if (NumInstancesViewLib > 0) NumInstancesViewLib--; else return;
 
-	if ((hViewerLibrary != NULL) && (_keepinmemory == 0) && (NumInstancesViewLib == 0))
+	if ((hViewerLibrary != NULL) && !_keepinmemory && (NumInstancesViewLib == 0))
 	{
 		FreeLibrary(hViewerLibrary);
 		hViewerLibrary = NULL;
@@ -583,13 +583,13 @@ HINSTANCE clsUlisterInstance::ViewerLibraryInstanceInc()
 	return hViewerLibrary;
 }
 
-void clsUlisterInstance::FileIdentInstanceDec(int _keepinmemory)
+void clsUlisterInstance::FileIdentInstanceDec(bool _keepinmemory)
 {
 	// unload the "SCCFI.DLL" if needed
 
 	if (NumInstancesFileIdentLib > 0) NumInstancesFileIdentLib--; else return;
 
-	if ((hFileIdentLibrary != NULL) && (_keepinmemory == 0) && (NumInstancesFileIdentLib == 0))
+	if ((hFileIdentLibrary != NULL) && !_keepinmemory && (NumInstancesFileIdentLib == 0))
 	{
 		FreeLibrary(hFileIdentLibrary);
 		hFileIdentLibrary = NULL;

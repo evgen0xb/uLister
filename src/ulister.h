@@ -40,7 +40,7 @@ struct clsUlisterOptions
 	wchar_t	inionlyloadtypes[ULISTMAXBUF];
 	wchar_t	ininopreviewtypes[ULISTMAXBUF];
 	wchar_t	inionlypreviewtypes[ULISTMAXBUF];
-	int		keepinmemory;
+	bool	keepinmemory;
 	bool	mwhscrollinvert;
 };
 
@@ -55,10 +55,10 @@ public:
 	~clsUlisterInstance();
 
 	HINSTANCE ViewerLibraryInstanceInc();
-	void ViewerLibraryInstanceDec(int _keepinmemory);
+	void ViewerLibraryInstanceDec(bool _keepinmemory);
 
 	HINSTANCE FileIdentInstanceInc();
-	void FileIdentInstanceDec(int _keepinmemory);
+	void FileIdentInstanceDec(bool _keepinmemory);
 
 private:
 	
