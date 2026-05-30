@@ -37,34 +37,35 @@ VTWORD GetVTFileType(const wchar_t* FileToLoad)
 	typedef VTWORD(*FIIdFileExFUNC)(VTDWORD, const VTVOID *, VTDWORD, VTWORD *, VTLPTSTR, VTWORD);
 	typedef VTDWORD(*FIDeInitFUNC)(VTVOID);
 
-	SCCERR  err = SCCERR_UNKNOWN;
-	VTDWORD dwFlags = FIFLAG_NORMAL;
-	VTWORD  wType = FI_UNKNOWN;
-	VTBYTE  pTypeName[256];
-
-
 	FIInitFUNC FIInit;
 	FIIdFileExFUNC FIIdFileEx;
 	FIDeInitFUNC FIDeInit;
 
-	HINSTANCE hinstDLL;
+	VTWORD  wVTFileType = FI_UNKNOWN;
+	SCCERR  FIErrorCode = SCCERR_UNKNOWN;
 
-	hinstDLL = LoadLibVT(L"SCCFI.DLL");
-	if (hinstDLL) {
-		FIInit = (FIInitFUNC)GetProcAddress(hinstDLL, "FIInit");
-		FIIdFileEx = (FIIdFileExFUNC)GetProcAddress(hinstDLL, "FIIdFileEx");
-		FIDeInit = (FIDeInitFUNC)GetProcAddress(hinstDLL, "FIDeInit");
-		if (FIInit&&FIIdFileEx&&FIDeInit) {
+	HINSTANCE hInstFileIdentDLL = UlisterInstance.FileIdentInstanceInc();
+
+	if (hInstFileIdentDLL)
+	{
+		FIInit = (FIInitFUNC)GetProcAddress(hInstFileIdentDLL, "FIInit");
+		FIIdFileEx = (FIIdFileExFUNC)GetProcAddress(hInstFileIdentDLL, "FIIdFileEx");
+		FIDeInit = (FIDeInitFUNC)GetProcAddress(hInstFileIdentDLL, "FIDeInit");
+
+		if (FIInit && FIIdFileEx && FIDeInit)
+		{
 			FIInit();
-			err = FIIdFileEx(IOTYPE_UNICODEPATH, FileToLoad, dwFlags, &wType, (VTLPTSTR)pTypeName, 256);
+			VTDWORD dwFlags = FIFLAG_NORMAL;
+			const VTWORD wNameCount = 256;
+			VTBYTE  pTypeName[wNameCount];
+			FIErrorCode = FIIdFileEx(IOTYPE_UNICODEPATH, FileToLoad, dwFlags, &wVTFileType, (VTLPTSTR)pTypeName, wNameCount);
 			FIDeInit();
 		}
-		FreeLibrary(hinstDLL);
 	}
-	else return FI_UNKNOWN;
 
-	if (err != SCCERR_OK) return FI_UNKNOWN;
-	return 	wType;
+	UlisterInstance.FileIdentInstanceDec(UlisterOptions.keepinmemory);
+
+	return 	(FIErrorCode == SCCERR_OK) ? wVTFileType : FI_UNKNOWN;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 bool IsVTFileTypeAllowed(const wchar_t* FileToLoad, const wchar_t* onlyload, const wchar_t* noload)
@@ -535,8 +536,12 @@ ALLMYDATA::ALLMYDATA()
 void clsUlisterInstance::Init(const HINSTANCE _hInst)
 {
 	hInstWLX = _hInst;
+
 	hViewerLibrary = NULL;
-	numInstances = 0;
+	NumInstancesViewLib = 0;
+
+	hFileIdentLibrary = NULL;
+	NumInstancesFileIdentLib = 0;
 
 	if (REGCurrentBuildNumber() < WINDOWS7BETABUILDNUMBER)
 		NTLevel = WindowsNTLevel::WinNT5;
@@ -546,19 +551,20 @@ void clsUlisterInstance::Init(const HINSTANCE _hInst)
 
 clsUlisterInstance::~clsUlisterInstance()
 {
-	if (hViewerLibrary) FreeLibrary((HINSTANCE)hViewerLibrary);
+	if (hViewerLibrary) FreeLibrary(hViewerLibrary);
+	if (hFileIdentLibrary) FreeLibrary(hFileIdentLibrary);
 }
 
 void clsUlisterInstance::ViewerLibraryInstanceDec(int _keepinmemory)
 {
 	// unload the "SCCVW.DLL" if needed
 
-	if (numInstances > 0) numInstances--; else return;
+	if (NumInstancesViewLib > 0) NumInstancesViewLib--; else return;
 
-	if ((hViewerLibrary != NULL) && (_keepinmemory == 0) && (numInstances == 0))
+	if ((hViewerLibrary != NULL) && (_keepinmemory == 0) && (NumInstancesViewLib == 0))
 	{
-		FreeLibrary((HINSTANCE)UlisterInstance.hViewerLibrary);
-		UlisterInstance.hViewerLibrary = NULL;
+		FreeLibrary(hViewerLibrary);
+		hViewerLibrary = NULL;
 	}
 }
 
@@ -569,8 +575,36 @@ HINSTANCE clsUlisterInstance::ViewerLibraryInstanceInc()
 	if (!hViewerLibrary) hViewerLibrary = LoadLibVT(L"SCCVW.DLL");
 	if (!hViewerLibrary) return NULL;
 
-	UlisterInstance.numInstances++;
+	// When a developer uses the Windows LoadLibrary call to load sccvw.dll,
+	// the DLL registers a Window Class named SCCVIEWER.
+	// The developer can then create windows of this class.
+
+	NumInstancesViewLib++;
 	return hViewerLibrary;
+}
+
+void clsUlisterInstance::FileIdentInstanceDec(int _keepinmemory)
+{
+	// unload the "SCCFI.DLL" if needed
+
+	if (NumInstancesFileIdentLib > 0) NumInstancesFileIdentLib--; else return;
+
+	if ((hFileIdentLibrary != NULL) && (_keepinmemory == 0) && (NumInstancesFileIdentLib == 0))
+	{
+		FreeLibrary(hFileIdentLibrary);
+		hFileIdentLibrary = NULL;
+	}
+}
+
+HINSTANCE clsUlisterInstance::FileIdentInstanceInc()
+{
+	// load the "SCCFI.DLL" if needed
+
+	if (!hFileIdentLibrary) hFileIdentLibrary = LoadLibVT(L"SCCFI.DLL");
+	if (!hFileIdentLibrary) return NULL;
+
+	NumInstancesFileIdentLib++;
+	return hFileIdentLibrary;
 }
 
 

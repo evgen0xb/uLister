@@ -434,3 +434,4 @@ Finally, the search procedure has been rewritten:
 
 2026-05-30
     - refactoring keepinmemory option
+    - refactoring keepinmemory for SCCFI.DLL

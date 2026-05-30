@@ -433,3 +433,4 @@ https://github.com/avogelba/uLister
 
 2026-05-30
     - рефакторинг опции keepinmemory
+    - рефакторинг keepinmemory для SCCFI.DLL

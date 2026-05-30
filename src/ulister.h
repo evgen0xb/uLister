@@ -57,10 +57,17 @@ public:
 	HINSTANCE ViewerLibraryInstanceInc();
 	void ViewerLibraryInstanceDec(int _keepinmemory);
 
+	HINSTANCE FileIdentInstanceInc();
+	void FileIdentInstanceDec(int _keepinmemory);
+
 private:
 	
 	HINSTANCE	hViewerLibrary;
-	int			numInstances;
+	int			NumInstancesViewLib;
+
+	HINSTANCE	hFileIdentLibrary;
+	int			NumInstancesFileIdentLib;
+
 };
 
 #endif
