@@ -441,3 +441,7 @@ Finally, the search procedure has been rewritten:
     - added minimal mode for debug messages
     - original bugfix: the plugin don't destroy its view window after loading an unsupported file type
     - original bugfix: memery leak
+    - bugfix related to unclear TC SDK
+
+2026-06-01
+    - code for testing the keepinmemory option (OK)

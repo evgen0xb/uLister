@@ -3,6 +3,7 @@ The plugin is provided as-is and without any warranty under the GPLv3 license.
 */
 
 #define __ULISTDEBUGMSG
+#define __ULISTDEBUGKEEPINMEMORY
 #if defined (__ULISTDEBUGMSG)
 // for using with Sysinternals Debug Output Viewer
 
@@ -27,6 +28,18 @@ template< typename T > std::wstring ToHexW(T i)
 	stream << L"0x"
 		<< std::setfill(L'0') << std::setw(sizeof(T) * 2)
 		<< std::hex << i;
+	return stream.str();
+}
+template< typename T > std::string ToStrA(T i)
+{
+	std::stringstream stream;
+	stream << i;
+	return stream.str();
+}
+template< typename T > std::wstring ToStrW(T i)
+{
+	std::wstringstream stream;
+	stream << i;
 	return stream.str();
 }
 #endif

@@ -554,12 +554,20 @@ void clsUlisterInstance::ViewerLibraryInstanceDec(bool _keepinmemory)
 {
 	// unload the "SCCVW.DLL" if needed
 
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGKEEPINMEMORY)
+	std::wstring msgW = L"Viewer Library Instance Before Decrement (SCCVW.DLL) Num=" + ToStrW(NumInstancesViewLib) + L", keepinmemory=" + ToStrW(_keepinmemory);
+	OutputDebugStringW(msgW.c_str());
+#endif
+
 	if (NumInstancesViewLib > 0) NumInstancesViewLib--; else return;
 
 	if ((hViewerLibrary != NULL) && !_keepinmemory && (NumInstancesViewLib == 0))
 	{
 		FreeLibrary(hViewerLibrary);
 		hViewerLibrary = NULL;
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGKEEPINMEMORY)
+		OutputDebugStringW(L"FreeLibrary (SCCVW.DLL)");
+#endif
 	}
 }
 
@@ -575,6 +583,10 @@ HINSTANCE clsUlisterInstance::ViewerLibraryInstanceInc()
 	// The developer can then create windows of this class.
 
 	NumInstancesViewLib++;
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGKEEPINMEMORY)
+	std::wstring msgW = L"Viewer Library Instance After Increment (SCCVW.DLL) Num=" + ToStrW(NumInstancesViewLib);
+	OutputDebugStringW(msgW.c_str());
+#endif
 	return hViewerLibrary;
 }
 
@@ -582,12 +594,20 @@ void clsUlisterInstance::FileIdentInstanceDec(bool _keepinmemory)
 {
 	// unload the "SCCFI.DLL" if needed
 
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGKEEPINMEMORY)
+	std::wstring msgW = L"File Identification Instance Before Decrement (SCCFI.DLL) Num=" + ToStrW(NumInstancesFileIdentLib) + L", keepinmemory=" + ToStrW(_keepinmemory);
+	OutputDebugStringW(msgW.c_str());
+#endif
+
 	if (NumInstancesFileIdentLib > 0) NumInstancesFileIdentLib--; else return;
 
 	if ((hFileIdentLibrary != NULL) && !_keepinmemory && (NumInstancesFileIdentLib == 0))
 	{
 		FreeLibrary(hFileIdentLibrary);
 		hFileIdentLibrary = NULL;
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGKEEPINMEMORY)
+		OutputDebugStringW(L"FreeLibrary (SCCFI.DLL)");
+#endif
 	}
 }
 
@@ -599,6 +619,10 @@ HINSTANCE clsUlisterInstance::FileIdentInstanceInc()
 	if (!hFileIdentLibrary) return NULL;
 
 	NumInstancesFileIdentLib++;
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGKEEPINMEMORY)
+	std::wstring msgW = L"File Identification Instance After Increment (SCCFI.DLL) Num=" + ToStrW(NumInstancesFileIdentLib);
+	OutputDebugStringW(msgW.c_str());
+#endif
 	return hFileIdentLibrary;
 }
 
