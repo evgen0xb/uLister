@@ -12,7 +12,6 @@ The plugin is provided as-is and without any warranty under the GPLv3 license.
 #include <float.h>
 #include <lomenu.h>
 #include "ulister.h"
-//#include <string>
 
 extern clsUlisterInstance	UlisterInstance;
 extern clsUlisterOptions	UlisterOptions;

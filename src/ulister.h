@@ -2,7 +2,36 @@
 The plugin is provided as-is and without any warranty under the GPLv3 license.
 */
 
-//OLD PreprocessorDefinitions: WIN32;NDEBUG;ULISTER_EXPORTS;_WINDOWS;_USRDLL;
+#define __ULISTDEBUGMSG
+#if defined (__ULISTDEBUGMSG)
+// for using with Sysinternals Debug Output Viewer
+
+#ifndef __ULISTEMPLATELIB
+#define __ULISTEMPLATELIB
+// C++17 and earlier
+// https://stackoverflow.com/questions/5100718/integer-to-hex-string-in-c
+// WARNING: this will not work for single byte because char is always threated as char
+#include <sstream>
+#include <iomanip> // CRITICAL: Required for std::setfill and std::setw
+template< typename T > std::string ToHexA(T i)
+{
+	std::stringstream stream;
+	stream << "0x"
+		<< std::setfill('0') << std::setw(sizeof(T) * 2)
+		<< std::hex << i;
+	return stream.str();
+}
+template< typename T > std::wstring ToHexW(T i)
+{
+	std::wstringstream stream;
+	stream << L"0x"
+		<< std::setfill(L'0') << std::setw(sizeof(T) * 2)
+		<< std::hex << i;
+	return stream.str();
+}
+#endif
+
+#endif
 
 #if defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || defined(__x86_64) || defined(_M_X64) || defined (_M_AMD64) || defined(_AMD64_)
 #define ULISTER64

@@ -438,3 +438,4 @@ Finally, the search procedure has been rewritten:
 
 2026-05-31
     - in accordance with the TC SDK standard, ListLoadW and ListLoadNext now actually return an error if the document format is not supported
+    - added minimal mode for debug messages

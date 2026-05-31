@@ -25,11 +25,18 @@ std::map<HWND, wchar_t*> SearchStringPerWindowW;
 
 // Use [same] _wcsicmp [etc] everyweare to optimize .text dll-section memory usage
 
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-BOOL APIENTRY DllMain(HINSTANCE hinst, unsigned long reason, void* lpReserved) {
+BOOL APIENTRY DllMain(HINSTANCE hinst, unsigned long reason, void* lpReserved)
+{
 	switch (reason)
 	{
 	case DLL_PROCESS_ATTACH:
+
+#if defined (__ULISTDEBUGMSG)
+		OutputDebugStringA("ULISTER::DLL_PROCESS_ATTACH");
+#endif
 
 		UlisterInstance.Init(hinst);
 		IniParse();
@@ -38,7 +45,9 @@ BOOL APIENTRY DllMain(HINSTANCE hinst, unsigned long reason, void* lpReserved) {
 
 	case DLL_PROCESS_DETACH:
 
-		// UlisterInstance.~clsUlisterInstance();
+#if defined (__ULISTDEBUGMSG)
+		OutputDebugStringA("ULISTER::DLL_PROCESS_DETACH");
+#endif
 
 		std::map<HWND, wchar_t*>::iterator itW; // VS2005 fix
 		for (itW = SearchStringPerWindowW.begin(); itW != SearchStringPerWindowW.end(); ++itW)
@@ -48,15 +57,31 @@ BOOL APIENTRY DllMain(HINSTANCE hinst, unsigned long reason, void* lpReserved) {
 		for (itA = SearchStringPerWindowA.begin(); itA != SearchStringPerWindowA.end(); ++itA)
 			free(itA->second);
 
+		// < + CALL UlisterInstance::~clsUlisterInstance(); >
+
 		break;
 	}
 	return TRUE;
-}
+} // DllMain
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 extern "C" __declspec(dllexport) HWND __stdcall ListLoadW(HWND ParentWin, wchar_t* FileToLoad, int ShowFlags)
 {
 
-	if (!IsVTFileTypeAllowed(FileToLoad, UlisterOptions.inionlyloadtypes, UlisterOptions.ininoloadtypes)) return NULL;
+#if defined (__ULISTDEBUGMSG)
+	std::wstring msgW = L"ListLoadW (" + std::wstring(FileToLoad) + L", ParentWin=" + ToHexW(ParentWin) + L")";
+	OutputDebugStringW(msgW.c_str());
+#endif
+
+	if (!IsVTFileTypeAllowed(FileToLoad, UlisterOptions.inionlyloadtypes, UlisterOptions.ininoloadtypes))
+	{
+#if defined (__ULISTDEBUGMSG)
+		OutputDebugStringW(L"ListLoadW := NULL; // IsVTFileTypeAllowed");
+#endif
+		return NULL;
+	}
 
 	if (!UlisterInstance.ViewerLibraryInstanceInc()) return NULL;
 
@@ -72,6 +97,9 @@ extern "C" __declspec(dllexport) HWND __stdcall ListLoadW(HWND ParentWin, wchar_
 			// TC SDK:
 			// Return a handle to your window if load succeeds, NULL otherwise. If NULL is returned, Lister will try the next plugin.
 
+#if defined (__ULISTDEBUGMSG)
+			OutputDebugStringW(L"ListLoadW := NULL; // LoadVTFile");
+#endif
 			UlisterInstance.ViewerLibraryInstanceDec(UlisterOptions.keepinmemory); // или при ret=ERROR TC сам вызовет ListCloseWindow???
 			return NULL;
 		}
@@ -85,18 +113,41 @@ extern "C" __declspec(dllexport) HWND __stdcall ListLoadW(HWND ParentWin, wchar_
 		return NULL;
 	}
 
+#if defined (__ULISTDEBUGMSG)
+	msgW = L"ListLoadW := (HWND) " + ToHexW(hViewWnd) + L";";
+	OutputDebugStringW(msgW.c_str());
+#endif
 	return hViewWnd;
-}
+} // ListLoadW
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __declspec(dllexport) HWND __stdcall ListLoad(HWND ParentWin, char* FileToLoad, int ShowFlags) {
+extern "C" __declspec(dllexport) HWND __stdcall ListLoad(HWND ParentWin, char* FileToLoad, int ShowFlags)
+{
 	wchar_t path[MAX_PATH] = L"";
 	MultiByteToWideChar(CP_ACP, 0, FileToLoad, -1, path, MAX_PATH);
 	return ListLoadW(ParentWin, path, ShowFlags);
-}
+} // ListLoad
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 extern "C" __declspec(dllexport) int __stdcall ListLoadNextW(HWND ParentWin, HWND ListWin, wchar_t* FileToLoad, int ShowFlags)
 {
-	if (!IsVTFileTypeAllowed(FileToLoad, UlisterOptions.inionlyloadtypes, UlisterOptions.ininoloadtypes)) return LISTPLUGIN_ERROR;
+#if defined (__ULISTDEBUGMSG)
+	std::wstring msgW = L"ListLoadNextW (" + std::wstring(FileToLoad) + L", ParentWin=" + ToHexW(ParentWin) +
+		L", ListWin=" + ToHexW(ListWin) + L")";
+	OutputDebugStringW(msgW.c_str());
+#endif
+
+	if (!IsVTFileTypeAllowed(FileToLoad, UlisterOptions.inionlyloadtypes, UlisterOptions.ininoloadtypes))
+	{
+#if defined (__ULISTDEBUGMSG)
+		OutputDebugStringW(L"ListLoadNextW := LISTPLUGIN_ERROR; // IsVTFileTypeAllowed");
+#endif
+		return LISTPLUGIN_ERROR;
+	}
 
 	ALLMYDATA *mydata = (ALLMYDATA *)GetWindowLongPtr(ListWin, GWLP_USERDATA);
 	if (mydata)
@@ -110,6 +161,9 @@ extern "C" __declspec(dllexport) int __stdcall ListLoadNextW(HWND ParentWin, HWN
 
 		if (!LoadVTFile(mydata->SccviewerWindow, FileToLoad))
 		{
+#if defined (__ULISTDEBUGMSG)
+			OutputDebugStringW(L"ListLoadNextW := LISTPLUGIN_ERROR; // LoadVTFile");
+#endif
 			UlisterInstance.ViewerLibraryInstanceDec(UlisterOptions.keepinmemory); // или при ret=ERROR TC сам вызовет ListCloseWindow???
 			return LISTPLUGIN_ERROR;
 		}
@@ -123,18 +177,32 @@ extern "C" __declspec(dllexport) int __stdcall ListLoadNextW(HWND ParentWin, HWN
 		return LISTPLUGIN_ERROR;
 	}
 
+#if defined (__ULISTDEBUGMSG)
+	OutputDebugStringW(L"ListLoadNextW := LISTPLUGIN_OK;");
+#endif
 	return LISTPLUGIN_OK;
-}
+} // ListLoadNextW
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 extern "C" __declspec(dllexport) int __stdcall ListLoadNext(HWND ParentWin, HWND ListWin, char* FileToLoad, int ShowFlags)
 {
 	wchar_t path[MAX_PATH] = L"";
 	MultiByteToWideChar(CP_ACP, 0, FileToLoad, -1, path, MAX_PATH);
 	return ListLoadNextW(ParentWin, ListWin, path, ShowFlags);
-}
+} // ListLoadNext
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 extern "C" __declspec(dllexport)void __stdcall ListCloseWindow(HWND ListWin)
 {
+#if defined (__ULISTDEBUGMSG)
+	std::wstring msgW = L"ListCloseWindow (ListWin=" + ToHexW(ListWin) + L")";
+	OutputDebugStringW(msgW.c_str());
+#endif
+
 	// Is ListCloseWindow called before every ListLoadNextW?
 	// TC SDK:
 	// ListCloseWindow is called when a user closes lister, or loads a different file.
@@ -167,7 +235,7 @@ extern "C" __declspec(dllexport)void __stdcall ListCloseWindow(HWND ListWin)
 
 		}
 	}
-}
+} // ListCloseWindow
 
 
 
@@ -248,7 +316,7 @@ extern "C" __declspec(dllexport)int __stdcall ListSearchText(HWND ListWin, char*
 	}
 	return LISTPLUGIN_OK;
 #pragma warning( pop ) 
-}
+} // ListSearchText
 
 
 
@@ -325,20 +393,25 @@ extern "C" __declspec(dllexport)int __stdcall ListSearchTextW(HWND ListWin, WCHA
 	}
 	return LISTPLUGIN_OK;
 #pragma warning( pop ) 
-}
+} // ListSearchTextW
 
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __declspec(dllexport)int __stdcall ListPrint(HWND ListWin, char* FileToPrint, char* DefPrinter, int PrintFlags, RECT* Margins) {
+extern "C" __declspec(dllexport)int __stdcall ListPrint(HWND ListWin, char* FileToPrint, char* DefPrinter, int PrintFlags, RECT* Margins)
+{
 	ALLMYDATA *mydata;
 	mydata = (ALLMYDATA *)GetWindowLongPtr(ListWin, GWLP_USERDATA);
 	if (mydata)
 		SendMessage(mydata->SccviewerWindow, SCCVW_PRINT, 0, 0);
 	return LISTPLUGIN_OK;
-}
+} // ListPrint
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __declspec(dllexport)int __stdcall ListSendCommand(HWND ListWin, int Command, int Parameter) {
+extern "C" __declspec(dllexport)int __stdcall ListSendCommand(HWND ListWin, int Command, int Parameter)
+{
 	ALLMYDATA *mydata;
 	mydata = (ALLMYDATA *)GetWindowLongPtr(ListWin, GWLP_USERDATA);
 	if (mydata)
@@ -351,16 +424,24 @@ extern "C" __declspec(dllexport)int __stdcall ListSendCommand(HWND ListWin, int 
 			return LISTPLUGIN_OK;
 		}
 	return LISTPLUGIN_ERROR;
-}
+} // ListSendCommand
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __declspec(dllexport)HBITMAP __stdcall ListGetPreviewBitmapW(wchar_t* FileToLoad, int width, int height, char* contentbuf, int contentbuflen) {
+extern "C" __declspec(dllexport)HBITMAP __stdcall ListGetPreviewBitmapW(wchar_t* FileToLoad, int width, int height, char* contentbuf, int contentbuflen)
+{
 	if (!IsVTFileTypeAllowed(FileToLoad, UlisterOptions.inionlypreviewtypes, UlisterOptions.ininopreviewtypes)) return NULL;
 	HBITMAP bitmap = GetVTFilePreview(FileToLoad, width, height);
 	return bitmap;
-}
+} // ListGetPreviewBitmapW
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __declspec(dllexport)HBITMAP __stdcall ListGetPreviewBitmap(char* FileToLoad, int width, int height, char* contentbuf, int contentbuflen) {
+extern "C" __declspec(dllexport)HBITMAP __stdcall ListGetPreviewBitmap(char* FileToLoad, int width, int height, char* contentbuf, int contentbuflen)
+{
 	wchar_t path[MAX_PATH] = L"";
 	MultiByteToWideChar(CP_ACP, 0, FileToLoad, -1, path, MAX_PATH);
 	return ListGetPreviewBitmapW(path, width, height, contentbuf, contentbuflen);
-}
+} // ListGetPreviewBitmap
