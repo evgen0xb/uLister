@@ -146,36 +146,30 @@ extern "C" __declspec(dllexport) int __stdcall ListLoadNextW(HWND ParentWin, HWN
 #if defined (__ULISTDEBUGMSG)
 		OutputDebugStringW(L"ListLoadNextW := LISTPLUGIN_ERROR; // IsVTFileTypeAllowed");
 #endif
-		return LISTPLUGIN_ERROR;
+		return LISTPLUGIN_ERROR; // error return cause auto call ListCloseWindow()
 	}
 
 	ALLMYDATA *mydata = (ALLMYDATA *)GetWindowLongPtr(ListWin, GWLP_USERDATA);
 	if (mydata)
 	{
-		if (!UlisterInstance.ViewerLibraryInstanceInc()) return LISTPLUGIN_ERROR; // pair call ViewerLibraryInstanceDec() in ListCloseWindow()
-
 		// TC SDK:
 		// Return LISTPLUGIN_OK if load succeeds, LISTPLUGIN_ERROR otherwise.
-		// If LISTPLUGIN_ERROR is returned, Lister will try to load the file with the normal ListLoad function
-		// (also with other plugins).
+		// FAKE: If LISTPLUGIN_ERROR is returned, Lister will try to load the file with the normal ListLoad function
+		// (also with other plugins). -- Lister will call ListCloseWindow() first!
 
 		if (!LoadVTFile(mydata->SccviewerWindow, FileToLoad))
 		{
 #if defined (__ULISTDEBUGMSG)
 			OutputDebugStringW(L"ListLoadNextW := LISTPLUGIN_ERROR; // LoadVTFile");
 #endif
-			UlisterInstance.ViewerLibraryInstanceDec(UlisterOptions.keepinmemory); // или при ret=ERROR TC сам вызовет ListCloseWindow???
-			return LISTPLUGIN_ERROR;
+			return LISTPLUGIN_ERROR; // error return cause auto call ListCloseWindow()
 		}
 
 		SendVTOptions(mydata, &VTOptions);
 
 		//SetSccdisplayChildWndProc(mydata->waWindow);
 	}
-	else
-	{
-		return LISTPLUGIN_ERROR;
-	}
+	else return LISTPLUGIN_ERROR; // actually, mydata is always valid in ListLoadNextW()
 
 #if defined (__ULISTDEBUGMSG)
 	OutputDebugStringW(L"ListLoadNextW := LISTPLUGIN_OK;");
