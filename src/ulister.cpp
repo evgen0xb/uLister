@@ -97,10 +97,10 @@ extern "C" __declspec(dllexport) HWND __stdcall ListLoadW(HWND ParentWin, wchar_
 			// TC SDK:
 			// Return a handle to your window if load succeeds, NULL otherwise. If NULL is returned, Lister will try the next plugin.
 
+			ListCloseWindow(hViewWnd);
 #if defined (__ULISTDEBUGMSG)
 			OutputDebugStringW(L"ListLoadW := NULL; // LoadVTFile");
 #endif
-			UlisterInstance.ViewerLibraryInstanceDec(UlisterOptions.keepinmemory); // или при ret=ERROR TC сам вызовет ListCloseWindow???
 			return NULL;
 		}
 
@@ -203,9 +203,8 @@ extern "C" __declspec(dllexport)void __stdcall ListCloseWindow(HWND ListWin)
 	OutputDebugStringW(msgW.c_str());
 #endif
 
-	// Is ListCloseWindow called before every ListLoadNextW?
 	// TC SDK:
-	// ListCloseWindow is called when a user closes lister, or loads a different file.
+	// FAKE: ListCloseWindow is called when a user closes lister, or loads a different file.
 	// If ListCloseWindow isn't present, DestroyWindow() is called.
 
 	if (IsWindow(ListWin)) {

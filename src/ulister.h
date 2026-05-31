@@ -213,3 +213,4 @@ unsigned long long REGCurrentBuildNumber();
 void SendVTOptions(const ALLMYDATA *mydata, const clsVTOptions *_VTOptions);
 //void SetSccdisplayChildWndProc(HWND waWnd);
 LRESULT CALLBACK SccdisplayWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+extern "C" __declspec(dllexport)void __stdcall ListCloseWindow(HWND ListWin);

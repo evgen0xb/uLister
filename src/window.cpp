@@ -375,15 +375,7 @@ HWND CreateListerWindow(HWND ParentWin)
 	hViewWnd = CreateWindow(WNDCLASSNAME_SCCVIEWER,	NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN, r.left, r.top, r.right - r.left, r.bottom - r.top, waWnd,		0, UlisterInstance.hInstWLX, NULL);
 	mydata->SccviewerWindow = hViewWnd;
 
-	if (!IsWindow(hViewWnd)) return NULL; // а здесь надо удалять mydata? или ListCloseWindow при ошибка сам вызовется?
-
-	// гислер свою факинговую документацию не читал, потому что по ней невозможно написать плагин.
-	// короче, нужно смотреть, в какой последовательности вызываются
-	// ListLoadW ListLoadNext и ListCloseWindow
-	// и когда вызывается ListCloseWindow, если ListLoadW ListLoadNext возвращают ошибку.
-
-	// TODO это надо прогнать в отладчике и описание поведения явно добавить сюда в документацию
-	// в новый отдельный раздел.
+	if (!IsWindow(hViewWnd)) return NULL; // in this case, mydata will be deleted in the ListCloseWindow call - BUT HOW BEFORE SetWindowLongPtr call???
 
 	mydata->OriginalSccviewerWindowProc = (WNDPROC)SetWindowLongPtr(hViewWnd, GWLP_WNDPROC, (LONG_PTR)SccviewerWindowProc);
 	// exception with Delphi 12 SetWindowLongPtr(hViewWnd, GWLP_USERDATA,(long) mydata);
