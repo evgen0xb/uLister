@@ -440,3 +440,4 @@ Finally, the search procedure has been rewritten:
     - in accordance with the TC SDK standard, ListLoadW and ListLoadNext now actually return an error if the document format is not supported
     - added minimal mode for debug messages
     - original bugfix: the plugin don't destroy its view window after loading an unsupported file type
+    - original bugfix: memery leak

@@ -347,11 +347,6 @@ HWND CreateListerWindow(HWND ParentWin)
 	HWND        hViewWnd, waWnd;
 	RECT		r;
 	WNDCLASS	wc;
-	ALLMYDATA	*mydata;
-
-	mydata = new ALLMYDATA();
-
-	mydata->ListerWindow = ParentWin;
 
 	bool quickview = WS_CHILD & GetWindowLongPtr(ParentWin, GWL_STYLE);
 
@@ -369,15 +364,19 @@ HWND CreateListerWindow(HWND ParentWin)
 
 	GetClientRect(ParentWin, &r);
 	waWnd = CreateWindow	(WNDCLASSNAME_WAWC,		NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN, r.left, r.top, r.right - r.left, r.bottom - r.top, ParentWin,	0, UlisterInstance.hInstWLX, NULL);
-	mydata->waWindow = waWnd;
 
 	GetClientRect(waWnd, &r);
 	hViewWnd = CreateWindow(WNDCLASSNAME_SCCVIEWER,	NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN, r.left, r.top, r.right - r.left, r.bottom - r.top, waWnd,		0, UlisterInstance.hInstWLX, NULL);
+
+	if (!IsWindow(hViewWnd)) return NULL;
+
+	// allocate ALLMYDATA and return NULL cause memery leak
+	ALLMYDATA *mydata = new ALLMYDATA();
+	mydata->ListerWindow = ParentWin;
+	mydata->waWindow = waWnd;
 	mydata->SccviewerWindow = hViewWnd;
-
-	if (!IsWindow(hViewWnd)) return NULL; // in this case, mydata will be deleted in the ListCloseWindow call - BUT HOW BEFORE SetWindowLongPtr call???
-
 	mydata->OriginalSccviewerWindowProc = (WNDPROC)SetWindowLongPtr(hViewWnd, GWLP_WNDPROC, (LONG_PTR)SccviewerWindowProc);
+
 	// exception with Delphi 12 SetWindowLongPtr(hViewWnd, GWLP_USERDATA,(long) mydata);
 	// exception with Delphi 12 SetWindowLongPtr(waWnd, GWLP_USERDATA,(long) mydata);
 	SetWindowLongPtr(hViewWnd, GWLP_USERDATA, (LONG_PTR)mydata);
