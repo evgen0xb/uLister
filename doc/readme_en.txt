@@ -145,6 +145,13 @@ bitmapfitmode=skip|best|original|window|height|width|stretch***|imagesize
                 Although the stretch parameter is defined in the SDK for bitmap graphics too, it has no effect for them.
     imagesize   - Scale to image size.
 
+Version 4.1.0.0 of the plugin now includes a option for controlling the display of spreadsheets.
+(A.4.9 SCCID_SSDRAFTMODE, A.4.19 SCCID_SSSHOWHIDDENCELLS)
+spreadsheetdisplaymode=skip|draft|normal|normalhidden
+    draft       - draft document display with a single font of the same size, without graphics, etc
+    normal      - display without restrictions
+    normalhidden- additionally display hidden rows and columns
+
 Options are set the first time you launch the plugin. Restart Total Commander for the changes to take effect.
 
 6. Installation
@@ -457,3 +464,4 @@ Finally, the search procedure has been rewritten:
     - added: Ctrl+M/Ctrl+Shift+M and Ctrl+Shift + Mouse Wheel - 90 degree rotation for bitmaps (gif, jpeg, png, ...)
     - added: Ctrl+M/Ctrl+Shift+M and Ctrl+Shift + Mouse Wheel - change sort order for archives (none->name->size->date)
     - added: Ctrl+M/Ctrl+Shift+M and Ctrl+Shift + Mouse Wheel - switching between spreadsheet viewing modes (draft->normal->normal with hidden rows and columns displayed)
+    - added spreadsheetdisplaymode option

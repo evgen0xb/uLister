@@ -122,7 +122,6 @@ void ChangeViewMode(const HWND hWnd, const int dir)
 		locOptionSpec.dwId = SCCID_SSDRAFTMODE;
 		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
 
-		// TODO: INI-file spreadsheetdisplaymode=skip|draft|normal|normalhidden
 	}
 	else if (DispEng == SCCVWTYPE_ARCHIVE)
 	{

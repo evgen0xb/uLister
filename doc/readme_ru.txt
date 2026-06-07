@@ -144,6 +144,13 @@ bitmapfitmode=skip|best|original|window|height|width|stretch***|imagesize
                 Хотя параметр stretch определен в SDK для растровой графики, однако для нее он не имеет никакого эффекта.
     imagesize   - Масштабировать до размера изображения.
 
+В версии 4.1.0.0 плагина доступна настройка для управления отображением электронных таблиц
+(SDK разделы A.4.9 SCCID_SSDRAFTMODE, A.4.19 SCCID_SSSHOWHIDDENCELLS)
+spreadsheetdisplaymode=skip|draft|normal|normalhidden
+    draft       - черновое представление документа одним шрифтом одинакового размера без графики и т.п.
+    normal      - отображение без ограничений
+    normalhidden- дополнительно отображать скрытые строки и столбцы
+
 Параметры считываются при первом запуске плагина. Перезапустите Total Commander для применения изменений.
 
 6. Установка
@@ -513,3 +520,4 @@ https://github.com/avogelba/uLister
     - добавлено: Ctrl+M/Ctrl+Shift+M и Ctrl+Shift + Mouse Wheel - поворот на 90 градусов для растровых картинок (gif, jpeg, png, ...)
     - добавлено: Ctrl+M/Ctrl+Shift+M и Ctrl+Shift + Mouse Wheel - изменение порядка сортировки для архивов (none->name->size->date)
     - добавлено: Ctrl+M/Ctrl+Shift+M и Ctrl+Shift + Mouse Wheel - переключение между режимами просмотра электронных таблиц (draft->normal->normal и отображение скрытых строк и столбцов)
+    - добавлена опция spreadsheetdisplaymode

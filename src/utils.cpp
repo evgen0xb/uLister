@@ -371,6 +371,20 @@ VTDWORD ReadIniViewOptGraphicFitMode(const wchar_t *optionname)
 	return result;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+__int8 ReadIniViewOptSpreadsheetDisplayMode(const wchar_t *optionname)
+{
+	wchar_t buf[INT64STRMAXBUF];
+	__int8 result;
+
+	GetPrivateProfileStringW(VIEWERSECTION, optionname, ASKIP, buf, INT64STRMAXBUF, UlisterOptions.inipath);
+	if (_wcsicmp(buf, L"draft") == 0) result = UlisterSSDisplayMode::DRAFT;
+	else if (_wcsicmp(buf, L"normal") == 0) result = UlisterSSDisplayMode::NORMAL;
+	else if (_wcsicmp(buf, L"normalhidden") == 0) result = UlisterSSDisplayMode::NORMALHIDDEN;
+	else result = Opt::SKIP;
+
+	return result;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void InitClipboardOpts()
 {
 	VTOptions.VTClipboard.FORMAT_TEXT = ReadIniClipbOpt(L"ascii");
@@ -399,6 +413,8 @@ void InitViewerOpts()
 
 	VTOptions.VTViewer.VECTORFITMODE.Option = ReadIniViewOptGraphicFitMode(L"vectorfitmode");
 	VTOptions.VTViewer.BITMAPFITMODE.Option = ReadIniViewOptGraphicFitMode(L"bitmapfitmode");
+
+	VTOptions.VTViewer.SPREADSHEETDISPLAYMODE.Option = ReadIniViewOptSpreadsheetDisplayMode(L"spreadsheetdisplaymode");
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void IniParse()
@@ -628,7 +644,21 @@ HINSTANCE clsUlisterInstance::FileIdentInstanceInc()
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+clsSSViewModeOption::clsSSViewModeOption() { Option = UlisterSSDisplayMode::SKIP; }
 
+VTBOOL clsSSViewModeOption::FilterSkipHiddenCells(VTBOOL val) const
+{
+	if (Option == UlisterSSDisplayMode::SKIP) return val;
+	return (Option == UlisterSSDisplayMode::NORMALHIDDEN) ? TRUE : FALSE;
+}
+
+VTBOOL clsSSViewModeOption::FilterSkipDraft(VTBOOL val) const
+{
+	if (Option == UlisterSSDisplayMode::SKIP) return val;
+	return (Option == UlisterSSDisplayMode::DRAFT) ? TRUE : FALSE;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 clsVTDWORDOption::clsVTDWORDOption() { Option = Opt::SKIP; }
 VTDWORD clsVTDWORDOption::FilterSkip(VTDWORD val) const { if (Option == Opt::SKIP) return val; else return Option; }
 
@@ -721,6 +751,9 @@ void SendVTOptions(const ALLMYDATA *mydata, const clsVTOptions *_VTOptions)
 		VTDWORD Bitmapfitmode;
 
 		VTDWORD ArcSortOrder;
+
+		VTBOOL SpreadsheetDraftMode;
+		VTBOOL SpreadsheetHiddenCells;
 	};
 
 	// unicode clipboard:
@@ -848,6 +881,20 @@ void SendVTOptions(const ALLMYDATA *mydata, const clsVTOptions *_VTOptions)
 	//locOptionSpec.pData = &Bitmapfitmode;
 	SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
 	Bitmapfitmode = _VTOptions->VTViewer.BITMAPFITMODE.FilterSkip(Bitmapfitmode);
+	SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+	// spreadsheet display engine-1:
+	locOptionSpec.dwId = SCCID_SSDRAFTMODE;
+	//locOptionSpec.pData = &SpreadsheetDraftMode;
+	SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	SpreadsheetDraftMode = _VTOptions->VTViewer.SPREADSHEETDISPLAYMODE.FilterSkipDraft(SpreadsheetDraftMode);
+	SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+	// spreadsheet display engine-2:
+	locOptionSpec.dwId = SCCID_SSSHOWHIDDENCELLS;
+	//locOptionSpec.pData = &SpreadsheetHiddenCells;
+	SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	SpreadsheetHiddenCells = _VTOptions->VTViewer.SPREADSHEETDISPLAYMODE.FilterSkipHiddenCells(SpreadsheetHiddenCells);
 	SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 
 	/****************************************************/

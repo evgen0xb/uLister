@@ -151,6 +151,15 @@ namespace UlisterNextMode {
 	};
 } // VS2005 fix
 
+namespace UlisterSSDisplayMode {
+	enum Type {
+		SKIP = -1,
+		DRAFT = 0,
+		NORMAL,
+		NORMALHIDDEN,
+	};
+} // VS2005 fix
+
 #ifndef VTOPTIONSCLIPBOARD
 #define VTOPTIONSCLIPBOARD
 
@@ -187,6 +196,16 @@ public:
 #ifndef VTOPTIONSVIEWER
 #define VTOPTIONSVIEWER
 
+class clsSSViewModeOption
+{
+public:
+	__int8 Option;
+	clsSSViewModeOption();
+	VTBOOL FilterSkipHiddenCells(VTBOOL val) const;
+	VTBOOL FilterSkipDraft(VTBOOL val) const;
+};
+
+
 class clsVTOptionsViewer
 {
 public:
@@ -201,6 +220,8 @@ public:
 
 	clsVTDWORDOption VECTORFITMODE;
 	clsVTDWORDOption BITMAPFITMODE;
+
+	clsSSViewModeOption SPREADSHEETDISPLAYMODE;
 
 }; // clsVTOptionsViewer
 #endif
