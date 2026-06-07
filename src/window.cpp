@@ -62,6 +62,7 @@ void ChangeViewMode(const HWND hWnd, const int dir)
 		VTDWORD viewmode;
 		VTDWORD bitmaprotation;
 		VTDWORD arcsortorder;
+		VTBOOL spreadsheetdraft;
 	};
 
 	SCCVWOPTIONSPEC40 locOptionSpec;
@@ -81,6 +82,47 @@ void ChangeViewMode(const HWND hWnd, const int dir)
 		else { viewmode--; if (viewmode < SCCVW_WPMODE_DRAFT) viewmode = SCCVW_WPMODE_DRAFT; }
 
 		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+	}
+	else if (DispEng == SCCVWTYPE_SS)
+	{
+		// SCCID_SSSHOWGRIDLINES ???
+
+		// spreadsheet: draft->normal->normal with hidden rows and columns displayed
+
+		VTBOOL spreadsheethiddencells;
+
+		//locOptionSpec.pData = &spreadsheetdraft;
+		locOptionSpec.dwId = SCCID_SSDRAFTMODE;
+		SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+
+		locOptionSpec.pData = &spreadsheethiddencells;
+		locOptionSpec.dwId = SCCID_SSSHOWHIDDENCELLS;
+		SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+
+		if (dir == UlisterNextMode::MNEXT)
+		{
+			if (spreadsheethiddencells == FALSE && spreadsheetdraft == TRUE) spreadsheetdraft = FALSE; // draft->normal
+			else if (spreadsheethiddencells == FALSE && spreadsheetdraft == FALSE) spreadsheethiddencells = TRUE; // normal->normal with hidden rows and columns displayed
+			else if (spreadsheethiddencells == TRUE && spreadsheetdraft == FALSE) { ; } // normal with hidden rows and columns displayed->nothing
+			else { spreadsheethiddencells = FALSE; spreadsheetdraft = TRUE; } // reset to draft
+		}
+		else
+		{
+			if (spreadsheethiddencells == TRUE && spreadsheetdraft == FALSE) spreadsheethiddencells = FALSE; // normal with hidden rows and columns displayed->normal
+			else if (spreadsheethiddencells == FALSE && spreadsheetdraft == FALSE) spreadsheetdraft = TRUE; // normal->draft
+			else if (spreadsheethiddencells == FALSE && spreadsheetdraft == TRUE) { ; } // draft->nothing
+			else { spreadsheethiddencells = TRUE; spreadsheetdraft = FALSE; } // reset to normal with hidden rows and columns displayed
+		}
+
+		//locOptionSpec.pData = &spreadsheethiddencells;
+		//locOptionSpec.dwId = SCCID_SSSHOWHIDDENCELLS;
+		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+
+		locOptionSpec.pData = &spreadsheetdraft;
+		locOptionSpec.dwId = SCCID_SSDRAFTMODE;
+		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+
+		// TODO: INI-file spreadsheetdisplaymode=skip|draft|normal|normalhidden
 	}
 	else if (DispEng == SCCVWTYPE_ARCHIVE)
 	{
@@ -115,12 +157,6 @@ void ChangeViewMode(const HWND hWnd, const int dir)
 	{
 		// SCCID_VECSHOWFULLSCREEN ???
 		// SCCID_STROKE_TEXT ???
-	}
-	else if (DispEng == SCCVWTYPE_SS)
-	{
-		// SCCID_SSDRAFTMODE ???
-		// SCCID_SSSHOWGRIDLINES ???
-		// SCCID_SSSHOWHIDDENCELLS ???
 	}
 	else if (DispEng == SCCVWTYPE_DB)
 	{

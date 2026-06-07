@@ -198,7 +198,8 @@ Outside In Viewer может работать с простыми контейн
 Ctrl+M/Ctrl+Shift+M и Ctrl+Shift + Mouse Wheel:
     для Word Processor / HTML / EMAIL переключение между режимами просмотра (draft->normal->preview->weblayout);
     поворот на 90 градусов для растровых картинок (gif, jpeg, png, ...);
-    изменение порядка сортировки для архивов (none->name->size->date).
+    изменение порядка сортировки для архивов (none->name->size->date);
+    переключение между режимами просмотра электронных таблиц (draft->normal->normal и отображение скрытых строк и столбцов)
 
 8. Компиляция.
 Используйте файл vs2015.sln для редактирования исходных кодов проекта в современных версиях Visual Studio.
@@ -511,3 +512,4 @@ https://github.com/avogelba/uLister
     - добавлено: Ctrl+M/Ctrl+Shift+M и Ctrl+Shift + Mouse Wheel - переключение между режимами просмотра Word Processor / HTML / EMAIL (draft->normal->preview->weblayout)
     - добавлено: Ctrl+M/Ctrl+Shift+M и Ctrl+Shift + Mouse Wheel - поворот на 90 градусов для растровых картинок (gif, jpeg, png, ...)
     - добавлено: Ctrl+M/Ctrl+Shift+M и Ctrl+Shift + Mouse Wheel - изменение порядка сортировки для архивов (none->name->size->date)
+    - добавлено: Ctrl+M/Ctrl+Shift+M и Ctrl+Shift + Mouse Wheel - переключение между режимами просмотра электронных таблиц (draft->normal->normal и отображение скрытых строк и столбцов)
