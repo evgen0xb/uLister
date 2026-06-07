@@ -57,7 +57,11 @@ void ChangeViewMode(const HWND hWnd, const int dir)
 	VTDWORD DispEng;
 	mydata = (ALLMYDATA *)GetWindowLongPtr(hWnd, GWLP_USERDATA);
 
-	VTDWORD viewmode;
+	union
+	{
+		VTDWORD viewmode;
+		VTDWORD bitmaprotation;
+	};
 
 	SCCVWOPTIONSPEC40 locOptionSpec;
 	locOptionSpec.dwSize = sizeof(SCCVWOPTIONSPEC40);
@@ -77,12 +81,21 @@ void ChangeViewMode(const HWND hWnd, const int dir)
 
 		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 	}
-	/*
 	else if (DispEng == SCCVWTYPE_IMAGE)
 	{
 		// SCCID_ANTIALIAS ??? SCCVW_ANTIALIAS_OFF | SCCVW_ANTIALIAS_ALL ???
-		// SCCID_BMPROTATION : SCCVW_ROTATION_NONE | SCCVW_ROTATION_90 | SCCVW_ROTATION_180 | SCCVW_ROTATION_270 
+		
+		//locOptionSpec.pData = &bitmaprotation;
+		locOptionSpec.dwId = SCCID_BMPROTATION;
+		SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+
+		if (dir == UlisterNextMode::MNEXT) { bitmaprotation = bitmaprotation + 90; if (bitmaprotation > SCCVW_ROTATION_270) bitmaprotation = SCCVW_ROTATION_NONE; }
+		else { bitmaprotation = bitmaprotation - 90; if (bitmaprotation > SCCVW_ROTATION_270) bitmaprotation = SCCVW_ROTATION_270; } // unsigned int (VTDWORD) overflow hack
+
+		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+		// It seems that this option is not saved in the .oit directory and does not need to be reset to SCCVW_ROTATION_NONE when loading an image file.
 	}
+	/*
 	else if (DispEng == SCCVWTYPE_VECTOR)
 	{
 		// SCCID_VECSHOWFULLSCREEN ???

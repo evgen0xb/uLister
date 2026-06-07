@@ -195,7 +195,9 @@ Outside In Viewer может работать с простыми контейн
 
 Сочетание клавиш Ctrl+Shift+R перезагружает опции конфигурации из ini-файла (возможно, некоторые из них вступят в силу немедленно).
 
-Ctrl+M/Ctrl+Shift+M и Ctrl+Shift + Mouse Wheel - для Word Processor / HTML / EMAIL переключение между режимами просмотра (draft->normal->preview->weblayout).
+Ctrl+M/Ctrl+Shift+M и Ctrl+Shift + Mouse Wheel:
+    для Word Processor / HTML / EMAIL переключение между режимами просмотра (draft->normal->preview->weblayout);
+    поворот на 90 градусов для растровых картинок (gif, jpeg, png, ...).
 
 8. Компиляция.
 Используйте файл vs2015.sln для редактирования исходных кодов проекта в современных версиях Visual Studio.
@@ -506,3 +508,4 @@ https://github.com/avogelba/uLister
 
 2026-06-07
     - добавлено: Ctrl+M/Ctrl+Shift+M и Ctrl+Shift + Mouse Wheel - переключение между режимами просмотра Word Processor / HTML / EMAIL (draft->normal->preview->weblayout)
+    - добавлено: Ctrl+M/Ctrl+Shift+M и Ctrl+Shift + Mouse Wheel - поворот на 90 градусов для растровых картинок (gif, jpeg, png, ...)
