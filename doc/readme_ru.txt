@@ -195,6 +195,8 @@ Outside In Viewer может работать с простыми контейн
 
 Сочетание клавиш Ctrl+Shift+R перезагружает опции конфигурации из ini-файла (возможно, некоторые из них вступят в силу немедленно).
 
+Ctrl+M/Ctrl+Shift+M и Ctrl+Shift + Mouse Wheel - для Word Processor / HTML / EMAIL переключение между режимами просмотра (draft->normal->preview->weblayout).
+
 8. Компиляция.
 Используйте файл vs2015.sln для редактирования исходных кодов проекта в современных версиях Visual Studio.
 Используйте файл vs2005.sln для компиляции проекта в компактный код с поддержкой Windows XP 32/64 с помощью
@@ -501,3 +503,6 @@ https://github.com/avogelba/uLister
 
 2026-06-01
     - код для тестирования опции keepinmemory (OK)
+
+2026-06-07
+    - добавлено: Ctrl+M/Ctrl+Shift+M и Ctrl+Shift + Mouse Wheel - переключение между режимами просмотра Word Processor / HTML / EMAIL (draft->normal->preview->weblayout)

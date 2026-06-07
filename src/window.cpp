@@ -48,11 +48,76 @@ VTDWORD GetDisplayEngineVT(const HWND hWnd)
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+void ChangeViewMode(const HWND hWnd, const int dir)
+{
+	// dir =  1		- next view mode
+	// dir = -1		- prev view mode
+
+	ALLMYDATA *mydata;
+	VTDWORD DispEng;
+	mydata = (ALLMYDATA *)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+
+	VTDWORD viewmode;
+
+	SCCVWOPTIONSPEC40 locOptionSpec;
+	locOptionSpec.dwSize = sizeof(SCCVWOPTIONSPEC40);
+	locOptionSpec.dwFlags = SCCVWOPTION_CURRENT;
+	locOptionSpec.pData = &viewmode;
+
+	DispEng = GetDisplayEngineVT(mydata->SccviewerWindow); // call only from user-level defined messages!!!
+	if (DispEng == SCCVWTYPE_WP || DispEng == SCCVWTYPE_HTML || DispEng == SCCVWTYPE_EMAIL)
+	{
+		if (DispEng == SCCVWTYPE_WP) locOptionSpec.dwId = SCCID_WPDISPLAYMODE;
+		else locOptionSpec.dwId = (DispEng == SCCVWTYPE_HTML) ? SCCID_HTMLDISPLAYMODE : SCCID_EMAILDISPLAYMODE;
+
+		SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+
+		if (dir == UlisterNextMode::MNEXT) { viewmode++; if (viewmode > SCCVW_WPMODE_WEBLAYOUT) viewmode = SCCVW_WPMODE_WEBLAYOUT; }
+		else { viewmode--; if (viewmode < SCCVW_WPMODE_DRAFT) viewmode = SCCVW_WPMODE_DRAFT; }
+
+		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+	}
+	/*
+	else if (DispEng == SCCVWTYPE_IMAGE)
+	{
+		// SCCID_ANTIALIAS ??? SCCVW_ANTIALIAS_OFF | SCCVW_ANTIALIAS_ALL ???
+		// SCCID_BMPROTATION : SCCVW_ROTATION_NONE | SCCVW_ROTATION_90 | SCCVW_ROTATION_180 | SCCVW_ROTATION_270 
+	}
+	else if (DispEng == SCCVWTYPE_VECTOR)
+	{
+		// SCCID_VECSHOWFULLSCREEN ???
+		// SCCID_STROKE_TEXT ???
+	}
+	else if (DispEng == SCCVWTYPE_SS)
+	{
+		// SCCID_SSDRAFTMODE ???
+		// SCCID_SSSHOWGRIDLINES ???
+		// SCCID_SSSHOWHIDDENCELLS ???
+	}
+	else if (DispEng == SCCVWTYPE_DB)
+	{
+		// SCCID_DBDRAFTMODE ???
+		// SCCID_DBSHOWGRIDLINES ???
+	}
+	else if (DispEng == SCCVWTYPE_HEX)
+	{
+		// ??? nothing
+	}
+	else if (DispEng == SCCVWTYPE_ARCHIVE)
+	{
+		// SCCID_ARCSORTORDER ??? SCCVW_SORT_NONE | SCCVW_SORT_NAME | SCCVW_SORT_SIZE | SCCVW_SORT_DATE
+	}
+	*/
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void ZoomBitmapVecFont(const HWND hWnd, const int dir)
 {
 	// dir =  1		- zoom in
 	// dir = -1		- zoom out
-	// dir =  0		- zoom reset to 100%
+	// dir =  0		- zoom reset to 100% (146% in Russian Federation)
 
 	ALLMYDATA *mydata;
 	VTDWORD DispEng;
@@ -216,6 +281,14 @@ LRESULT CALLBACK SccviewerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 				return 0;
 			}
 
+			if ((GetKeyState(VK_CONTROL) < 0) && (lParam == 'M'))
+			{
+				// OutputDebugStringA("Prev/Next View Mode");
+				if (GetKeyState(VK_SHIFT) < 0) ChangeViewMode(mydata->SccviewerWindow, UlisterNextMode::MPREV);
+				else ChangeViewMode(mydata->SccviewerWindow, UlisterNextMode::MNEXT);
+				return 0;
+			}
+
 			PostMessage(mydata->ListerWindow, WM_KEYDOWN, lParam, 0); // TC Lister Handler: (Ctrl+F/F7, F3/Shift+F3, ESC)
 			break;
 		
@@ -311,7 +384,13 @@ LRESULT CALLBACK SccdisplayWindowProc(HWND hWnd, UINT message, WPARAM wParam, LP
 		case WM_MOUSEWHEEL:
 			// OutputDebugStringA("***WM_MOUSEWHEEL***");
 			DisplayEngineType = GetDisplayEngineVT(mydata->SccviewerWindow);
-			if (GetKeyState(VK_CONTROL) < 0 && DisplayEngineType != SCCVWTYPE_IMAGE && DisplayEngineType != SCCVWTYPE_VECTOR)
+			if (GetKeyState(VK_CONTROL) < 0 && GetKeyState(VK_SHIFT) < 0)
+			{
+				// CTRL+SHIFT+MOUSEHWHEEL : Next/Prev View Mode (ex. for Word Processor, HTML and EMAIL: draft->normal->preview->weblayout->draft)
+				if (GET_WHEEL_DELTA_WPARAM(wParam) > 0) ChangeViewMode(mydata->SccviewerWindow, UlisterNextMode::MPREV); else ChangeViewMode(mydata->SccviewerWindow, UlisterNextMode::MNEXT);
+				return 0;
+			}
+			else if (GetKeyState(VK_CONTROL) < 0 && DisplayEngineType != SCCVWTYPE_IMAGE && DisplayEngineType != SCCVWTYPE_VECTOR)
 			{
 				// CTRL+MOUSEHWHEEL : Zoom-In/Zoom-Out
 				if (GET_WHEEL_DELTA_WPARAM(wParam) > 0) ZoomBitmapVecFont(mydata->SccviewerWindow, UlisterZoom::ZIN); else ZoomBitmapVecFont(mydata->SccviewerWindow, UlisterZoom::ZOUT);

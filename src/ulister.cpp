@@ -18,8 +18,8 @@ const char *ANOTFOUND = "Not found:";
 const wchar_t *WNOTFOUND = L"Not found:";
 const int MAXSEARCH = VTMAXSEARCHBUF - 1;
 
-// нужно помнить строку поиска для каждого окна uLister, чтобы правильно выводить сообщение, что именно НЕ найдено,
-// т.к. в каждом окне строка поиска FORWARD/BACK независимая.
+// You need to remember the search string for each uLister window in order to correctly display the message about what exactly was NOT found,
+// since the FORWARD/BACK search string is independent in each window.
 std::map<HWND, char*> SearchStringPerWindowA;		// SearchStringW + SearchStringA + SearchParameter - into ALLMYDATA (TODO)
 std::map<HWND, wchar_t*> SearchStringPerWindowW;
 

@@ -2,8 +2,8 @@
 The plugin is provided as-is and without any warranty under the GPLv3 license.
 */
 
-#define __ULISTDEBUGMSG
-#define __ULISTDEBUGKEEPINMEMORY
+//#define __ULISTDEBUGMSG
+//#define __ULISTDEBUGKEEPINMEMORY
 #if defined (__ULISTDEBUGMSG)
 // for using with Sysinternals Debug Output Viewer
 
@@ -141,6 +141,13 @@ namespace UlisterZoom {
 		ZOUT = -1,
 		ZRESET = 0,
 		ZIN = 1
+	};
+} // VS2005 fix
+
+namespace UlisterNextMode {
+	enum Type {
+		MPREV = -1,
+		MNEXT = 1
 	};
 } // VS2005 fix
 
