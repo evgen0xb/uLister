@@ -719,6 +719,8 @@ void SendVTOptions(const ALLMYDATA *mydata, const clsVTOptions *_VTOptions)
 
 		VTDWORD Vectorfitmode;
 		VTDWORD Bitmapfitmode;
+
+		VTDWORD ArcSortOrder;
 	};
 
 	// unicode clipboard:
@@ -847,4 +849,15 @@ void SendVTOptions(const ALLMYDATA *mydata, const clsVTOptions *_VTOptions)
 	SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
 	Bitmapfitmode = _VTOptions->VTViewer.BITMAPFITMODE.FilterSkip(Bitmapfitmode);
 	SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+	/****************************************************/
+
+	// reset to default non-INI options:
+
+	// archive display engine:
+	locOptionSpec.dwId = SCCID_ARCSORTORDER;
+	//locOptionSpec.pData = &ArcSortOrder;
+	ArcSortOrder = SCCVW_SORT_NAME;
+	SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
 }

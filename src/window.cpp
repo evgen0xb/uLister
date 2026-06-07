@@ -61,6 +61,7 @@ void ChangeViewMode(const HWND hWnd, const int dir)
 	{
 		VTDWORD viewmode;
 		VTDWORD bitmaprotation;
+		VTDWORD arcsortorder;
 	};
 
 	SCCVWOPTIONSPEC40 locOptionSpec;
@@ -80,6 +81,20 @@ void ChangeViewMode(const HWND hWnd, const int dir)
 		else { viewmode--; if (viewmode < SCCVW_WPMODE_DRAFT) viewmode = SCCVW_WPMODE_DRAFT; }
 
 		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+	}
+	else if (DispEng == SCCVWTYPE_ARCHIVE)
+	{
+		// NONE->NAME->SIZE->DATE
+
+		//locOptionSpec.pData = &arcsortorder;
+		locOptionSpec.dwId = SCCID_ARCSORTORDER;
+		SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+
+		if (dir == UlisterNextMode::MNEXT) { arcsortorder++; if (arcsortorder > SCCVW_SORT_DATE) arcsortorder = SCCVW_SORT_DATE; }
+		else { arcsortorder--; if (arcsortorder < SCCVW_SORT_NONE) arcsortorder = SCCVW_SORT_NONE; }
+
+		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+		// This option is saved in the .oit directory and does need to be reset to SCCVW_SORT_NAME when loading an archive file (see SendVTOptions function).
 	}
 	else if (DispEng == SCCVWTYPE_IMAGE)
 	{
@@ -115,10 +130,6 @@ void ChangeViewMode(const HWND hWnd, const int dir)
 	else if (DispEng == SCCVWTYPE_HEX)
 	{
 		// ??? nothing
-	}
-	else if (DispEng == SCCVWTYPE_ARCHIVE)
-	{
-		// SCCID_ARCSORTORDER ??? SCCVW_SORT_NONE | SCCVW_SORT_NAME | SCCVW_SORT_SIZE | SCCVW_SORT_DATE
 	}
 	*/
 }

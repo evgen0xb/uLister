@@ -197,7 +197,8 @@ The keyboard shortcut Ctrl+Shift+R reload the configuration parameters from the 
 
 Ctrl+M/Ctrl+Shift+M and Ctrl+Shift + Mouse Wheel:
     for Word Processor / HTML / EMAIL switching between view modes (draft->normal->preview->weblayout);
-    90 degree rotation for bitmaps (gif, jpeg, png, ...).
+    90 degree rotation for bitmaps (gif, jpeg, png, ...);
+    change sort order for archives (none->name->size->date).
 
 8. Compilation.
 Use the vs2015.sln file to edit the project's source code in modern versions of Visual Studio.
@@ -453,3 +454,4 @@ Finally, the search procedure has been rewritten:
 2026-06-07
     - added: Ctrl+M/Ctrl+Shift+M and Ctrl+Shift + Mouse Wheel - switching between Word Processor / HTML / EMAIL viewing modes (draft->normal->preview->weblayout)
     - added: Ctrl+M/Ctrl+Shift+M and Ctrl+Shift + Mouse Wheel - 90 degree rotation for bitmaps (gif, jpeg, png, ...)
+    - added: Ctrl+M/Ctrl+Shift+M and Ctrl+Shift + Mouse Wheel - change sort order for archives (none->name->size->date)
