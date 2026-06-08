@@ -515,7 +515,7 @@ https://github.com/avogelba/uLister
 2026-06-01
     - код для тестирования опции keepinmemory (OK)
 
-2026-06-07
+2026-06-07 4.1.0.0
     - добавлено: Ctrl+M/Ctrl+Shift+M и Ctrl+Shift + Mouse Wheel - переключение между режимами просмотра Word Processor / HTML / EMAIL (draft->normal->preview->weblayout)
     - добавлено: Ctrl+M/Ctrl+Shift+M и Ctrl+Shift + Mouse Wheel - поворот на 90 градусов для растровых картинок (gif, jpeg, png, ...)
     - добавлено: Ctrl+M/Ctrl+Shift+M и Ctrl+Shift + Mouse Wheel - изменение порядка сортировки для архивов (none->name->size->date)

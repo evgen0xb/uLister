@@ -459,7 +459,7 @@ Finally, the search procedure has been rewritten:
 2026-06-01
     - code for testing the keepinmemory option (OK)
 
-2026-06-07
+2026-06-07 4.1.0.0
     - added: Ctrl+M/Ctrl+Shift+M and Ctrl+Shift + Mouse Wheel - switching between Word Processor / HTML / EMAIL viewing modes (draft->normal->preview->weblayout)
     - added: Ctrl+M/Ctrl+Shift+M and Ctrl+Shift + Mouse Wheel - 90 degree rotation for bitmaps (gif, jpeg, png, ...)
     - added: Ctrl+M/Ctrl+Shift+M and Ctrl+Shift + Mouse Wheel - change sort order for archives (none->name->size->date)
