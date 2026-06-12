@@ -109,7 +109,7 @@ void ChangeViewMode(const HWND hWnd, const int dir)
 		else VIEWMODENAME = AUNK;
 
 		mydata->BalloonTip.InitPosition(mydata->TListerWindow, BALLOONTIP_XOFFS, BALLOONTIP_YOFFS, BALLOONTIP_WIDTH, BALLOONTIP_HEIGHT);
-		mydata->BalloonTip.ShowTemporaryMessage(VIEWMODENAME, UlisterInstance.BalloonTipTimer);
+		mydata->BalloonTip.ShowTemporaryMessage(VIEWMODENAME, UlisterInstance.BalloonTransparency, UlisterInstance.BalloonTipTimer);
 	}
 	else if (DispEng == SCCVWTYPE_SS)
 	{
@@ -151,7 +151,7 @@ void ChangeViewMode(const HWND hWnd, const int dir)
 		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
 
 		mydata->BalloonTip.InitPosition(mydata->TListerWindow, BALLOONTIP_XOFFS, BALLOONTIP_YOFFS, BALLOONTIP_WIDTH, BALLOONTIP_HEIGHT);
-		mydata->BalloonTip.ShowTemporaryMessage(VIEWMODENAME, UlisterInstance.BalloonTipTimer);
+		mydata->BalloonTip.ShowTemporaryMessage(VIEWMODENAME, UlisterInstance.BalloonTransparency, UlisterInstance.BalloonTipTimer);
 	}
 	else if (DispEng == SCCVWTYPE_ARCHIVE)
 	{
@@ -174,7 +174,7 @@ void ChangeViewMode(const HWND hWnd, const int dir)
 		else VIEWMODENAME = AUNK;
 
 		mydata->BalloonTip.InitPosition(mydata->TListerWindow, BALLOONTIP_XOFFS, BALLOONTIP_YOFFS, BALLOONTIP_WIDTH, BALLOONTIP_HEIGHT);
-		mydata->BalloonTip.ShowTemporaryMessage(VIEWMODENAME, UlisterInstance.BalloonTipTimer);
+		mydata->BalloonTip.ShowTemporaryMessage(VIEWMODENAME, UlisterInstance.BalloonTransparency, UlisterInstance.BalloonTipTimer);
 	}
 	else if (DispEng == SCCVWTYPE_IMAGE)
 	{
@@ -199,7 +199,7 @@ void ChangeViewMode(const HWND hWnd, const int dir)
 		else VIEWMODENAME = AUNK;
 
 		mydata->BalloonTip.InitPosition(mydata->TListerWindow, BALLOONTIP_XOFFS, BALLOONTIP_YOFFS, BALLOONTIP_WIDTH, BALLOONTIP_HEIGHT);
-		mydata->BalloonTip.ShowTemporaryMessage(VIEWMODENAME, UlisterInstance.BalloonTipTimer);
+		mydata->BalloonTip.ShowTemporaryMessage(VIEWMODENAME, UlisterInstance.BalloonTransparency, UlisterInstance.BalloonTipTimer);
 	}
 	/*
 	else if (DispEng == SCCVWTYPE_VECTOR)

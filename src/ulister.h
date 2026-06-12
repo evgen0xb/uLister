@@ -64,6 +64,7 @@ template< typename T > std::wstring ToStrW(T i)
 #define BALLOONTIP_YOFFS 10
 #define BALLOONTIP_WIDTH 200
 #define BALLOONTIP_HEIGHT 30
+#define BALLOONTIP_TRANSPARENCY 244
 
 // VS2005 fix:
 #define member_size(type, member) sizeof(((type *)0)->member)
@@ -73,7 +74,7 @@ class clsBalloonTip
 public:
 
 	void InitPosition(HWND hWnd, int _X, int _Y, int _Width, int _Height);
-	bool ShowTemporaryMessage(LPCWSTR text, const UINT Timer_ms);
+	bool ShowTemporaryMessage(LPCWSTR InfoText, const BYTE Transparency, const UINT Timer_ms);
 	void DestroyTemporaryMessage();
 	void Move();
 
@@ -145,6 +146,7 @@ public:
 	void FileIdentInstanceDec(bool _keepinmemory);
 
 	UINT BalloonTipTimer;
+	BYTE BalloonTransparency;
 
 private:
 	

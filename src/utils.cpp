@@ -562,6 +562,7 @@ void clsUlisterInstance::Init(const HINSTANCE _hInst)
 		NTLevel = WindowsNTLevel::WinNT6;
 
 	BalloonTipTimer = BALLOONTIPTIMER;
+	BalloonTransparency = BALLOONTIP_TRANSPARENCY;
 }
 
 clsUlisterInstance::~clsUlisterInstance()
@@ -746,7 +747,7 @@ void clsBalloonTip::InitPosition(HWND hWnd, int _X, int _Y, int _Width, int _Hei
 	TargetHeight = _Height;
 };
 
-bool clsBalloonTip::ShowTemporaryMessage(LPCWSTR InfoText, const UINT Timer_ms)
+bool clsBalloonTip::ShowTemporaryMessage(LPCWSTR InfoText, const BYTE Transparency, const UINT Timer_ms)
 // BE CAREFUL! InfoText IS ONLY PTR, NOT A BUFFER! You can add malloc() with memcpy() in ShowTemporaryMessage and free() in ~destructor.
 // return true - OK
 {
@@ -755,7 +756,7 @@ bool clsBalloonTip::ShowTemporaryMessage(LPCWSTR InfoText, const UINT Timer_ms)
 
 	// SS_LEFTNOWORDWRAP
 	hMsgWnd = CreateWindowExW (
-		WS_EX_NOACTIVATE | WS_EX_TRANSPARENT,
+		WS_EX_NOACTIVATE | WS_EX_TRANSPARENT | WS_EX_LAYERED,
 		L"STATIC", InfoText,
 		WS_POPUP | SS_CENTER | WS_BORDER,
 		Offset_X, Offset_Y,
@@ -768,6 +769,7 @@ bool clsBalloonTip::ShowTemporaryMessage(LPCWSTR InfoText, const UINT Timer_ms)
 	if (hMsgWnd)
 	{
 		Move(); // apply position limits
+		SetLayeredWindowAttributes(hMsgWnd, 0, Transparency, LWA_ALPHA);
 		Show();
 		SetTimer(hParentWnd, nIDEvent, Timer_ms, NULL);
 		return true;
