@@ -4,6 +4,8 @@ The plugin is provided as-is and without any warranty under the GPLv3 license.
 
 //#define __ULISTDEBUGMSG
 //#define __ULISTDEBUGKEEPINMEMORY
+//#define __ULISTDEBUGBALLOON
+
 #if defined (__ULISTDEBUGMSG)
 // for using with Sysinternals Debug Output Viewer
 
@@ -56,12 +58,50 @@ template< typename T > std::wstring ToStrW(T i)
 #define VTMAXSEARCHBUF 80
 #define INT64STRMAXBUF 24
 
+#define BALLOONTIPTIMER 3000
+#define BALLOONTIP_TIMER_MSG 42 // and ID_TIMER_MSG=1 is used in the SCCVIEWER class window btw
+#define BALLOONTIP_XOFFS 10
+#define BALLOONTIP_YOFFS 10
+#define BALLOONTIP_WIDTH 200
+#define BALLOONTIP_HEIGHT 30
+
 // VS2005 fix:
 #define member_size(type, member) sizeof(((type *)0)->member)
 
+class clsBalloonTip
+{
+public:
+
+	void InitPosition(HWND hWnd, int _X, int _Y, int _Width, int _Height);
+	bool ShowTemporaryMessage(LPCWSTR text, const UINT Timer_ms);
+	void DestroyTemporaryMessage();
+	void Move();
+
+	void Show();
+	void Hide();
+
+	UINT_PTR nIDEvent;
+	clsBalloonTip(UINT_PTR _IDEvent);
+	//~clsBalloonTip();
+
+private:
+
+	HWND	hParentWnd;
+	HWND	hMsgWnd;
+	int		Offset_X;
+	int		Offset_Y;
+	int		TargetWidth;
+	int		TargetHeight;
+
+	void PositionLimits(int *_X, int *_Y, int *_Width, int *_Height);
+
+};
+
 struct ALLMYDATA
 {
-	HWND ListerWindow;
+	HWND TListerWindow;
+	WNDPROC OriginalTListerWindowProc;
+
 	HWND waWindow; // WTF-naming
 	
 	WNDPROC OriginalSccviewerWindowProc;
@@ -69,6 +109,8 @@ struct ALLMYDATA
 
 	WNDPROC OriginalSccdisplayWindowProc;
 	HWND SccdisplayWindow;
+
+	clsBalloonTip BalloonTip;
 
 	ALLMYDATA();
 };
@@ -101,6 +143,8 @@ public:
 
 	HINSTANCE FileIdentInstanceInc();
 	void FileIdentInstanceDec(bool _keepinmemory);
+
+	UINT BalloonTipTimer;
 
 private:
 	
@@ -242,8 +286,10 @@ void IniParse();
 HINSTANCE LoadLibVT(const wchar_t *libname);
 void ZoomBitmapVecFont(const HWND hWnd, const int dir);
 DWORD ViewThisFileHandler(const LPARAM lParam);
-LRESULT CALLBACK ParentWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+LRESULT CALLBACK TListerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+LRESULT CALLBACK WAwcWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK SccviewerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+LRESULT CALLBACK SccdisplayWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 HWND CreateListerWindow(HWND ParentWin);
 VTWORD GetVTFileType(const wchar_t* FileToLoad);
 bool IsVTFileTypeAllowed(const wchar_t* FileToLoad, const wchar_t* onlyload, const wchar_t* noload);
@@ -253,5 +299,4 @@ void ErrMsgIssue(const int issuetype, const wchar_t *path, const DWORD dwError);
 unsigned long long REGCurrentBuildNumber();
 void SendVTOptions(const ALLMYDATA *mydata, const clsVTOptions *_VTOptions);
 //void SetSccdisplayChildWndProc(HWND waWnd);
-LRESULT CALLBACK SccdisplayWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 extern "C" __declspec(dllexport)void __stdcall ListCloseWindow(HWND ListWin);

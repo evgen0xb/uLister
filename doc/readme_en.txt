@@ -465,3 +465,6 @@ Finally, the search procedure has been rewritten:
     - added: Ctrl+M/Ctrl+Shift+M and Ctrl+Shift + Mouse Wheel - change sort order for archives (none->name->size->date)
     - added: Ctrl+M/Ctrl+Shift+M and Ctrl+Shift + Mouse Wheel - switching between spreadsheet viewing modes (draft->normal->normal with hidden rows and columns displayed)
     - added spreadsheetdisplaymode option
+
+2026-06-12
+    - added display of viewing mode when changing

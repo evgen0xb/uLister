@@ -53,6 +53,23 @@ void ChangeViewMode(const HWND hWnd, const int dir)
 	// dir =  1		- next view mode
 	// dir = -1		- prev view mode
 
+	LPCWSTR AUNK		= L"Unknown";
+	LPCWSTR ADRAFT		= L"Draft";
+	LPCWSTR ANORMAL		= L"Normal";
+	LPCWSTR APREVIEW	= L"Preview";
+	LPCWSTR AWEBLAY		= L"Weblayout";
+	LPCWSTR AHIDDEN		= L"Hidden";
+	LPCWSTR ANONE		= L"None";
+	LPCWSTR ANAME		= L"Name";
+	LPCWSTR ASIZE		= L"Size";
+	LPCWSTR ADATE		= L"Date";
+	LPCWSTR A0			= L"0\u00B0";
+	LPCWSTR A90			= L"90\u00B0";
+	LPCWSTR A180		= L"180\u00B0";
+	LPCWSTR A270		= L"270\u00B0";
+
+	LPCWSTR VIEWMODENAME = AUNK;
+
 	ALLMYDATA *mydata;
 	VTDWORD DispEng;
 	mydata = (ALLMYDATA *)GetWindowLongPtr(hWnd, GWLP_USERDATA);
@@ -73,6 +90,8 @@ void ChangeViewMode(const HWND hWnd, const int dir)
 	DispEng = GetDisplayEngineVT(mydata->SccviewerWindow); // call only from user-level defined messages!!!
 	if (DispEng == SCCVWTYPE_WP || DispEng == SCCVWTYPE_HTML || DispEng == SCCVWTYPE_EMAIL)
 	{
+		// word processor: draft->normal->preview->weblayout
+
 		if (DispEng == SCCVWTYPE_WP) locOptionSpec.dwId = SCCID_WPDISPLAYMODE;
 		else locOptionSpec.dwId = (DispEng == SCCVWTYPE_HTML) ? SCCID_HTMLDISPLAYMODE : SCCID_EMAILDISPLAYMODE;
 
@@ -82,6 +101,15 @@ void ChangeViewMode(const HWND hWnd, const int dir)
 		else { viewmode--; if (viewmode < SCCVW_WPMODE_DRAFT) viewmode = SCCVW_WPMODE_DRAFT; }
 
 		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+		if (viewmode == SCCVW_WPMODE_DRAFT) VIEWMODENAME = ADRAFT;
+		else if (viewmode == SCCVW_WPMODE_NORMAL) VIEWMODENAME = ANORMAL;
+		else if (viewmode == SCCVW_WPMODE_PREVIEW) VIEWMODENAME = APREVIEW;
+		else if (viewmode == SCCVW_WPMODE_WEBLAYOUT) VIEWMODENAME = AWEBLAY;
+		else VIEWMODENAME = AUNK;
+
+		mydata->BalloonTip.InitPosition(mydata->TListerWindow, BALLOONTIP_XOFFS, BALLOONTIP_YOFFS, BALLOONTIP_WIDTH, BALLOONTIP_HEIGHT);
+		mydata->BalloonTip.ShowTemporaryMessage(VIEWMODENAME, UlisterInstance.BalloonTipTimer);
 	}
 	else if (DispEng == SCCVWTYPE_SS)
 	{
@@ -101,17 +129,17 @@ void ChangeViewMode(const HWND hWnd, const int dir)
 
 		if (dir == UlisterNextMode::MNEXT)
 		{
-			if (spreadsheethiddencells == FALSE && spreadsheetdraft == TRUE) spreadsheetdraft = FALSE; // draft->normal
-			else if (spreadsheethiddencells == FALSE && spreadsheetdraft == FALSE) spreadsheethiddencells = TRUE; // normal->normal with hidden rows and columns displayed
-			else if (spreadsheethiddencells == TRUE && spreadsheetdraft == FALSE) { ; } // normal with hidden rows and columns displayed->nothing
-			else { spreadsheethiddencells = FALSE; spreadsheetdraft = TRUE; } // reset to draft
+			if (spreadsheethiddencells == FALSE && spreadsheetdraft == TRUE) { spreadsheetdraft = FALSE; VIEWMODENAME = ANORMAL; } // draft->normal
+			else if (spreadsheethiddencells == FALSE && spreadsheetdraft == FALSE) { spreadsheethiddencells = TRUE; VIEWMODENAME = AHIDDEN; } // normal->normal with hidden rows and columns displayed
+			else if (spreadsheethiddencells == TRUE && spreadsheetdraft == FALSE) { VIEWMODENAME = AHIDDEN; } // normal with hidden rows and columns displayed->nothing
+			else { spreadsheethiddencells = FALSE; spreadsheetdraft = TRUE; VIEWMODENAME = ADRAFT; } // reset to draft
 		}
 		else
 		{
-			if (spreadsheethiddencells == TRUE && spreadsheetdraft == FALSE) spreadsheethiddencells = FALSE; // normal with hidden rows and columns displayed->normal
-			else if (spreadsheethiddencells == FALSE && spreadsheetdraft == FALSE) spreadsheetdraft = TRUE; // normal->draft
-			else if (spreadsheethiddencells == FALSE && spreadsheetdraft == TRUE) { ; } // draft->nothing
-			else { spreadsheethiddencells = TRUE; spreadsheetdraft = FALSE; } // reset to normal with hidden rows and columns displayed
+			if (spreadsheethiddencells == TRUE && spreadsheetdraft == FALSE) { spreadsheethiddencells = FALSE; VIEWMODENAME = ANORMAL; } // normal with hidden rows and columns displayed->normal
+			else if (spreadsheethiddencells == FALSE && spreadsheetdraft == FALSE) { spreadsheetdraft = TRUE; VIEWMODENAME = ADRAFT; } // normal->draft
+			else if (spreadsheethiddencells == FALSE && spreadsheetdraft == TRUE) { VIEWMODENAME = ADRAFT; } // draft->nothing
+			else { spreadsheethiddencells = TRUE; spreadsheetdraft = FALSE; VIEWMODENAME = AHIDDEN; } // reset to normal with hidden rows and columns displayed
 		}
 
 		//locOptionSpec.pData = &spreadsheethiddencells;
@@ -122,6 +150,8 @@ void ChangeViewMode(const HWND hWnd, const int dir)
 		locOptionSpec.dwId = SCCID_SSDRAFTMODE;
 		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
 
+		mydata->BalloonTip.InitPosition(mydata->TListerWindow, BALLOONTIP_XOFFS, BALLOONTIP_YOFFS, BALLOONTIP_WIDTH, BALLOONTIP_HEIGHT);
+		mydata->BalloonTip.ShowTemporaryMessage(VIEWMODENAME, UlisterInstance.BalloonTipTimer);
 	}
 	else if (DispEng == SCCVWTYPE_ARCHIVE)
 	{
@@ -136,10 +166,21 @@ void ChangeViewMode(const HWND hWnd, const int dir)
 
 		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 		// This option is saved in the .oit directory and does need to be reset to SCCVW_SORT_NAME when loading an archive file (see SendVTOptions function).
+
+		if (arcsortorder == SCCVW_SORT_NONE) VIEWMODENAME = ANONE;
+		else if (arcsortorder == SCCVW_SORT_NAME) VIEWMODENAME = ANAME;
+		else if (arcsortorder == SCCVW_SORT_SIZE) VIEWMODENAME = ASIZE;
+		else if (arcsortorder == SCCVW_SORT_DATE) VIEWMODENAME = ADATE;
+		else VIEWMODENAME = AUNK;
+
+		mydata->BalloonTip.InitPosition(mydata->TListerWindow, BALLOONTIP_XOFFS, BALLOONTIP_YOFFS, BALLOONTIP_WIDTH, BALLOONTIP_HEIGHT);
+		mydata->BalloonTip.ShowTemporaryMessage(VIEWMODENAME, UlisterInstance.BalloonTipTimer);
 	}
 	else if (DispEng == SCCVWTYPE_IMAGE)
 	{
 		// SCCID_ANTIALIAS ??? SCCVW_ANTIALIAS_OFF | SCCVW_ANTIALIAS_ALL ???
+
+		// rotate 0->90->180->270->0->...
 		
 		//locOptionSpec.pData = &bitmaprotation;
 		locOptionSpec.dwId = SCCID_BMPROTATION;
@@ -150,6 +191,15 @@ void ChangeViewMode(const HWND hWnd, const int dir)
 
 		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 		// It seems that this option is not saved in the .oit directory and does not need to be reset to SCCVW_ROTATION_NONE when loading an image file.
+
+		if (bitmaprotation == SCCVW_ROTATION_NONE) VIEWMODENAME = A0;
+		else if (bitmaprotation == SCCVW_ROTATION_90) VIEWMODENAME = A90;
+		else if (bitmaprotation == SCCVW_ROTATION_180) VIEWMODENAME = A180;
+		else if (bitmaprotation == SCCVW_ROTATION_270) VIEWMODENAME = A270;
+		else VIEWMODENAME = AUNK;
+
+		mydata->BalloonTip.InitPosition(mydata->TListerWindow, BALLOONTIP_XOFFS, BALLOONTIP_YOFFS, BALLOONTIP_WIDTH, BALLOONTIP_HEIGHT);
+		mydata->BalloonTip.ShowTemporaryMessage(VIEWMODENAME, UlisterInstance.BalloonTipTimer);
 	}
 	/*
 	else if (DispEng == SCCVWTYPE_VECTOR)
@@ -281,13 +331,46 @@ void ZoomBitmapVecFont(const HWND hWnd, const int dir)
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-LRESULT CALLBACK ParentWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK TListerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
 	_control87(MCW_EM, MCW_EM);
 	ALLMYDATA *mydata;
 	mydata = (ALLMYDATA *)GetWindowLongPtr(hWnd, GWLP_USERDATA);
 
 	if (mydata)
-		switch (message) {
+	{
+		switch (message)
+		{
+		case WM_SIZE:
+			//OutputDebugStringA("WM_SIZE");
+			mydata->BalloonTip.Move();
+			break;
+		case WM_MOVE:
+			//OutputDebugStringA("WM_MOVE");
+			mydata->BalloonTip.Move();
+			break;
+		case WM_TIMER:
+			//OutputDebugStringA("WM_TIMER");
+			if (wParam == mydata->BalloonTip.nIDEvent) mydata->BalloonTip.DestroyTemporaryMessage();
+			break;
+		}
+		return CallWindowProc(mydata->OriginalTListerWindowProc, hWnd, message, wParam, lParam); // Ghisler Handler
+	}
+	return DefWindowProc(hWnd, message, wParam, lParam);
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+LRESULT CALLBACK WAwcWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	_control87(MCW_EM, MCW_EM);
+	ALLMYDATA *mydata;
+	mydata = (ALLMYDATA *)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+
+	if (mydata)
+		switch (message)
+		{
 		case WM_SETFOCUS:
 			SetFocus(mydata->SccviewerWindow);
 			break;
@@ -348,7 +431,7 @@ LRESULT CALLBACK SccviewerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 				return 0;
 			}
 
-			PostMessage(mydata->ListerWindow, WM_KEYDOWN, lParam, 0); // TC Lister Handler: (Ctrl+F/F7, F3/Shift+F3, ESC)
+			PostMessage(mydata->TListerWindow, WM_KEYDOWN, lParam, 0); // TC Lister Handler: (Ctrl+F/F7, F3/Shift+F3, ESC)
 			break;
 		
 		// WM_MOUSEHWHEEL/WM_MOUSEWHEEL mesages are available ONLY in SCCDISPLAY child window!
@@ -358,7 +441,7 @@ LRESULT CALLBACK SccviewerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 
 			// to hook MOUSEHWHEEL:
 
-			//	TLister Window
+			//	TLister Window (WM_MOVE MESSAGES IS HERE!)
 			//	|
 			//	+-WAwc
 			//		|
@@ -482,14 +565,14 @@ LRESULT CALLBACK SccdisplayWindowProc(HWND hWnd, UINT message, WPARAM wParam, LP
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 HWND CreateListerWindow(HWND ParentWin)
 {
-	HWND        hViewWnd, waWnd;
+	HWND        SccviewerWnd, waWnd;
 	RECT		r;
 	WNDCLASS	wc;
 
 	bool quickview = WS_CHILD & GetWindowLongPtr(ParentWin, GWL_STYLE);
 
 	wc.style = CS_HREDRAW | CS_VREDRAW;
-	wc.lpfnWndProc = (WNDPROC)ParentWindowProc;
+	wc.lpfnWndProc = (WNDPROC)WAwcWindowProc;
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hInstance = UlisterInstance.hInstWLX;
@@ -504,23 +587,29 @@ HWND CreateListerWindow(HWND ParentWin)
 	waWnd = CreateWindow	(WNDCLASSNAME_WAWC,		NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN, r.left, r.top, r.right - r.left, r.bottom - r.top, ParentWin,	0, UlisterInstance.hInstWLX, NULL);
 
 	GetClientRect(waWnd, &r);
-	hViewWnd = CreateWindow(WNDCLASSNAME_SCCVIEWER,	NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN, r.left, r.top, r.right - r.left, r.bottom - r.top, waWnd,		0, UlisterInstance.hInstWLX, NULL);
+	SccviewerWnd = CreateWindow(WNDCLASSNAME_SCCVIEWER,	NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN, r.left, r.top, r.right - r.left, r.bottom - r.top, waWnd,		0, UlisterInstance.hInstWLX, NULL);
 
-	if (!IsWindow(hViewWnd)) return NULL;
+	if (!IsWindow(SccviewerWnd)) return NULL;
 
-	// allocate ALLMYDATA and return NULL cause memery leak
-	ALLMYDATA *mydata = new ALLMYDATA();
-	mydata->ListerWindow = ParentWin;
+	ALLMYDATA *mydata = new ALLMYDATA(); // if NULL ... TODO: *mydata = new (std::nothrow) MyClass(); if (mydata == NULL) ...
+
+	mydata->TListerWindow = ParentWin;
 	mydata->waWindow = waWnd;
-	mydata->SccviewerWindow = hViewWnd;
-	mydata->OriginalSccviewerWindowProc = (WNDPROC)SetWindowLongPtr(hViewWnd, GWLP_WNDPROC, (LONG_PTR)SccviewerWindowProc);
+	mydata->SccviewerWindow = SccviewerWnd;
+
+	mydata->OriginalSccviewerWindowProc = (WNDPROC)SetWindowLongPtr(SccviewerWnd, GWLP_WNDPROC, (LONG_PTR)SccviewerWindowProc);
+	mydata->OriginalTListerWindowProc = (WNDPROC)SetWindowLongPtr(ParentWin, GWLP_WNDPROC, (LONG_PTR)TListerWindowProc);
+
+	//std::wstring msgW = L"CreateListerWindow: OriginalTListerWindowProc=" + ToHexW(mydata->OriginalTListerWindowProc);
+	//OutputDebugStringW(msgW.c_str());
 
 	// exception with Delphi 12 SetWindowLongPtr(hViewWnd, GWLP_USERDATA,(long) mydata);
 	// exception with Delphi 12 SetWindowLongPtr(waWnd, GWLP_USERDATA,(long) mydata);
-	SetWindowLongPtr(hViewWnd, GWLP_USERDATA, (LONG_PTR)mydata);
+	SetWindowLongPtr(SccviewerWnd, GWLP_USERDATA, (LONG_PTR)mydata);
 	SetWindowLongPtr(waWnd, GWLP_USERDATA, (LONG_PTR)mydata);
-	
-	if (!quickview) SetFocus(hViewWnd);
+	SetWindowLongPtr(ParentWin, GWLP_USERDATA, (LONG_PTR)mydata);
+
+	if (!quickview) SetFocus(SccviewerWnd);
 	return waWnd;
 }
 

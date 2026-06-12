@@ -521,3 +521,6 @@ https://github.com/avogelba/uLister
     - добавлено: Ctrl+M/Ctrl+Shift+M и Ctrl+Shift + Mouse Wheel - изменение порядка сортировки для архивов (none->name->size->date)
     - добавлено: Ctrl+M/Ctrl+Shift+M и Ctrl+Shift + Mouse Wheel - переключение между режимами просмотра электронных таблиц (draft->normal->normal и отображение скрытых строк и столбцов)
     - добавлена опция spreadsheetdisplaymode
+
+2026-06-12
+    - добавлено отображение режим просмотра при изменении

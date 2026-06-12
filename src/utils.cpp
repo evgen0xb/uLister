@@ -530,9 +530,11 @@ void ErrMsgIssue(const int issuetype, const wchar_t *path, const DWORD dwError)
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-ALLMYDATA::ALLMYDATA()
+ALLMYDATA::ALLMYDATA() : BalloonTip(BALLOONTIP_TIMER_MSG)
 {
-	ListerWindow = NULL;
+	TListerWindow = NULL;
+	OriginalTListerWindowProc = NULL;
+
 	waWindow = NULL;
 
 	OriginalSccviewerWindowProc = NULL;
@@ -558,6 +560,8 @@ void clsUlisterInstance::Init(const HINSTANCE _hInst)
 		NTLevel = WindowsNTLevel::WinNT5;
 	else
 		NTLevel = WindowsNTLevel::WinNT6;
+
+	BalloonTipTimer = BALLOONTIPTIMER;
 }
 
 clsUlisterInstance::~clsUlisterInstance()
@@ -683,7 +687,6 @@ VTDWORD clsVTOptionsClipboard::Get_SCCVW_OLE(VTDWORD OLEFlags) const
 
 VTDWORD clsVTOptionsClipboard::Get_SCCVW_CLIPFORMAT(VTDWORD ClipFormat) const
 {
-
 	/*
 	//ClipFormat = 0;
 	wchar_t buf[ULISTMAXBUF];
@@ -701,8 +704,6 @@ VTDWORD clsVTOptionsClipboard::Get_SCCVW_CLIPFORMAT(VTDWORD ClipFormat) const
 	MessageBoxW(NULL, buf, L"Get_SCCVW_CLIPFORMAT", MB_OK);
 	*/
 
-
-
 	// skip/set/reset bits
 	if (FORMAT_TEXT != Opt::SKIP) ClipFormat = FORMAT_TEXT ? (ClipFormat | SCCVW_CLIPFORMAT_TEXT) : (ClipFormat & ~SCCVW_CLIPFORMAT_TEXT);
 	if (FORMAT_RTF != Opt::SKIP) ClipFormat = FORMAT_RTF ? (ClipFormat | SCCVW_CLIPFORMAT_RTF) : (ClipFormat & ~SCCVW_CLIPFORMAT_RTF);
@@ -711,8 +712,6 @@ VTDWORD clsVTOptionsClipboard::Get_SCCVW_CLIPFORMAT(VTDWORD ClipFormat) const
 	if (FORMAT_WINDIB != Opt::SKIP) ClipFormat = FORMAT_WINDIB ? (ClipFormat | SCCVW_CLIPFORMAT_WINDIB) : (ClipFormat & ~SCCVW_CLIPFORMAT_WINDIB);
 	if (FORMAT_WINMETAFILE != Opt::SKIP) ClipFormat = FORMAT_WINMETAFILE ? (ClipFormat | SCCVW_CLIPFORMAT_WINMETAFILE) : (ClipFormat & ~SCCVW_CLIPFORMAT_WINMETAFILE);
 	if (FORMAT_WINPALETTE != Opt::SKIP) ClipFormat = FORMAT_WINPALETTE ? (ClipFormat | SCCVW_CLIPFORMAT_WINPALETTE) : (ClipFormat & ~SCCVW_CLIPFORMAT_WINPALETTE);
-
-
 
 	/*
 	swprintf_s(buf, ULISTMAXBUF,
@@ -723,6 +722,174 @@ VTDWORD clsVTOptionsClipboard::Get_SCCVW_CLIPFORMAT(VTDWORD ClipFormat) const
 
 	return ClipFormat;
 }
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+clsBalloonTip::clsBalloonTip(UINT_PTR _IDTimerEvent)
+{
+	nIDEvent = _IDTimerEvent;
+	hMsgWnd = NULL;
+	hParentWnd = NULL;
+	Offset_X = 0;
+	Offset_Y = 0;
+	TargetWidth = 0;
+	TargetHeight = 0;
+}
+
+void clsBalloonTip::InitPosition(HWND hWnd, int _X, int _Y, int _Width, int _Height)
+{
+	hParentWnd = hWnd;
+	Offset_X = _X;
+	Offset_Y = _Y;
+	TargetWidth = _Width;
+	TargetHeight = _Height;
+};
+
+bool clsBalloonTip::ShowTemporaryMessage(LPCWSTR InfoText, const UINT Timer_ms)
+// BE CAREFUL! InfoText IS ONLY PTR, NOT A BUFFER! You can add malloc() with memcpy() in ShowTemporaryMessage and free() in ~destructor.
+// return true - OK
+{
+	if (!hParentWnd) return false;
+	if (hMsgWnd) DestroyWindow(hMsgWnd); // Remove the old window if it is still hanging
+
+	// SS_LEFTNOWORDWRAP
+	hMsgWnd = CreateWindowExW (
+		WS_EX_NOACTIVATE | WS_EX_TRANSPARENT,
+		L"STATIC", InfoText,
+		WS_POPUP | SS_CENTER | WS_BORDER,
+		Offset_X, Offset_Y,
+		TargetWidth, TargetHeight,
+		hParentWnd, // Parent
+		(HMENU)NULL,
+		GetModuleHandle(NULL), // Instance
+		NULL); // lParam of WM_CREATE
+
+	if (hMsgWnd)
+	{
+		Move(); // apply position limits
+		Show();
+		SetTimer(hParentWnd, nIDEvent, Timer_ms, NULL);
+		return true;
+	}
+	else
+	{
+		DestroyTemporaryMessage();
+		return false;
+	}
+}
+
+void clsBalloonTip::DestroyTemporaryMessage()
+{
+	if ( IsWindow(hParentWnd) ) KillTimer(hParentWnd, nIDEvent);
+	if (hMsgWnd) DestroyWindow(hMsgWnd);
+	hMsgWnd = NULL; // don't touch the hParentWnd!
+}
+
+void clsBalloonTip::Move()
+// move and resize with parent window client
+{
+	if (hMsgWnd && hParentWnd)
+	{
+		int toX, toY, limitedWidth, limitedHeight;
+		PositionLimits(&toX, &toY, &limitedWidth, &limitedHeight);
+
+		SetWindowPos(hMsgWnd, NULL,
+			toX + Offset_X,
+			toY + Offset_Y,
+			limitedWidth, limitedHeight,
+			SWP_NOACTIVATE | SWP_NOZORDER);
+	}
+}
+
+void clsBalloonTip::PositionLimits(int *_X, int *_Y, int *_Width, int *_Height)
+// to get absolute window coordinate without "Windows 10 Invisible Resizing Borders" and "Drop Shadows" you must call DwmGetWindowAttribute with DWMWA_EXTENDED_FRAME_BOUNDS instead GetWindowRect.
+// however this function may not be implemented in older Windows versions.
+// we will use old school GetClientRect and ClientToScreen instead
+{
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGBALLOON)
+	OutputDebugStringW(L"*** PositionLimits ***");
+#endif
+
+	RECT rectParentClient; GetClientRect(hParentWnd, &rectParentClient);
+	POINT pointParentClientTopLeft = { 0, 0 }; ClientToScreen(hParentWnd, &pointParentClientTopLeft);
+
+	// absolute coordinate:
+	// rectParentClient.top = pointParentClientTopLeft.y; <-never used
+	// rectParentClient.left = pointParentClientTopLeft.x; <-never used
+	// *_X = rectParentClient.left;
+	// *_Y = rectParentClient.top;
+
+	*_X = pointParentClientTopLeft.x;
+	*_Y = pointParentClientTopLeft.y;
+	rectParentClient.right = rectParentClient.right + pointParentClientTopLeft.x;
+	rectParentClient.bottom = rectParentClient.bottom + pointParentClientTopLeft.y;
+
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGBALLOON)
+	std::wstring msgW = L"parent client absolute (" + ToStrW(pointParentClientTopLeft.x) + L", " + ToStrW(pointParentClientTopLeft.y) + L", " + ToStrW(rectParentClient.right) + L", " + ToStrW(rectParentClient.bottom) + L")";
+	OutputDebugStringW(msgW.c_str());
+#endif
+
+	RECT rectMsgWindow; GetWindowRect(hMsgWnd, &rectMsgWindow);
+	if (rectMsgWindow.left == Offset_X && rectMsgWindow.top == Offset_Y && !IsWindowVisible(hMsgWnd))
+	{
+		// it's impossible!
+		// GetWindowRect fails due just created window is HIDDEN.
+
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGBALLOON)
+		OutputDebugStringW(L"GetWindowRect fails. Correcting coordinates.");
+#endif
+
+		rectMsgWindow.left += pointParentClientTopLeft.x;
+		rectMsgWindow.top += pointParentClientTopLeft.y;
+		rectMsgWindow.right += pointParentClientTopLeft.x;
+		rectMsgWindow.bottom += pointParentClientTopLeft.y;
+	}
+
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGBALLOON)
+	msgW = L"msg absolute (" + ToStrW(rectMsgWindow.left) + L", " + ToStrW(rectMsgWindow.top) + L", " + ToStrW(rectMsgWindow.right) + L", " + ToStrW(rectMsgWindow.bottom) + L")";
+	OutputDebugStringW(msgW.c_str());
+#endif
+
+	union { int scrollbarHeight; int scrollbarWidth; };
+
+	scrollbarHeight = GetSystemMetrics(SM_CYHSCROLL);
+	*_Height = rectParentClient.bottom - rectMsgWindow.top - scrollbarHeight; // max available
+	scrollbarWidth = GetSystemMetrics(SM_CXVSCROLL);
+	*_Width = rectParentClient.right - rectMsgWindow.left - scrollbarWidth;
+
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGBALLOON)
+	msgW = L"max: newwidth=" + ToStrW(*_Width);
+	OutputDebugStringW(msgW.c_str());
+	msgW = L"max: newheight=" + ToStrW(*_Height);
+	OutputDebugStringW(msgW.c_str());
+#endif
+
+	*_Height = (*_Height < 0) ? 0 : *_Height; // 0 if negative
+	*_Width = (*_Width < 0) ? 0 : *_Width;
+
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGBALLOON)
+	msgW = L"positive: newwidth=" + ToStrW(*_Width);
+	OutputDebugStringW(msgW.c_str());
+	msgW = L"positive: newheight=" + ToStrW(*_Height);
+	OutputDebugStringW(msgW.c_str());
+#endif
+
+	*_Height = (*_Height < TargetHeight) ? *_Height : TargetHeight; // min
+	*_Width = (*_Width < TargetWidth) ? *_Width : TargetWidth;
+
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGBALLOON)
+	msgW = L"min: newwidth=" + ToStrW(*_Width);
+	OutputDebugStringW(msgW.c_str());
+	msgW = L"min: newheight=" + ToStrW(*_Height);
+	OutputDebugStringW(msgW.c_str());
+#endif
+}
+
+void clsBalloonTip::Show() { if (hMsgWnd) { ShowWindow(hMsgWnd, SW_SHOWNOACTIVATE); UpdateWindow(hMsgWnd); } }
+void clsBalloonTip::Hide() { if (hMsgWnd) ShowWindow(hMsgWnd, SW_HIDE); }
+
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void SendVTOptions(const ALLMYDATA *mydata, const clsVTOptions *_VTOptions)
