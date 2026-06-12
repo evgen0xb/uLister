@@ -20,6 +20,7 @@ wchar_t *REDIST_NT6 = L"\\redist32\\";
 wchar_t *REDIST_NT5 = L"\\XPdist32\\";
 #endif
 
+const wchar_t ULISTERINI[] = L"\\ulister.ini"; // ! MUST BE ARRAY !
 const wchar_t *CLIPBOARDSECTION = L"clipboard";
 const wchar_t *VIEWERSECTION = L"viewer";
 const wchar_t *ASKIP = L"SKIP";
@@ -232,36 +233,153 @@ HBITMAP GetVTFilePreview(const wchar_t* FileToLoad, const int width, const int h
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-void GetIniPath(wchar_t *_inipath)
+#ifdef SMARTINIPATH
+void CreateDefaultUlisterIni(wchar_t *_inipath)
 {
-	const wchar_t *ULISTERINI = L"\\ulister.ini";
-	wchar_t *pathposition;
-	int retlength;
+	DWORD bytesWritten;
+	const char defaultconfig[] = // ! MUST BE ARRAY !
+"[ulister]\n"
+"noloadtypes=1999\n"
+"nopreviewtypes=1999\n"
+"keepinmemory=1\n"
+"\n"
+"; optionsdir=%COMMANDER_PATH%\\Plugins\\wlx\\ulister\n"
+"\n"
+"; Ctrl-Shift-F1 - Thumbnails view\n"
+"; Qtrl-Q - Quick View\n"
+"; F3 - View\n"
+"; Shift-F3 - multiple selected files viewing session\n"
+"\n"
+"; invert mouse wheel horizontal scroll\n"
+"mwhscrollinvert=on\n"
+"\n"
+"; tooltip display time in milliseconds\n"
+"tooltipsdelayms=3000\n"
+"; tooltip transparency (0...255)\n"
+"tooltipstransparency=244\n"
+"\n"
+"[clipboard]\n"
+"; This options controls the clipboard formats that the viewer attempts to place on the clipboard\n"
+"; skip|on|off\n"
+"\n"
+"ascii=on\n"
+"rtf=on\n"
+"\n"
+"; turn it on!\n"
+"unicode=on\n"
+"\n"
+"bitmap=on\n"
+"windib=on\n"
+"metafile=on\n"
+"palette=on\n"
+"\n"
+"dragdrop=on\n"
+"\n"
+"; controls the format the spreadsheet or the database data takes when copied to the clipboard\n"
+"; skip|rtf|tabs|optimizedtabs\n"
+"spreadsheet=rtf\n"
+"database=rtf\n"
+"\n"
+"[viewer]\n"
+"; Display engine\n"
+"; skip|draft|normal|preview|weblayout\n"
+"wpdisplaymode=normal\n"
+"htmldisplaymode=weblayout\n"
+"emaildisplaymode=normal\n"
+"\n"
+"; skip|draft|normal|normalhidden\n"
+"spreadsheetdisplaymode=normal\n"
+"\n"
+"; Extended for preview or weblayout mode of previous options.\n"
+"; These settings are applied correctly only from the second launch of ulister after\n"
+"; changes in the .ini file due to an bug in the Outside In Viewer library (workaround):\n"
+"; skip|original|width|window\n"
+"webprevwpfitmode=width\n"
+"webprevhtmlfitmode=width\n"
+"webprevemailfitmode=width\n"
+"\n"
+"; For bitmap and vector graphics\n"
+"; skip|best|original|window|height|width|stretch|imagesize\n"
+"vectorfitmode=window\n"
+"bitmapfitmode=window\n"
+;
+	const DWORD cfglength = STRLEN(defaultconfig)-1;
 
-	GetModuleFileNameW(UlisterInstance.hInstWLX, _inipath, MAX_PATH); // highest priority is to place ulister.ini in the plugin directory
+	HANDLE hFile = CreateFileW(_inipath, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (hFile == INVALID_HANDLE_VALUE) return;
+	WriteFile(hFile, defaultconfig, cfglength, &bytesWritten, NULL);
+	CloseHandle(hFile);
+}
+#endif
+
+void GetIniPathWLX(wchar_t *_inipath)
+{
+	wchar_t *pathposition;
+	GetModuleFileNameW(UlisterInstance.hInstWLX, _inipath, MAX_PATH);
 	_inipath[MAX_PATH - 1] = L'\0'; // Windows XP fix: The string is truncated to nSize characters and is not null-terminated
-	if (pathposition = wcsrchr(_inipath, L'\\'))
-		*pathposition = L'\0';
+	if (pathposition = wcsrchr(_inipath, L'\\')) *pathposition = L'\0';
 	wcscat_s(_inipath, MAX_PATH, ULISTERINI);
+}
+
+void GetIniPathCOMMANDER(wchar_t *_inipath)
+{
+	wchar_t *pathposition;
+	DWORD retlength = GetEnvironmentVariableW(L"COMMANDER_INI", _inipath, MAX_PATH);
+	if ((retlength < MAX_PATH) && retlength)
+	{
+		if (pathposition = wcsrchr(_inipath, L'\\')) *pathposition = L'\0';
+		wcscat_s(_inipath, MAX_PATH, ULISTERINI);
+	}
+	else _inipath[0] = L'\0';
+}
+
+void GetIniPathAPPDATA(wchar_t *_inipath)
+{
+	DWORD retlength = GetEnvironmentVariableW(L"APPDATA", _inipath, MAX_PATH);
+	if ((retlength + STRLEN(ULISTERINI)-1 < MAX_PATH) && retlength) wcscat_s(_inipath, MAX_PATH, ULISTERINI);
+	else _inipath[0] = L'\0';
+}
+
+bool GetIniPath(wchar_t *_inipath)
+// true  - ulister.ini was found
+// false - ulister.ini does not exist
+{
+	bool isexist = false;
+
+	// highest priority is to place ulister.ini in the plugin directory
+	GetIniPathWLX(_inipath);
 
 	if (GetFileAttributesW(_inipath) == INVALID_FILE_ATTRIBUTES)
 	{
-		retlength = GetEnvironmentVariableW(L"COMMANDER_INI", _inipath, MAX_PATH); // otherwise, look for ulister.ini in the same place as wincmd.ini
-		if ((retlength < MAX_PATH) && retlength)
-		{
-			if (pathposition = wcsrchr(_inipath, L'\\'))
-				*pathposition = L'\0';
-			wcscat_s(_inipath, MAX_PATH, ULISTERINI);
-		}
+		// otherwise, look for ulister.ini in the same place as wincmd.ini
+		GetIniPathCOMMANDER(_inipath);
 
 		if (GetFileAttributesW(_inipath) == INVALID_FILE_ATTRIBUTES)
 		{
-			GetEnvironmentVariableW(L"APPDATA", _inipath, MAX_PATH); // lowest priority ulister.ini placed in %APPDATA%
-			wcscat_s(_inipath, MAX_PATH, ULISTERINI);
+			// lowest priority ulister.ini placed in %APPDATA%
+			GetIniPathAPPDATA(_inipath);
+			if (GetFileAttributesW(_inipath) != INVALID_FILE_ATTRIBUTES) isexist = true;
 		}
+		else isexist = true;
 	}
+	else isexist = true;
 
+#ifdef SMARTINIPATH
+	// last chance:
+	// try to create default ulister.ini in the plugin directory
+	if (!isexist)
+	{
+		GetIniPathWLX(_inipath);
+		CreateDefaultUlisterIni(_inipath);
+		if (GetFileAttributesW(_inipath) != INVALID_FILE_ATTRIBUTES) isexist = true;
+	}
+#endif
+
+	return isexist;
 }
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void InitUlister()
 {

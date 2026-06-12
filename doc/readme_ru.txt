@@ -530,3 +530,4 @@ https://github.com/avogelba/uLister
 2026-06-12
     - добавлено отображение режим просмотра при изменении
     - добавлены опции tooltipsdelayms и tooltipstransparency
+    - если файл ulister.ini не нашелся, попробуем создать дефолтный в каталоге с плагином

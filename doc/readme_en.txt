@@ -474,3 +474,4 @@ Finally, the search procedure has been rewritten:
 2026-06-12
     - added display of viewing mode when changing
     - added options tooltipsdelayms and tooltipstransparency
+    - if the ulister.ini file is not found, try creating a default one in the plugin directory

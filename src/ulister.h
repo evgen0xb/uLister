@@ -66,8 +66,12 @@ template< typename T > std::wstring ToStrW(T i)
 #define BALLOONTIP_HEIGHT 30
 #define BALLOONTIP_TRANSPARENCY 244
 
+#define SMARTINIPATH
+
 // VS2005 fix:
 #define member_size(type, member) sizeof(((type *)0)->member)
+
+#define STRLEN(s) (sizeof(s)/sizeof(s[0])) // ! MUST BE ARRAY !
 
 class clsBalloonTip
 {
