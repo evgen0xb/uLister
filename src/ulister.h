@@ -127,6 +127,9 @@ struct clsUlisterOptions
 	wchar_t	inionlypreviewtypes[ULISTMAXBUF];
 	bool	keepinmemory;
 	bool	mwhscrollinvert;
+
+	UINT BalloonTipTimer;
+	BYTE BalloonTransparency;
 };
 
 class clsUlisterInstance
@@ -144,9 +147,6 @@ public:
 
 	HINSTANCE FileIdentInstanceInc();
 	void FileIdentInstanceDec(bool _keepinmemory);
-
-	UINT BalloonTipTimer;
-	BYTE BalloonTransparency;
 
 private:
 	

@@ -109,7 +109,7 @@ void ChangeViewMode(const HWND hWnd, const int dir)
 		else VIEWMODENAME = AUNK;
 
 		mydata->BalloonTip.InitPosition(mydata->TListerWindow, BALLOONTIP_XOFFS, BALLOONTIP_YOFFS, BALLOONTIP_WIDTH, BALLOONTIP_HEIGHT);
-		mydata->BalloonTip.ShowTemporaryMessage(VIEWMODENAME, UlisterInstance.BalloonTransparency, UlisterInstance.BalloonTipTimer);
+		mydata->BalloonTip.ShowTemporaryMessage(VIEWMODENAME, UlisterOptions.BalloonTransparency, UlisterOptions.BalloonTipTimer);
 	}
 	else if (DispEng == SCCVWTYPE_SS)
 	{
@@ -151,7 +151,7 @@ void ChangeViewMode(const HWND hWnd, const int dir)
 		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
 
 		mydata->BalloonTip.InitPosition(mydata->TListerWindow, BALLOONTIP_XOFFS, BALLOONTIP_YOFFS, BALLOONTIP_WIDTH, BALLOONTIP_HEIGHT);
-		mydata->BalloonTip.ShowTemporaryMessage(VIEWMODENAME, UlisterInstance.BalloonTransparency, UlisterInstance.BalloonTipTimer);
+		mydata->BalloonTip.ShowTemporaryMessage(VIEWMODENAME, UlisterOptions.BalloonTransparency, UlisterOptions.BalloonTipTimer);
 	}
 	else if (DispEng == SCCVWTYPE_ARCHIVE)
 	{
@@ -174,7 +174,7 @@ void ChangeViewMode(const HWND hWnd, const int dir)
 		else VIEWMODENAME = AUNK;
 
 		mydata->BalloonTip.InitPosition(mydata->TListerWindow, BALLOONTIP_XOFFS, BALLOONTIP_YOFFS, BALLOONTIP_WIDTH, BALLOONTIP_HEIGHT);
-		mydata->BalloonTip.ShowTemporaryMessage(VIEWMODENAME, UlisterInstance.BalloonTransparency, UlisterInstance.BalloonTipTimer);
+		mydata->BalloonTip.ShowTemporaryMessage(VIEWMODENAME, UlisterOptions.BalloonTransparency, UlisterOptions.BalloonTipTimer);
 	}
 	else if (DispEng == SCCVWTYPE_IMAGE)
 	{
@@ -199,7 +199,7 @@ void ChangeViewMode(const HWND hWnd, const int dir)
 		else VIEWMODENAME = AUNK;
 
 		mydata->BalloonTip.InitPosition(mydata->TListerWindow, BALLOONTIP_XOFFS, BALLOONTIP_YOFFS, BALLOONTIP_WIDTH, BALLOONTIP_HEIGHT);
-		mydata->BalloonTip.ShowTemporaryMessage(VIEWMODENAME, UlisterInstance.BalloonTransparency, UlisterInstance.BalloonTipTimer);
+		mydata->BalloonTip.ShowTemporaryMessage(VIEWMODENAME, UlisterOptions.BalloonTransparency, UlisterOptions.BalloonTipTimer);
 	}
 	/*
 	else if (DispEng == SCCVWTYPE_VECTOR)
@@ -420,6 +420,10 @@ LRESULT CALLBACK SccviewerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 				// OutputDebugStringA("Reload ini-file");
 				bool _keepinmemory = UlisterOptions.keepinmemory; IniParse(); UlisterOptions.keepinmemory = _keepinmemory;
 				SendVTOptions(mydata, &VTOptions);
+
+				mydata->BalloonTip.InitPosition(mydata->TListerWindow, BALLOONTIP_XOFFS, BALLOONTIP_YOFFS, BALLOONTIP_WIDTH, BALLOONTIP_HEIGHT);
+				mydata->BalloonTip.ShowTemporaryMessage(L"Reload", UlisterOptions.BalloonTransparency, UlisterOptions.BalloonTipTimer);
+
 				return 0;
 			}
 

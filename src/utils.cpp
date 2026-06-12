@@ -291,6 +291,10 @@ void InitUlister()
 		SetEnvironmentVariableW(OIT_DATA_PATH, oitdatapath);
 	}
 
+	GetPrivateProfileStringW(ULISTERSECTION, L"tooltipsdelayms", L"3000", buf, INT64STRMAXBUF, UlisterOptions.inipath);
+	UlisterOptions.BalloonTipTimer = (UINT)wcstol(buf, NULL, 10);
+	GetPrivateProfileStringW(ULISTERSECTION, L"tooltipstransparency", L"244", buf, INT64STRMAXBUF, UlisterOptions.inipath);
+	UlisterOptions.BalloonTransparency = (UINT)wcstol(buf, NULL, 10);
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 __int8 ReadIniClipbOpt(const wchar_t *optionname)
@@ -560,9 +564,6 @@ void clsUlisterInstance::Init(const HINSTANCE _hInst)
 		NTLevel = WindowsNTLevel::WinNT5;
 	else
 		NTLevel = WindowsNTLevel::WinNT6;
-
-	BalloonTipTimer = BALLOONTIPTIMER;
-	BalloonTransparency = BALLOONTIP_TRANSPARENCY;
 }
 
 clsUlisterInstance::~clsUlisterInstance()

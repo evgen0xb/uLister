@@ -65,6 +65,11 @@ if this value is also undefined, it creates it in the library directory.
 mwhscrollinvert     (default on) - invert mouse wheel horizontal scroll,
                     off - do not invert; this option is available starting with version 4.0.3.0.
 
+Version 4.1.1.0 now displays tooltips when switching modes:
+
+tooltipsdelayms     (default 3000) - tooltip display time in milliseconds
+tooltipstransparency (default 244, from 0 to 255 inclusive) - tooltip transparency
+
 Since version 4.0.0.7 of the plugin, ulister.ini can be used to write some useful internal settings of the Outside In Technology
 library, stored in a proprietary binary representation in the ".oit" directory.
 
@@ -468,3 +473,4 @@ Finally, the search procedure has been rewritten:
 
 2026-06-12
     - added display of viewing mode when changing
+    - added options tooltipsdelayms and tooltipstransparency
