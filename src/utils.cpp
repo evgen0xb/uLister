@@ -20,12 +20,24 @@ wchar_t *REDIST_NT6 = L"\\redist32\\";
 wchar_t *REDIST_NT5 = L"\\XPdist32\\";
 #endif
 
-const wchar_t ULISTERINI[] = L"\\ulister.ini"; // ! MUST BE ARRAY !
+#ifdef ULISTER64
+const wchar_t *formatsfilename = L"\\formats64.txt";
+#else
+const wchar_t *formatsfilename = L"\\formats32.txt";
+#endif
+
+const wchar_t ULISTERINI[]		= L"\\ulister.ini"; // ! MUST BE ARRAY !
 const wchar_t *CLIPBOARDSECTION = L"clipboard";
-const wchar_t *VIEWERSECTION = L"viewer";
-const wchar_t *ASKIP = L"SKIP";
-const wchar_t *AON	 = L"ON";
-const wchar_t *AOFF  = L"OFF";
+const wchar_t *VIEWERSECTION	= L"viewer";
+const wchar_t *ASKIP			= L"SKIP";
+const wchar_t *AON				= L"ON";
+const wchar_t *AOFF				= L"OFF";
+
+const char *AFIINIT				= "FIInit";
+const char *AFIDEINIT			= "FIDeInit";
+const char *AFIGETFIRSTID		= "FIGetFirstId";
+const char *AFIGETNEXTID		= "FIGetNextId";
+const char *AFIIDFILEEX			= "FIIdFileEx";
 
 extern const char *WNDCLASSNAME_SCCVIEWER;
 
@@ -49,17 +61,16 @@ VTWORD GetVTFileType(const wchar_t* FileToLoad)
 
 	if (hInstFileIdentDLL)
 	{
-		FIInit = (FIInitFUNC)GetProcAddress(hInstFileIdentDLL, "FIInit");
-		FIIdFileEx = (FIIdFileExFUNC)GetProcAddress(hInstFileIdentDLL, "FIIdFileEx");
-		FIDeInit = (FIDeInitFUNC)GetProcAddress(hInstFileIdentDLL, "FIDeInit");
+		FIInit = (FIInitFUNC)GetProcAddress(hInstFileIdentDLL, AFIINIT);
+		FIIdFileEx = (FIIdFileExFUNC)GetProcAddress(hInstFileIdentDLL, AFIIDFILEEX);
+		FIDeInit = (FIDeInitFUNC)GetProcAddress(hInstFileIdentDLL, AFIDEINIT);
 
 		if (FIInit && FIIdFileEx && FIDeInit)
 		{
 			FIInit();
 			VTDWORD dwFlags = FIFLAG_NORMAL;
-			const VTWORD wNameCount = 256;
-			VTBYTE  pTypeName[wNameCount];
-			FIErrorCode = FIIdFileEx(IOTYPE_UNICODEPATH, FileToLoad, dwFlags, &wVTFileType, (VTLPTSTR)pTypeName, wNameCount);
+			char pTypeName[VTMAXTYPENAMEBUF];
+			FIErrorCode = FIIdFileEx(IOTYPE_UNICODEPATH, FileToLoad, dwFlags, &wVTFileType, (VTLPTSTR)pTypeName, VTMAXTYPENAMEBUF);
 			FIDeInit();
 		}
 	}
@@ -68,6 +79,82 @@ VTWORD GetVTFileType(const wchar_t* FileToLoad)
 
 	return 	(FIErrorCode == SCCERR_OK) ? wVTFileType : FI_UNKNOWN;
 }
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void CreatFormatsTxt(const wchar_t* path)
+{
+	typedef VTDWORD(*FIInitFUNC)(VTVOID);
+	typedef VTDWORD(*FIDeInitFUNC)(VTVOID);
+	typedef VTWORD(*FIGetFirstIdFUNC)(PFIGET pFiGet, VTWORD * pType, VTLPTSTR pTypeName, VTWORD wNameCount);
+	typedef VTWORD(*FIGetNextIdFUNC)(PFIGET pFiGet, VTWORD * pType, VTLPTSTR pTypeName, VTWORD wNameCount);
+
+	FIInitFUNC FIInit;
+	FIDeInitFUNC FIDeInit;
+	FIGetFirstIdFUNC FIGetFirstId;
+	FIGetNextIdFUNC FIGetNextId;
+
+	HINSTANCE hInstFileIdentDLL = UlisterInstance.FileIdentInstanceInc();
+
+	if (hInstFileIdentDLL)
+	{
+		FIInit = (FIInitFUNC)GetProcAddress(hInstFileIdentDLL, AFIINIT);
+		FIDeInit = (FIDeInitFUNC)GetProcAddress(hInstFileIdentDLL, AFIDEINIT);
+		FIGetFirstId = (FIGetFirstIdFUNC)GetProcAddress(hInstFileIdentDLL, AFIGETFIRSTID);
+		FIGetNextId = (FIGetFirstIdFUNC)GetProcAddress(hInstFileIdentDLL, AFIGETNEXTID);
+
+		if (FIInit && FIDeInit && FIGetFirstId && FIGetNextId)
+		{
+			HANDLE hFile = CreateFileW(path, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+			if (hFile != INVALID_HANDLE_VALUE)
+			{
+				FIGET figetTag;
+				VTBOOL MoreIDs;
+				char buf[ULISTMAXBUF];
+				DWORD bytesWritten;
+
+				VTWORD TotalIDs = 0;
+				VTWORD TypeNumber;
+				char TypeName[VTMAXTYPENAMEBUF];
+
+				FIInit();
+				MoreIDs = FIGetFirstId(&figetTag, &TypeNumber, TypeName, VTMAXTYPENAMEBUF);
+				while (MoreIDs)
+				{
+					TotalIDs++;
+					_snprintf_s(buf, ULISTMAXBUF, _TRUNCATE, "%u  -  %s\n", TypeNumber, TypeName);
+					//OutputDebugStringA(buf);
+					WriteFile(hFile, buf, (DWORD)strlen(buf), &bytesWritten, NULL);
+					MoreIDs = FIGetNextId(&figetTag, &TypeNumber, TypeName, VTMAXTYPENAMEBUF);
+				}
+				FIDeInit();
+				_snprintf_s(buf, ULISTMAXBUF, _TRUNCATE, "\nTotal format types: %u\n", TotalIDs);
+				//OutputDebugStringA(buf);
+				WriteFile(hFile, buf, (DWORD)strlen(buf), &bytesWritten, NULL);
+
+				CloseHandle(hFile);
+			}
+		}
+	}
+
+	UlisterInstance.FileIdentInstanceDec(UlisterOptions.keepinmemory);
+}
+
+void RequestFormatsTxt()
+{
+	wchar_t formatspath[MAX_PATH];
+	wchar_t *pathposition;
+	GetModuleFileNameW(UlisterInstance.hInstWLX, formatspath, MAX_PATH);
+	formatspath[MAX_PATH - 1] = L'\0'; // Windows XP fix: The string is truncated to nSize characters and is not null-terminated
+	if (pathposition = wcsrchr(formatspath, L'\\')) *pathposition = L'\0';
+	wcscat_s(formatspath, MAX_PATH, formatsfilename);
+
+	if (GetFileAttributesW(formatspath) == INVALID_FILE_ATTRIBUTES) CreatFormatsTxt(formatspath);
+}
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 bool IsVTFileTypeAllowed(const wchar_t* FileToLoad, const wchar_t* onlyload, const wchar_t* noload)
 {
@@ -82,6 +169,9 @@ bool IsVTFileTypeAllowed(const wchar_t* FileToLoad, const wchar_t* onlyload, con
 
 	if (wcslen(noload) > 0 && wcsstr(noload, FTypeStr)) return false; else return true;
 }
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 bool LoadVTFile(const HWND hViewWnd, const wchar_t* FileToLoad)
 {
@@ -99,6 +189,9 @@ bool LoadVTFile(const HWND hViewWnd, const wchar_t* FileToLoad)
 	locViewFile.dwReserved2 = 0;
 	return (SendMessage(hViewWnd, SCCVW_VIEWFILE, 0, (LPARAM)&locViewFile) == SCCVWERR_OK);
 }
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 // This message is sent from the view window to the developer when another file should be viewed.
@@ -155,6 +248,8 @@ DWORD ViewThisFileHandler(const LPARAM lParam) // 4.74 SCCVW_VIEWTHISFILE
 
 	return GetLastError();
 }
+
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 HBITMAP GetVTFilePreview(const wchar_t* FileToLoad, const int width, const int height)
@@ -231,8 +326,10 @@ HBITMAP GetVTFilePreview(const wchar_t* FileToLoad, const int width, const int h
 
 	return bitmap;
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 #ifdef SMARTINIPATH
 void CreateDefaultUlisterIni(wchar_t *_inipath)
 {
@@ -380,6 +477,7 @@ bool GetIniPath(wchar_t *_inipath)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void InitUlister()
 {
@@ -414,6 +512,9 @@ void InitUlister()
 	GetPrivateProfileStringW(ULISTERSECTION, L"tooltipstransparency", L"244", buf, INT64STRMAXBUF, UlisterOptions.inipath);
 	UlisterOptions.BalloonTransparency = (UINT)wcstol(buf, NULL, 10);
 }
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 __int8 ReadIniClipbOpt(const wchar_t *optionname)
 {
@@ -427,6 +528,9 @@ __int8 ReadIniClipbOpt(const wchar_t *optionname)
 
 	return result;
 }
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 VTDWORD ReadIniClipbSubFormat(const wchar_t *optionname)
 {
@@ -442,6 +546,9 @@ VTDWORD ReadIniClipbSubFormat(const wchar_t *optionname)
 
 	return result;
 }
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 VTDWORD ReadIniViewOptDisplay(const wchar_t *optionname)
 {
@@ -458,6 +565,9 @@ VTDWORD ReadIniViewOptDisplay(const wchar_t *optionname)
 
 	return result;
 }
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 VTDWORD ReadIniViewOptWebPrevFitMode(const wchar_t *optionname)
 {
@@ -473,6 +583,9 @@ VTDWORD ReadIniViewOptWebPrevFitMode(const wchar_t *optionname)
 
 	return result;
 }
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 VTDWORD ReadIniViewOptGraphicFitMode(const wchar_t *optionname)
 {
@@ -492,6 +605,9 @@ VTDWORD ReadIniViewOptGraphicFitMode(const wchar_t *optionname)
 
 	return result;
 }
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 __int8 ReadIniViewOptSpreadsheetDisplayMode(const wchar_t *optionname)
 {
@@ -506,6 +622,9 @@ __int8 ReadIniViewOptSpreadsheetDisplayMode(const wchar_t *optionname)
 
 	return result;
 }
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void InitClipboardOpts()
 {
@@ -522,6 +641,9 @@ void InitClipboardOpts()
 	VTOptions.VTClipboard.SSCLIPBOARDSUBFORMAT.Option = ReadIniClipbSubFormat(L"spreadsheet");
 	VTOptions.VTClipboard.DBCLIPBOARDSUBFORMAT.Option = ReadIniClipbSubFormat(L"database");
 }
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void InitViewerOpts()
 {
@@ -538,6 +660,9 @@ void InitViewerOpts()
 
 	VTOptions.VTViewer.SPREADSHEETDISPLAYMODE.Option = ReadIniViewOptSpreadsheetDisplayMode(L"spreadsheetdisplaymode");
 }
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void IniParse()
 {
@@ -545,7 +670,12 @@ void IniParse()
 	InitUlister();
 	InitClipboardOpts();
 	InitViewerOpts();
+
+	RequestFormatsTxt();
 }
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 bool GetLibPathVT(wchar_t *libpath, const wchar_t *libname, const int ntlev)
 {
@@ -566,6 +696,9 @@ bool GetLibPathVT(wchar_t *libpath, const wchar_t *libname, const int ntlev)
 
 	return (GetFileAttributesW(libpath) != INVALID_FILE_ATTRIBUTES);
 }
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 HINSTANCE LoadLibVT(const wchar_t *libname)
 {
@@ -598,6 +731,8 @@ HINSTANCE LoadLibVT(const wchar_t *libname)
 	return lib;
 }
 
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 unsigned long long REGCurrentBuildNumber()
 {
@@ -622,6 +757,8 @@ unsigned long long REGCurrentBuildNumber()
 	RegCloseKey(hKey);
 	return CurrentBuildNumber;
 }
+
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void ErrMsgIssue(const int issuetype, const wchar_t *path, const DWORD dwError)
@@ -650,6 +787,9 @@ void ErrMsgIssue(const int issuetype, const wchar_t *path, const DWORD dwError)
 
 	MessageBoxW(NULL, buf, title, MB_OK);
 }
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 ALLMYDATA::ALLMYDATA() : BalloonTip(BALLOONTIP_TIMER_MSG)
@@ -665,6 +805,8 @@ ALLMYDATA::ALLMYDATA() : BalloonTip(BALLOONTIP_TIMER_MSG)
 	OriginalSccdisplayWindowProc = NULL;
 	SccdisplayWindow = NULL;
 }
+
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -767,7 +909,9 @@ HINSTANCE clsUlisterInstance::FileIdentInstanceInc()
 }
 
 
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
 clsSSViewModeOption::clsSSViewModeOption() { Option = UlisterSSDisplayMode::SKIP; }
 
 VTBOOL clsSSViewModeOption::FilterSkipHiddenCells(VTBOOL val) const
@@ -782,11 +926,17 @@ VTBOOL clsSSViewModeOption::FilterSkipDraft(VTBOOL val) const
 	return (Option == UlisterSSDisplayMode::DRAFT) ? TRUE : FALSE;
 }
 
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
 clsVTDWORDOption::clsVTDWORDOption() { Option = Opt::SKIP; }
 VTDWORD clsVTDWORDOption::FilterSkip(VTDWORD val) const { if (Option == Opt::SKIP) return val; else return Option; }
 
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
 clsVTOptionsClipboard::clsVTOptionsClipboard()
 {
 	FORMAT_TEXT = Opt::SKIP;
@@ -846,6 +996,7 @@ VTDWORD clsVTOptionsClipboard::Get_SCCVW_CLIPFORMAT(VTDWORD ClipFormat) const
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
 clsBalloonTip::clsBalloonTip(UINT_PTR _IDTimerEvent)
 {
 	nIDEvent = _IDTimerEvent;
@@ -1013,6 +1164,7 @@ void clsBalloonTip::Hide() { if (hMsgWnd) ShowWindow(hMsgWnd, SW_HIDE); }
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
 void SendVTOptions(const ALLMYDATA *mydata, const clsVTOptions *_VTOptions)
 {
 	SCCVWOPTIONSPEC40 locOptionSpec;

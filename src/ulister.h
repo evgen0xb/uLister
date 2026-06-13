@@ -56,6 +56,7 @@ template< typename T > std::wstring ToStrW(T i)
 
 #define ULISTMAXBUF 1024
 #define VTMAXSEARCHBUF 80
+#define VTMAXTYPENAMEBUF 128
 #define INT64STRMAXBUF 24
 
 #define BALLOONTIPTIMER 3000

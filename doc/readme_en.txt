@@ -475,3 +475,6 @@ Finally, the search procedure has been rewritten:
     - added display of viewing mode when changing
     - added options tooltipsdelayms and tooltipstransparency
     - if the ulister.ini file is not found, try creating a default one in the plugin directory
+
+2026-06-13
+    - ulister can now export the actual version of formats.txt
