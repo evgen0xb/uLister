@@ -69,8 +69,23 @@ template< typename T > std::wstring ToStrW(T i)
 
 #define SMARTINIPATH
 
+typedef char __VTTYPENAMEBUF[VTMAXTYPENAMEBUF];
+
 // VS2005 fix:
 #define member_size(type, member) sizeof(((type *)0)->member)
+
+class clsLoadedFileInfo
+{
+public:
+	wchar_t* pPath;
+	VTWORD wType;
+	char* pTypeName;
+
+	clsLoadedFileInfo();
+	~clsLoadedFileInfo();
+
+	void Init(const wchar_t* _pPath, const VTWORD _wType, const char* _pTypeName);
+};
 
 #define STRLEN(s) (sizeof(s)/sizeof(s[0])) // ! MUST BE ARRAY !
 
@@ -117,6 +132,8 @@ struct ALLMYDATA
 	HWND SccdisplayWindow;
 
 	clsBalloonTip BalloonTip;
+
+	clsLoadedFileInfo LoadedFileInfo;
 
 	ALLMYDATA();
 };
@@ -298,12 +315,13 @@ LRESULT CALLBACK WAwcWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
 LRESULT CALLBACK SccviewerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK SccdisplayWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 HWND CreateListerWindow(HWND ParentWin);
-VTWORD GetVTFileType(const wchar_t* FileToLoad);
-bool IsVTFileTypeAllowed(const wchar_t* FileToLoad, const wchar_t* onlyload, const wchar_t* noload);
+VTWORD GetVTFileType(const wchar_t* FileToLoad, __VTTYPENAMEBUF &pOutTypeName);
+bool IsVTFileTypeAllowed(const VTWORD wType, const wchar_t* onlyload, const wchar_t* noload);
 HBITMAP GetVTFilePreview(const wchar_t* FileToLoad, const int width, const int height);
 bool LoadVTFile(HWND hViewWnd, const wchar_t* FileToLoad);
 void ErrMsgIssue(const int issuetype, const wchar_t *path, const DWORD dwError);
 unsigned long long REGCurrentBuildNumber();
 void SendVTOptions(const ALLMYDATA *mydata, const clsVTOptions *_VTOptions);
 //void SetSccdisplayChildWndProc(HWND waWnd);
+VTDWORD GetDisplayEngineVT(const HWND hWnd);
 extern "C" __declspec(dllexport)void __stdcall ListCloseWindow(HWND ListWin);

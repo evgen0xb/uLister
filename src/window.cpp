@@ -48,6 +48,31 @@ VTDWORD GetDisplayEngineVT(const HWND hWnd)
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+wchar_t* DisplayEngineName(const VTDWORD dwType)
+{
+	wchar_t* name[] =
+	{
+		L"COMMON UNKNOWN",
+		L"No file open",
+		L"Unknown type",
+		L"Word Processor",
+		L"Spreadsheet",
+		L"Database",
+		L"Hexadecimal view",
+		L"Bitmap image",
+		L"Archive",
+		L"Vector graphics",
+		L"Sound file",
+		L"HTML document",
+		L"email"
+	};
+	const unsigned int count = sizeof(name) / sizeof(name[0]) - 1;
+	return name[(dwType > count) ? 0 : dwType];
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void ChangeViewMode(const HWND hWnd, const int dir)
 {
 	// dir =  1		- next view mode

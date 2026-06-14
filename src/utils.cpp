@@ -44,7 +44,10 @@ extern const char *WNDCLASSNAME_SCCVIEWER;
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-VTWORD GetVTFileType(const wchar_t* FileToLoad)
+VTWORD GetVTFileType(const wchar_t* FileToLoad, __VTTYPENAMEBUF &pOutTypeName)
+// return:
+// Type Number (VTWORD)
+// pOutTypeName: Type Name
 {
 	typedef VTDWORD(*FIInitFUNC)(VTVOID);
 	typedef VTWORD(*FIIdFileExFUNC)(VTDWORD, const VTVOID *, VTDWORD, VTWORD *, VTLPTSTR, VTWORD);
@@ -69,8 +72,8 @@ VTWORD GetVTFileType(const wchar_t* FileToLoad)
 		{
 			FIInit();
 			VTDWORD dwFlags = FIFLAG_NORMAL;
-			char pTypeName[VTMAXTYPENAMEBUF];
-			FIErrorCode = FIIdFileEx(IOTYPE_UNICODEPATH, FileToLoad, dwFlags, &wVTFileType, (VTLPTSTR)pTypeName, VTMAXTYPENAMEBUF);
+			FIErrorCode = FIIdFileEx(IOTYPE_UNICODEPATH, FileToLoad, dwFlags, &wVTFileType, pOutTypeName, sizeof(pOutTypeName));
+			if (FIErrorCode != SCCERR_OK) pOutTypeName[0] = '\0';
 			FIDeInit();
 		}
 	}
@@ -111,7 +114,7 @@ void CreatFormatsTxt(const wchar_t* path)
 			{
 				FIGET figetTag;
 				VTBOOL MoreIDs;
-				char buf[ULISTMAXBUF];
+				__VTTYPENAMEBUF buf;
 				DWORD bytesWritten;
 
 				VTWORD TotalIDs = 0;
@@ -156,11 +159,10 @@ void RequestFormatsTxt()
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-bool IsVTFileTypeAllowed(const wchar_t* FileToLoad, const wchar_t* onlyload, const wchar_t* noload)
+bool IsVTFileTypeAllowed(const VTWORD wType, const wchar_t* onlyload, const wchar_t* noload)
 {
 	// TRUE = OK
 	// FALSE = refuse
-	VTWORD  wType = GetVTFileType(FileToLoad);
 
 	wchar_t FTypeStr[INT64STRMAXBUF];
 	_itow_s(wType, FTypeStr, INT64STRMAXBUF, 10);
@@ -1160,6 +1162,21 @@ void clsBalloonTip::PositionLimits(int *_X, int *_Y, int *_Width, int *_Height)
 
 void clsBalloonTip::Show() { if (hMsgWnd) { ShowWindow(hMsgWnd, SW_SHOWNOACTIVATE); UpdateWindow(hMsgWnd); } }
 void clsBalloonTip::Hide() { if (hMsgWnd) ShowWindow(hMsgWnd, SW_HIDE); }
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+clsLoadedFileInfo::clsLoadedFileInfo() { pPath = NULL; pTypeName = NULL; }
+
+clsLoadedFileInfo::~clsLoadedFileInfo() { if (pPath) free(pPath); if (pTypeName) free(pTypeName); }
+
+void clsLoadedFileInfo::Init(const wchar_t* _pPath, const VTWORD _wType, const char* _pTypeName)
+{
+	pPath = _wcsdup(_pPath);
+	wType = _wType;
+	pTypeName = _strdup(_pTypeName);
+}
 
 
 

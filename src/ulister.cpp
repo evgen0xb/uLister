@@ -75,7 +75,10 @@ extern "C" __declspec(dllexport) HWND __stdcall ListLoadW(HWND ParentWin, wchar_
 	OutputDebugStringW(msgW.c_str());
 #endif
 
-	if (!IsVTFileTypeAllowed(FileToLoad, UlisterOptions.inionlyloadtypes, UlisterOptions.ininoloadtypes))
+	__VTTYPENAMEBUF pTypeName;
+	VTWORD wType = GetVTFileType(FileToLoad, pTypeName);
+
+	if (!IsVTFileTypeAllowed(wType, UlisterOptions.inionlyloadtypes, UlisterOptions.ininoloadtypes))
 	{
 #if defined (__ULISTDEBUGMSG)
 		OutputDebugStringW(L"ListLoadW := NULL; // IsVTFileTypeAllowed");
@@ -103,6 +106,10 @@ extern "C" __declspec(dllexport) HWND __stdcall ListLoadW(HWND ParentWin, wchar_
 #endif
 			return NULL;
 		}
+
+		mydata->LoadedFileInfo.Init(FileToLoad, wType, pTypeName);
+		//OutputDebugStringW(mydata->LoadedFileInfo.pPath);
+		//OutputDebugStringA(mydata->LoadedFileInfo.pTypeName);
 
 		SendVTOptions(mydata, &VTOptions);
 
@@ -141,7 +148,10 @@ extern "C" __declspec(dllexport) int __stdcall ListLoadNextW(HWND ParentWin, HWN
 	OutputDebugStringW(msgW.c_str());
 #endif
 
-	if (!IsVTFileTypeAllowed(FileToLoad, UlisterOptions.inionlyloadtypes, UlisterOptions.ininoloadtypes))
+	__VTTYPENAMEBUF pTypeName;
+	VTWORD wType = GetVTFileType(FileToLoad, pTypeName);
+
+	if (!IsVTFileTypeAllowed(wType, UlisterOptions.inionlyloadtypes, UlisterOptions.ininoloadtypes))
 	{
 #if defined (__ULISTDEBUGMSG)
 		OutputDebugStringW(L"ListLoadNextW := LISTPLUGIN_ERROR; // IsVTFileTypeAllowed");
@@ -164,6 +174,8 @@ extern "C" __declspec(dllexport) int __stdcall ListLoadNextW(HWND ParentWin, HWN
 #endif
 			return LISTPLUGIN_ERROR; // error return cause auto call ListCloseWindow()
 		}
+
+		mydata->LoadedFileInfo.Init(FileToLoad, wType, pTypeName);
 
 		SendVTOptions(mydata, &VTOptions);
 
@@ -424,7 +436,9 @@ extern "C" __declspec(dllexport)int __stdcall ListSendCommand(HWND ListWin, int 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 extern "C" __declspec(dllexport)HBITMAP __stdcall ListGetPreviewBitmapW(wchar_t* FileToLoad, int width, int height, char* contentbuf, int contentbuflen)
 {
-	if (!IsVTFileTypeAllowed(FileToLoad, UlisterOptions.inionlypreviewtypes, UlisterOptions.ininopreviewtypes)) return NULL;
+	__VTTYPENAMEBUF pTypeName;
+	VTWORD wType = GetVTFileType(FileToLoad, pTypeName);
+	if (!IsVTFileTypeAllowed(wType, UlisterOptions.inionlypreviewtypes, UlisterOptions.ininopreviewtypes)) return NULL;
 	HBITMAP bitmap = GetVTFilePreview(FileToLoad, width, height);
 	return bitmap;
 } // ListGetPreviewBitmapW
