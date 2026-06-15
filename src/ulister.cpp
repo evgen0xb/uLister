@@ -228,7 +228,7 @@ extern "C" __declspec(dllexport)void __stdcall ListCloseWindow(HWND ListWin)
 			// Calling ListCloseWindow doesn't necessarily mean the parent window will be "closed".
 			// It's necessary to return the original address of the window procedure to the parent window, since it may be used later by another plugin.
 			// TODO: ALLMYDATA struct->class with Load/Unload members?
-			// if (mydata->OriginalTListerWindowProc) SetWindowLongPtr(mydata->TListerWindow, GWLP_WNDPROC, (LONG_PTR)mydata->OriginalTListerWindowProc);
+			if (mydata->OriginalTListerWindowProc) SetWindowLongPtr(mydata->TListerWindow, GWLP_WNDPROC, (LONG_PTR)mydata->OriginalTListerWindowProc);
 
 			UlisterInstance.ViewerLibraryInstanceDec(UlisterOptions.keepinmemory);
 
