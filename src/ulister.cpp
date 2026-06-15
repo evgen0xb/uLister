@@ -94,7 +94,6 @@ extern "C" __declspec(dllexport) HWND __stdcall ListLoadW(HWND ParentWin, wchar_
 	ALLMYDATA *mydata = (ALLMYDATA *)GetWindowLongPtr(hViewWnd, GWLP_USERDATA);
 	if (mydata)
 	{
-
 		if (!LoadVTFile(mydata->SccviewerWindow, FileToLoad))
 		{
 			// TC SDK:
@@ -108,10 +107,11 @@ extern "C" __declspec(dllexport) HWND __stdcall ListLoadW(HWND ParentWin, wchar_
 		}
 
 		mydata->LoadedFileInfo.Init(FileToLoad, wType, pTypeName);
+		SendVTOptions(mydata, &VTOptions);
+		AddFileInfo(mydata);
+
 		//OutputDebugStringW(mydata->LoadedFileInfo.pPath);
 		//OutputDebugStringA(mydata->LoadedFileInfo.pTypeName);
-
-		SendVTOptions(mydata, &VTOptions);
 
 		//SetSccdisplayChildWndProc(hViewWnd);
 	}
@@ -176,8 +176,8 @@ extern "C" __declspec(dllexport) int __stdcall ListLoadNextW(HWND ParentWin, HWN
 		}
 
 		mydata->LoadedFileInfo.Init(FileToLoad, wType, pTypeName);
-
 		SendVTOptions(mydata, &VTOptions);
+		AddFileInfo(mydata);
 
 		//SetSccdisplayChildWndProc(mydata->waWindow);
 	}
@@ -213,14 +213,22 @@ extern "C" __declspec(dllexport)void __stdcall ListCloseWindow(HWND ListWin)
 	// FAKE: ListCloseWindow is called when a user closes lister, or loads a different file.
 	// If ListCloseWindow isn't present, DestroyWindow() is called.
 
-	if (IsWindow(ListWin)) {
+	if (IsWindow(ListWin))
+	{
 		ALLMYDATA *mydata;
 		mydata = (ALLMYDATA *)GetWindowLongPtr(ListWin, GWLP_USERDATA);
-		if (mydata) {
+		if (mydata)
+		{
 			SendMessage(mydata->SccviewerWindow, SCCVW_SAVEOPTIONS, 0, 0L);
 			SendMessage(mydata->SccviewerWindow, SCCVW_CLOSEFILE, 0, 0L);
 			DestroyWindow(mydata->SccviewerWindow);
 			DestroyWindow(mydata->waWindow);
+
+			// WARNING!
+			// Calling ListCloseWindow doesn't necessarily mean the parent window will be "closed".
+			// It's necessary to return the original address of the window procedure to the parent window, since it may be used later by another plugin.
+			// TODO: ALLMYDATA struct->class with Load/Unload members?
+			// if (mydata->OriginalTListerWindowProc) SetWindowLongPtr(mydata->TListerWindow, GWLP_WNDPROC, (LONG_PTR)mydata->OriginalTListerWindowProc);
 
 			UlisterInstance.ViewerLibraryInstanceDec(UlisterOptions.keepinmemory);
 

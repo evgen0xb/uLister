@@ -459,6 +459,13 @@ LRESULT CALLBACK SccviewerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 				else ChangeViewMode(mydata->SccviewerWindow, UlisterNextMode::MNEXT);
 				return 0;
 			}
+			if ((GetKeyState(VK_CONTROL) < 0) && (lParam == 'I'))
+			{
+				//OutputDebugStringA("File Info Window");
+				if (mydata->InfoWindow.CreateWnd(UlisterInstance.hInstWLX, mydata->TListerWindow)) SetActiveWindow(mydata->InfoWindow.hwndFileInfo);
+				else mydata->InfoWindow.Show();
+				return 0;
+			}
 
 			PostMessage(mydata->TListerWindow, WM_KEYDOWN, lParam, 0); // TC Lister Handler: (Ctrl+F/F7, F3/Shift+F3, ESC)
 			break;
@@ -592,7 +599,7 @@ LRESULT CALLBACK SccdisplayWindowProc(HWND hWnd, UINT message, WPARAM wParam, LP
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-HWND CreateListerWindow(HWND ParentWin)
+HWND CreateListerWindow(HWND ParentWin) // TODO + UlisterInstance.hInstWLX
 {
 	HWND        SccviewerWnd, waWnd;
 	RECT		r;
@@ -613,7 +620,7 @@ HWND CreateListerWindow(HWND ParentWin)
 	RegisterClass(&wc);
 
 	GetClientRect(ParentWin, &r);
-	waWnd = CreateWindow	(WNDCLASSNAME_WAWC,		NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN, r.left, r.top, r.right - r.left, r.bottom - r.top, ParentWin,	0, UlisterInstance.hInstWLX, NULL);
+	waWnd = CreateWindow		(WNDCLASSNAME_WAWC,		NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN, r.left, r.top, r.right - r.left, r.bottom - r.top, ParentWin,	0, UlisterInstance.hInstWLX, NULL);
 
 	GetClientRect(waWnd, &r);
 	SccviewerWnd = CreateWindow(WNDCLASSNAME_SCCVIEWER,	NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN, r.left, r.top, r.right - r.left, r.bottom - r.top, waWnd,		0, UlisterInstance.hInstWLX, NULL);

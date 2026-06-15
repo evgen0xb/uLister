@@ -20,12 +20,6 @@ wchar_t *REDIST_NT6 = L"\\redist32\\";
 wchar_t *REDIST_NT5 = L"\\XPdist32\\";
 #endif
 
-#ifdef ULISTER64
-const wchar_t *formatsfilename = L"\\formats64.txt";
-#else
-const wchar_t *formatsfilename = L"\\formats32.txt";
-#endif
-
 const wchar_t ULISTERINI[]		= L"\\ulister.ini"; // ! MUST BE ARRAY !
 const wchar_t *CLIPBOARDSECTION = L"clipboard";
 const wchar_t *VIEWERSECTION	= L"viewer";
@@ -142,18 +136,6 @@ void CreatFormatsTxt(const wchar_t* path)
 	}
 
 	UlisterInstance.FileIdentInstanceDec(UlisterOptions.keepinmemory);
-}
-
-void RequestFormatsTxt()
-{
-	wchar_t formatspath[MAX_PATH];
-	wchar_t *pathposition;
-	GetModuleFileNameW(UlisterInstance.hInstWLX, formatspath, MAX_PATH);
-	formatspath[MAX_PATH - 1] = L'\0'; // Windows XP fix: The string is truncated to nSize characters and is not null-terminated
-	if (pathposition = wcsrchr(formatspath, L'\\')) *pathposition = L'\0';
-	wcscat_s(formatspath, MAX_PATH, formatsfilename);
-
-	if (GetFileAttributesW(formatspath) == INVALID_FILE_ATTRIBUTES) CreatFormatsTxt(formatspath);
 }
 
 
@@ -672,8 +654,6 @@ void IniParse()
 	InitUlister();
 	InitClipboardOpts();
 	InitViewerOpts();
-
-	RequestFormatsTxt();
 }
 
 
@@ -788,6 +768,23 @@ void ErrMsgIssue(const int issuetype, const wchar_t *path, const DWORD dwError)
 		L"See readme.txt, install section.", issuename, path, dwError, dwError, UlisterOptions.inipath);
 
 	MessageBoxW(NULL, buf, title, MB_OK);
+}
+
+
+void AddFileInfo(ALLMYDATA *mydata)
+{
+
+	wchar_t buf[ULISTMAXBUF];
+	swprintf_s(buf, ULISTMAXBUF,
+		L"File: %s\r\n\r\n"
+		L"Format type: %u  -  %S\r\n\r\n"
+		L"Display engine: %s\r\n",
+		mydata->LoadedFileInfo.pPath,
+		mydata->LoadedFileInfo.wType, mydata->LoadedFileInfo.pTypeName,
+		DisplayEngineName(GetDisplayEngineVT(mydata->SccviewerWindow)) );
+
+	mydata->InfoWindow.Init(buf, INFOWINDOWWIDTH, INFOWINDOWHEIGHT);
+
 }
 
 
@@ -1010,9 +1007,9 @@ clsBalloonTip::clsBalloonTip(UINT_PTR _IDTimerEvent)
 	TargetHeight = 0;
 }
 
-void clsBalloonTip::InitPosition(HWND hWnd, int _X, int _Y, int _Width, int _Height)
+void clsBalloonTip::InitPosition(HWND hWndParent, int _X, int _Y, int _Width, int _Height)
 {
-	hParentWnd = hWnd;
+	hParentWnd = hWndParent;
 	Offset_X = _X;
 	Offset_Y = _Y;
 	TargetWidth = _Width;
@@ -1035,7 +1032,7 @@ bool clsBalloonTip::ShowTemporaryMessage(LPCWSTR InfoText, const BYTE Transparen
 		TargetWidth, TargetHeight,
 		hParentWnd, // Parent
 		(HMENU)NULL,
-		GetModuleHandle(NULL), // Instance
+		GetModuleHandle(NULL), // Instance for global window class
 		NULL); // lParam of WM_CREATE
 
 	if (hMsgWnd)
@@ -1171,7 +1168,7 @@ clsLoadedFileInfo::clsLoadedFileInfo() { pPath = NULL; pTypeName = NULL; }
 
 clsLoadedFileInfo::~clsLoadedFileInfo() { if (pPath) free(pPath); if (pTypeName) free(pTypeName); }
 
-void clsLoadedFileInfo::Init(const wchar_t* _pPath, const VTWORD _wType, const char* _pTypeName)
+void clsLoadedFileInfo::Init(LPCWSTR _pPath, const VTWORD _wType, LPCSTR _pTypeName)
 {
 	pPath = _wcsdup(_pPath);
 	wType = _wType;

@@ -187,6 +187,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\infowindow.cpp" />
     <ClCompile Include="..\src\ulister.cpp" />
     <ClCompile Include="..\src\utils.cpp" />
     <ClCompile Include="..\src\window.cpp" />
@@ -241,6 +242,7 @@
     <ClInclude Include="..\externals\VW sdk 64x\sdk\common\vtchars.h" />
     <ClInclude Include="..\externals\VW sdk 64x\sdk\common\xsccvw.h" />
     <ClInclude Include="..\externals\VW sdk 64x\sdk\common\xsccvwp.h" />
+    <ClInclude Include="..\src\infowindow.h" />
     <ClInclude Include="..\src\resource.h" />
     <ClInclude Include="..\src\total.h" />
     <ClInclude Include="..\src\ulister.h" />

@@ -53,6 +53,9 @@ template< typename T > std::wstring ToStrW(T i)
 #endif
 
 #include <sccvw.h>
+#include "infowindow.h"
+
+
 
 #define ULISTMAXBUF 1024
 #define VTMAXSEARCHBUF 80
@@ -66,6 +69,9 @@ template< typename T > std::wstring ToStrW(T i)
 #define BALLOONTIP_WIDTH 200
 #define BALLOONTIP_HEIGHT 30
 #define BALLOONTIP_TRANSPARENCY 244
+
+#define INFOWINDOWWIDTH 400
+#define INFOWINDOWHEIGHT 250
 
 #define SMARTINIPATH
 
@@ -84,7 +90,7 @@ public:
 	clsLoadedFileInfo();
 	~clsLoadedFileInfo();
 
-	void Init(const wchar_t* _pPath, const VTWORD _wType, const char* _pTypeName);
+	void Init(LPCWSTR _pPath, const VTWORD _wType, LPCSTR _pTypeName);
 };
 
 #define STRLEN(s) (sizeof(s)/sizeof(s[0])) // ! MUST BE ARRAY !
@@ -134,6 +140,7 @@ struct ALLMYDATA
 	clsBalloonTip BalloonTip;
 
 	clsLoadedFileInfo LoadedFileInfo;
+	clsInfoWindow InfoWindow;
 
 	ALLMYDATA();
 };
@@ -324,4 +331,7 @@ unsigned long long REGCurrentBuildNumber();
 void SendVTOptions(const ALLMYDATA *mydata, const clsVTOptions *_VTOptions);
 //void SetSccdisplayChildWndProc(HWND waWnd);
 VTDWORD GetDisplayEngineVT(const HWND hWnd);
+wchar_t* DisplayEngineName(const VTDWORD dwType);
 extern "C" __declspec(dllexport)void __stdcall ListCloseWindow(HWND ListWin);
+void AddFileInfo(ALLMYDATA *mydata);
+void CreatFormatsTxt(const wchar_t* path);

@@ -47,7 +47,7 @@ onlyloadtypes       list of formats allowed to loading
 nopreviewtypes      list of format thumbnails excluded from displaying
 onlypreviewtypes    list of format thumbnails allowed to displaying
 
-Four-digit format codes with descriptions are located in the formats.txt file.
+Four-digit format codes with descriptions are located in the formats.txt file (see also the keyboard shortcut Ctrl+I).
 Any non-numeric character, such as a comma or space, can be used as a separator.
 If an allow string is specified, the corresponding deny string is ignored.
 
@@ -65,7 +65,7 @@ if this value is also undefined, it creates it in the library directory.
 mwhscrollinvert     (default on) - invert mouse wheel horizontal scroll,
                     off - do not invert; this option is available starting with version 4.0.3.0.
 
-Version 4.1.1.0 now displays tooltips when switching modes:
+Version 4.2.0.0 now displays tooltips when switching modes:
 
 tooltipsdelayms     (default 3000) - tooltip display time in milliseconds
 tooltipstransparency (default 244, from 0 to 255 inclusive) - tooltip transparency
@@ -212,6 +212,10 @@ Ctrl+M/Ctrl+Shift+M and Ctrl+Shift + Mouse Wheel:
     90 degree rotation for bitmaps (gif, jpeg, png, ...);
     change sort order for archives (none->name->size->date);
     switching between spreadsheet viewing modes (draft->normal->normal with hidden rows and columns displayed).
+
+Ctrl+I: 
+    shows a "File Information" window with some technical information about the viewing mode; 
+    in this window it is possible to export the actual version of formats.txt corresponding to the used Viewer Technology library.
 
 8. Compilation.
 Use the vs2015.sln file to edit the project's source code in modern versions of Visual Studio.
@@ -477,4 +481,8 @@ Finally, the search procedure has been rewritten:
     - if the ulister.ini file is not found, try creating a default one in the plugin directory
 
 2026-06-13
-    - ulister can now export the actual version of formats.txt
+    - ulister can now export the actual version of formats.txt corresponding to the used Viewer Technology library
+
+2026-06-15
+    - added a "File Information" window with some technical information about the file viewing mode, accessible by pressing Ctrl+I
+    - added the ability to export a file with format types (formats.txt) from the "File Information" window
