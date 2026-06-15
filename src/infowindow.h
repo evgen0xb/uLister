@@ -28,6 +28,7 @@ public:
 
 	HICON hWindowIcon;
 	HWND hwndFileInfo;
+	HWND hwndParentWindow;
 
 };
 

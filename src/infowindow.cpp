@@ -26,6 +26,7 @@ clsInfoWindow::clsInfoWindow()
 	minWindowHeight = 0;
 
 	hwndFileInfo = NULL;
+	hwndParentWindow = NULL;
 }
 
 
@@ -130,6 +131,10 @@ bool clsInfoWindow::CreateWnd(const HINSTANCE hInstance, const HWND hwndParent)
 	SetWindowSubclass(hButton, ButtonSubclassProc, 0, 0);
 
 	SetFocus(hEdit);
+
+	hwndParentWindow = hwndParent;
+	EnableWindow(hwndParentWindow, FALSE);
+
 	return false;
 }
 
@@ -140,6 +145,10 @@ void clsInfoWindow::WMDestroyHandler()
 {
 	RemoveWindowSubclass(hEdit, EditSubclassProc, 0);
 	RemoveWindowSubclass(hButton, ButtonSubclassProc, 0);
+
+	EnableWindow(hwndParentWindow, TRUE);
+	SetFocus(hwndParentWindow);
+
 	hwndFileInfo = NULL;
 }
 
