@@ -54,7 +54,7 @@ template< typename T > std::wstring ToStrW(T i)
 
 #include <sccvw.h>
 #include "infowindow.h"
-
+#include "tooltip.h"
 
 
 #define ULISTMAXBUF 1024
@@ -62,13 +62,13 @@ template< typename T > std::wstring ToStrW(T i)
 #define VTMAXTYPENAMEBUF 128
 #define INT64STRMAXBUF 24
 
-#define BALLOONTIPTIMER 3000
-#define BALLOONTIP_TIMER_MSG 42 // and ID_TIMER_MSG=1 is used in the SCCVIEWER class window btw
-#define BALLOONTIP_XOFFS 10
-#define BALLOONTIP_YOFFS 10
-#define BALLOONTIP_WIDTH 200
-#define BALLOONTIP_HEIGHT 30
-#define BALLOONTIP_TRANSPARENCY 244
+#define TOOLTIPTIMER 3000
+#define TOOLTIP_TIMER_MSG 42 // and ID_TIMER_MSG=1 is used in the SCCVIEWER class window btw
+#define TOOLTIP_XOFFS 10
+#define TOOLTIP_YOFFS 10
+#define TOOLTIP_WIDTH 200
+#define TOOLTIP_HEIGHT 30
+#define TOOLTIP_TRANSPARENCY 244
 
 #define INFOWINDOWWIDTH 400
 #define INFOWINDOWHEIGHT 250
@@ -79,6 +79,8 @@ typedef char __VTTYPENAMEBUF[VTMAXTYPENAMEBUF];
 
 // VS2005 fix:
 #define member_size(type, member) sizeof(((type *)0)->member)
+
+#define STRLEN(s) (sizeof(s)/sizeof(s[0])) // ! MUST BE ARRAY !
 
 class clsLoadedFileInfo
 {
@@ -93,36 +95,7 @@ public:
 	void Init(LPCWSTR _pPath, const VTWORD _wType, LPCSTR _pTypeName);
 };
 
-#define STRLEN(s) (sizeof(s)/sizeof(s[0])) // ! MUST BE ARRAY !
 
-class clsBalloonTip
-{
-public:
-
-	void InitPosition(HWND hWnd, int _X, int _Y, int _Width, int _Height);
-	bool ShowTemporaryMessage(LPCWSTR InfoText, const BYTE Transparency, const UINT Timer_ms);
-	void DestroyTemporaryMessage();
-	void Move();
-
-	void Show();
-	void Hide();
-
-	UINT_PTR nIDEvent;
-	clsBalloonTip(UINT_PTR _IDEvent);
-	//~clsBalloonTip();
-
-private:
-
-	HWND	hParentWnd;
-	HWND	hMsgWnd;
-	int		Offset_X;
-	int		Offset_Y;
-	int		TargetWidth;
-	int		TargetHeight;
-
-	void PositionLimits(int *_X, int *_Y, int *_Width, int *_Height);
-
-};
 
 struct ALLMYDATA
 {
@@ -137,7 +110,7 @@ struct ALLMYDATA
 	WNDPROC OriginalSccdisplayWindowProc;
 	HWND SccdisplayWindow;
 
-	clsBalloonTip BalloonTip;
+	clsToolTip ToolTip;
 
 	clsLoadedFileInfo LoadedFileInfo;
 	clsInfoWindow InfoWindow;

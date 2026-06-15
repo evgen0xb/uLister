@@ -1,3 +1,7 @@
+/*
+The plugin is provided as-is and without any warranty under the GPLv3 license.
+*/
+
 #ifndef UNICODE
 #define UNICODE
 #endif
@@ -207,13 +211,13 @@ void ShowSaveFileDialog(HWND hwndOwner)
 LRESULT CALLBACK EditSubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
 {
 	HWND hParent = GetParent(hWnd);
-	clsInfoWindow* pApp = (clsInfoWindow*)GetWindowLongPtrW(hParent, GWLP_USERDATA);
+	clsInfoWindow* pInfoWindow = (clsInfoWindow*)GetWindowLongPtrW(hParent, GWLP_USERDATA);
 
 	switch (uMsg)
 	{
 	case WM_KEYDOWN:
 		if (wParam == VK_ESCAPE) { SendMessageW(hParent, WM_CLOSE, 0, 0); return 0; }
-		if (wParam == VK_TAB && pApp) { SetFocus(pApp->hButton); return 0; }
+		if (wParam == VK_TAB && pInfoWindow) { SetFocus(pInfoWindow->hButton); return 0; }
 		break;
 	}
 	return DefSubclassProc(hWnd, uMsg, wParam, lParam);
@@ -224,14 +228,14 @@ LRESULT CALLBACK EditSubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 LRESULT CALLBACK ButtonSubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
 {
 	HWND hParent = GetParent(hWnd);
-	clsInfoWindow* pApp = (clsInfoWindow*)GetWindowLongPtrW(hParent, GWLP_USERDATA);
+	clsInfoWindow* pInfoWindow = (clsInfoWindow*)GetWindowLongPtrW(hParent, GWLP_USERDATA);
 
 	switch (uMsg)
 	{
 	case WM_KEYDOWN:
 		if (wParam == VK_RETURN) { SendMessageW(hParent, WM_COMMAND, MAKEWPARAM(ID_BUTTON_EXPORT, BN_CLICKED), (LPARAM)hWnd); return 0; }
 		if (wParam == VK_ESCAPE) { SendMessageW(hParent, WM_CLOSE, 0, 0); return 0; }
-		if (wParam == VK_TAB && pApp) { SetFocus(pApp->hEdit); return 0; }
+		if (wParam == VK_TAB && pInfoWindow) { SetFocus(pInfoWindow->hEdit); return 0; }
 		break;
 	}
 	return DefSubclassProc(hWnd, uMsg, wParam, lParam);

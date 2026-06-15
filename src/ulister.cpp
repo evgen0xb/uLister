@@ -224,7 +224,7 @@ extern "C" __declspec(dllexport)void __stdcall ListCloseWindow(HWND ListWin)
 			DestroyWindow(mydata->SccviewerWindow);
 			DestroyWindow(mydata->waWindow);
 
-			mydata->BalloonTip.DestroyTemporaryMessage();
+			mydata->ToolTip.DestroyTemporaryMessage();
 
 			// WARNING!
 			// Calling ListCloseWindow doesn't necessarily mean the parent window will be "closed".

@@ -1,7 +1,9 @@
+/*
+The plugin is provided as-is and without any warranty under the GPLv3 license.
+*/
 
-
-#ifndef FILEINFOWNDCLS
-#define FILEINFOWNDCLS
+#ifndef ULISTERFILEINFOWNDCLS
+#define ULISTERFILEINFOWNDCLS
 
 #include <windows.h>
 
@@ -11,8 +13,8 @@ public:
 	HWND hEdit;
 	HWND hButton;
 	wchar_t* pText;
-	int minWindowWidth; // 400
-	int minWindowHeight; // 250
+	int minWindowWidth;
+	int minWindowHeight;
 
 	clsInfoWindow();
 	~clsInfoWindow();
