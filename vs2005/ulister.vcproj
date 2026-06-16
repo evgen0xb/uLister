@@ -354,6 +354,14 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath="..\src\infowindow.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\tooltip.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\src\ulister.cpp"
 				>
 			</File>
@@ -583,7 +591,15 @@
 				Name="ulister"
 				>
 				<File
+					RelativePath="..\src\infowindow.h"
+					>
+				</File>
+				<File
 					RelativePath="..\src\resource.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\tooltip.h"
 					>
 				</File>
 				<File
