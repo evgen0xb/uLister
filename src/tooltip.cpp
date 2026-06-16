@@ -39,17 +39,20 @@ bool clsToolTip::ShowTemporaryMessage(LPCWSTR InfoText, const BYTE Transparency,
 	if (!hParentWnd) return false;
 	if (hMsgWnd) DestroyWindow(hMsgWnd); // Remove the old window if it is still hanging
 
-										 // SS_LEFTNOWORDWRAP
+// https://learn.microsoft.com/en-us/windows/win32/winmsg/extended-window-styles
+// Windows 8: The WS_EX_LAYERED style is supported for top-level windows and child windows. Previous Windows versions support WS_EX_LAYERED only for top-level windows.
+
 	hMsgWnd = CreateWindowExW(
-		WS_EX_NOACTIVATE | WS_EX_TRANSPARENT | WS_EX_LAYERED,
+		//WS_EX_NOACTIVATE | WS_EX_TRANSPARENT | WS_EX_LAYERED,
+		WS_EX_NOACTIVATE, // WinXP-Win7 temporary fix
 		L"STATIC", InfoText,
 		WS_POPUP | SS_CENTER | WS_BORDER,
 		Offset_X, Offset_Y,
 		TargetWidth, TargetHeight,
-		hParentWnd, // Parent
+		hParentWnd,
 		(HMENU)NULL,
 		GetModuleHandle(NULL), // Instance for global window class
-		NULL); // lParam of WM_CREATE
+		NULL);
 
 	if (hMsgWnd)
 	{
