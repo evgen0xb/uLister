@@ -6,7 +6,17 @@ The plugin is provided as-is and without any warranty under the GPLv3 license.
 #define UNICODE
 #endif
 
+// vs2005 fix
+#define _WIN32_WINNT 0x0501
+#define WIN32_LEAN_AND_MEAN
+
 #include <windows.h>
+
+// vs2005 fix
+#include <shellapi.h>
+#include <stdlib.h>
+#include <commdlg.h>
+
 #include <commctrl.h>
 #pragma comment(lib, "comctl32.lib")
 #include "ulister.h"

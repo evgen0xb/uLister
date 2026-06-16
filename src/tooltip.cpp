@@ -2,7 +2,14 @@
 The plugin is provided as-is and without any warranty under the GPLv3 license.
 */
 
+// vs2005 fix
+#define _WIN32_WINNT 0x0501
+
 #include <windows.h>
+
+// vs2005 fix
+#include <WinUser.h>
+
 #include "ulister.h"
 
 clsToolTip::clsToolTip(UINT_PTR _IDTimerEvent)
