@@ -73,6 +73,11 @@ template< typename T > std::wstring ToStrW(T i)
 #define INFOWINDOWWIDTH 400
 #define INFOWINDOWHEIGHT 250
 
+#define WINDOWS7BETABUILDNUMBER 7000
+#define WINDOWS8BUILDNUMBER 9200
+
+
+
 #define SMARTINIPATH
 
 typedef char __VTTYPENAMEBUF[VTMAXTYPENAMEBUF];
@@ -130,8 +135,8 @@ struct clsUlisterOptions
 	bool	keepinmemory;
 	bool	mwhscrollinvert;
 
-	UINT BalloonTipTimer;
-	BYTE BalloonTransparency;
+	UINT ToolTipTimer;
+	WORD ToolTipTransparency;
 };
 
 class clsUlisterInstance
@@ -139,7 +144,7 @@ class clsUlisterInstance
 public:
 	
 	HINSTANCE	hInstWLX;
-	int			NTLevel;
+	unsigned long long WindowsBuildNumber;
 
 	void Init(const HINSTANCE _hInst);
 	~clsUlisterInstance();
@@ -283,8 +288,6 @@ public:
 	clsVTOptionsViewer		VTViewer;
 };
 #endif
-
-#define WINDOWS7BETABUILDNUMBER 7000
 
 void IniParse();
 HINSTANCE LoadLibVT(const wchar_t *libname);

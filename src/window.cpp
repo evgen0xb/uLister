@@ -134,7 +134,7 @@ void ChangeViewMode(const HWND hWnd, const int dir)
 		else VIEWMODENAME = AUNK;
 
 		mydata->ToolTip.InitPosition(mydata->TListerWindow, TOOLTIP_XOFFS, TOOLTIP_YOFFS, TOOLTIP_WIDTH, TOOLTIP_HEIGHT);
-		mydata->ToolTip.ShowTemporaryMessage(VIEWMODENAME, UlisterOptions.BalloonTransparency, UlisterOptions.BalloonTipTimer);
+		mydata->ToolTip.ShowTemporaryMessage(VIEWMODENAME, UlisterOptions.ToolTipTransparency, UlisterOptions.ToolTipTimer);
 	}
 	else if (DispEng == SCCVWTYPE_SS)
 	{
@@ -176,7 +176,7 @@ void ChangeViewMode(const HWND hWnd, const int dir)
 		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
 
 		mydata->ToolTip.InitPosition(mydata->TListerWindow, TOOLTIP_XOFFS, TOOLTIP_YOFFS, TOOLTIP_WIDTH, TOOLTIP_HEIGHT);
-		mydata->ToolTip.ShowTemporaryMessage(VIEWMODENAME, UlisterOptions.BalloonTransparency, UlisterOptions.BalloonTipTimer);
+		mydata->ToolTip.ShowTemporaryMessage(VIEWMODENAME, UlisterOptions.ToolTipTransparency, UlisterOptions.ToolTipTimer);
 	}
 	else if (DispEng == SCCVWTYPE_ARCHIVE)
 	{
@@ -199,7 +199,7 @@ void ChangeViewMode(const HWND hWnd, const int dir)
 		else VIEWMODENAME = AUNK;
 
 		mydata->ToolTip.InitPosition(mydata->TListerWindow, TOOLTIP_XOFFS, TOOLTIP_YOFFS, TOOLTIP_WIDTH, TOOLTIP_HEIGHT);
-		mydata->ToolTip.ShowTemporaryMessage(VIEWMODENAME, UlisterOptions.BalloonTransparency, UlisterOptions.BalloonTipTimer);
+		mydata->ToolTip.ShowTemporaryMessage(VIEWMODENAME, UlisterOptions.ToolTipTransparency, UlisterOptions.ToolTipTimer);
 	}
 	else if (DispEng == SCCVWTYPE_IMAGE)
 	{
@@ -224,7 +224,7 @@ void ChangeViewMode(const HWND hWnd, const int dir)
 		else VIEWMODENAME = AUNK;
 
 		mydata->ToolTip.InitPosition(mydata->TListerWindow, TOOLTIP_XOFFS, TOOLTIP_YOFFS, TOOLTIP_WIDTH, TOOLTIP_HEIGHT);
-		mydata->ToolTip.ShowTemporaryMessage(VIEWMODENAME, UlisterOptions.BalloonTransparency, UlisterOptions.BalloonTipTimer);
+		mydata->ToolTip.ShowTemporaryMessage(VIEWMODENAME, UlisterOptions.ToolTipTransparency, UlisterOptions.ToolTipTimer);
 	}
 	/*
 	else if (DispEng == SCCVWTYPE_VECTOR)
@@ -447,7 +447,7 @@ LRESULT CALLBACK SccviewerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 				SendVTOptions(mydata, &VTOptions);
 
 				mydata->ToolTip.InitPosition(mydata->TListerWindow, TOOLTIP_XOFFS, TOOLTIP_YOFFS, TOOLTIP_WIDTH, TOOLTIP_HEIGHT);
-				mydata->ToolTip.ShowTemporaryMessage(L"Reload", UlisterOptions.BalloonTransparency, UlisterOptions.BalloonTipTimer);
+				mydata->ToolTip.ShowTemporaryMessage(L"Reload", UlisterOptions.ToolTipTransparency, UlisterOptions.ToolTipTimer);
 
 				return 0;
 			}

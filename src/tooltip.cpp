@@ -32,8 +32,9 @@ void clsToolTip::InitPosition(HWND hWndParent, int _X, int _Y, int _Width, int _
 	TargetHeight = _Height;
 };
 
-bool clsToolTip::ShowTemporaryMessage(LPCWSTR InfoText, const BYTE Transparency, const UINT Timer_ms)
+bool clsToolTip::ShowTemporaryMessage(LPCWSTR InfoText, const WORD Transparency, const UINT Timer_ms)
 // BE CAREFUL! InfoText IS ONLY PTR, NOT A BUFFER! You can add malloc() with memcpy() in ShowTemporaryMessage and free() in ~destructor.
+// Call with Transparency=-1 if Windows don't support WS_EX_LAYERED (and without transparency). Let's not overload old computers with transparency.
 // return true - OK
 {
 	if (!hParentWnd) return false;
@@ -43,8 +44,8 @@ bool clsToolTip::ShowTemporaryMessage(LPCWSTR InfoText, const BYTE Transparency,
 // Windows 8: The WS_EX_LAYERED style is supported for top-level windows and child windows. Previous Windows versions support WS_EX_LAYERED only for top-level windows.
 
 	hMsgWnd = CreateWindowExW(
-		//WS_EX_NOACTIVATE | WS_EX_TRANSPARENT | WS_EX_LAYERED,
-		WS_EX_NOACTIVATE, // WinXP-Win7 temporary fix
+		// WinXP-Win7 fix: disable WS_EX_TRANSPARENT and WS_EX_LAYERED if Transparency=-1
+		(Transparency == (WORD)-1) ? WS_EX_NOACTIVATE : WS_EX_NOACTIVATE | WS_EX_TRANSPARENT | WS_EX_LAYERED,
 		L"STATIC", InfoText,
 		WS_POPUP | SS_CENTER | WS_BORDER,
 		Offset_X, Offset_Y,
@@ -57,7 +58,7 @@ bool clsToolTip::ShowTemporaryMessage(LPCWSTR InfoText, const BYTE Transparency,
 	if (hMsgWnd)
 	{
 		Move(); // apply position limits
-		SetLayeredWindowAttributes(hMsgWnd, 0, Transparency, LWA_ALPHA);
+		SetLayeredWindowAttributes(hMsgWnd, 0, (BYTE)Transparency, LWA_ALPHA);
 		Show();
 		SetTimer(hParentWnd, nIDEvent, Timer_ms, NULL);
 		return true;

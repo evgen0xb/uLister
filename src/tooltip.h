@@ -12,7 +12,7 @@ class clsToolTip
 public:
 
 	void InitPosition(HWND hWnd, int _X, int _Y, int _Width, int _Height);
-	bool ShowTemporaryMessage(LPCWSTR InfoText, const BYTE Transparency, const UINT Timer_ms);
+	bool ShowTemporaryMessage(LPCWSTR InfoText, const WORD Transparency, const UINT Timer_ms);
 	void DestroyTemporaryMessage();
 	void Move();
 

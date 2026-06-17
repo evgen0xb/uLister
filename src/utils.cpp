@@ -492,9 +492,11 @@ void InitUlister()
 	}
 
 	GetPrivateProfileStringW(ULISTERSECTION, L"tooltipsdelayms", L"3000", buf, INT64STRMAXBUF, UlisterOptions.inipath);
-	UlisterOptions.BalloonTipTimer = (UINT)wcstol(buf, NULL, 10);
+	UlisterOptions.ToolTipTimer = (UINT)wcstol(buf, NULL, 10);
+
 	GetPrivateProfileStringW(ULISTERSECTION, L"tooltipstransparency", L"244", buf, INT64STRMAXBUF, UlisterOptions.inipath);
-	UlisterOptions.BalloonTransparency = (UINT)wcstol(buf, NULL, 10);
+	UlisterOptions.ToolTipTransparency = (WORD)wcstol(buf, NULL, 10);
+	if (UlisterOptions.ToolTipTransparency > 255 || UlisterInstance.WindowsBuildNumber < WINDOWS8BUILDNUMBER) UlisterOptions.ToolTipTransparency = -1;
 }
 
 
@@ -687,8 +689,8 @@ HINSTANCE LoadLibVT(const wchar_t *libname)
 	HINSTANCE lib = NULL;
 	wchar_t path[MAX_PATH];
 
-	// if WinXP, first try to load library from "XPdist*"
-	if (UlisterInstance.NTLevel == WindowsNTLevel::WinNT5)
+	// if WinXP (and VISTA), first try to load library from "XPdist*"
+	if (UlisterInstance.WindowsBuildNumber < WINDOWS7BETABUILDNUMBER)
 	{
 		if (GetLibPathVT(path, libname, WindowsNTLevel::WinNT5))
 		{
@@ -819,10 +821,7 @@ void clsUlisterInstance::Init(const HINSTANCE _hInst)
 	hFileIdentLibrary = NULL;
 	NumInstancesFileIdentLib = 0;
 
-	if (REGCurrentBuildNumber() < WINDOWS7BETABUILDNUMBER)
-		NTLevel = WindowsNTLevel::WinNT5;
-	else
-		NTLevel = WindowsNTLevel::WinNT6;
+	WindowsBuildNumber = REGCurrentBuildNumber();
 }
 
 clsUlisterInstance::~clsUlisterInstance()
