@@ -68,7 +68,8 @@ mwhscrollinvert     (default on) - invert mouse wheel horizontal scroll,
 Version 4.2.0.0 now displays tooltips when switching modes:
 
 tooltipsdelayms     (default 3000) - tooltip display time in milliseconds
-tooltipstransparency (default 244, from 0 to 255 inclusive) - tooltip transparency
+tooltipstransparency (default 244, from 0 to 255 inclusive) - tooltip transparency (only works in Windows 8 and above, without overloading older systems);
+                    use a value of -1 to force transparency mode off.
 
 Since version 4.0.0.7 of the plugin, ulister.ini can be used to write some useful internal settings of the Outside In Technology
 library, stored in a proprietary binary representation in the ".oit" directory.
@@ -188,7 +189,7 @@ older library versions are also unnecessary, and everything will work as before 
 Enter a search string - Ctrl+F/F7
 Find Next/Previous - F3/Shift+F3
 (Search is not available in some formats; case-insensitive search option is supported)
-You can zoom in or out using Ctrl "+" / Ctrl "-" or Ctrl + Mouse Wheel (not available for some viewing modes).
+You can zoom in or out using Ctrl "+" / Ctrl "-" or Ctrl + Mouse Wheel (in older versions of the OutsideIn library, as for WinXP, it is not available for some viewing modes).
 Keyboard shortcut Ctrl+NUM*/Ctrl+8 or Ctrl + middle mouse button - reset zoom to 100%.
 Use Shift + mouse wheel (or special horizontal mouse wheel) to scroll horizontally.
 
@@ -486,3 +487,9 @@ Finally, the search procedure has been rewritten:
 2026-06-15
     - added a "File Information" window with some technical information about the file viewing mode, accessible by pressing Ctrl+I
     - added the ability to export a file with format types (formats.txt) from the "File Information" window
+
+2026-06-17
+    - tooltip transparency only works in Windows 8 and above (without overloading older systems)
+    - formats.txt has been updated (OutsideIn version 8.5.8)
+    - added FILID.pdf documentation
+    - updating plugin documentation
