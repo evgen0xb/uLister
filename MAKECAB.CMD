@@ -17,6 +17,7 @@ ECHO.Put 64-bit Oracle OiT DLLs here.> "%OUTDIR%\redist64\!.txt"
 
 xcopy.exe /I /E /C /H /R /Y  ".\doc" "%OUTDIR%\doc"
 DEL /f /q "%OUTDIR%\doc\OIVWR 854.pdf" > NUL 2>&1
+DEL /f /q "%OUTDIR%\doc\FILID.pdf" > NUL 2>&1
 
 COPY ".\plugin config files\*.*" "%OUTDIR%"
 
