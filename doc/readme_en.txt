@@ -488,7 +488,7 @@ Finally, the search procedure has been rewritten:
     - added a "File Information" window with some technical information about the file viewing mode, accessible by pressing Ctrl+I
     - added the ability to export a file with format types (formats.txt) from the "File Information" window
 
-2026-06-17
+2026-06-17 4.2.0.0
     - tooltip transparency only works in Windows 8 and above (without overloading older systems)
     - formats.txt has been updated (OutsideIn version 8.5.8)
     - added FILID.pdf documentation
