@@ -92,7 +92,7 @@
 1094  -  Microsoft WordPad
 1095  -  WP/Novell Unknown Format
 1096  -  Word for Windows 2.0 Object
-1097  -  WordPerfect 6.1 - 12.0 / X3-4
+1097  -  WordPerfect 6.1 - 12.0 / X3-7
 1098  -  Fulcrum Document Format
 1099  -  Europa Fulcrum
 1100  -  Europa Fulcrum
@@ -131,10 +131,10 @@
 1137  -  MIFF 5.0 Japan
 1138  -  MIFF 5.5
 1139  -  WordPerfect 8.0/10.0
-1140  -  Ichitaro 8.x/9.x/10.x/11.x/12.x/13.x/2004
+1140  -  Ichitaro 8.x-13.x/2004-2014
 1141  -  vCard
 1142  -  HTML - Cascading Style Sheets
-1143  -  MS Outlook
+1143  -  Outlook Email
 1144  -  Pocket Word
 1145  -  WordPro 97/Millennium
 1146  -  Microsoft Word 2000
@@ -158,16 +158,17 @@
 1166  -  MIFF 6.0
 1167  -  MIFF 6.0 Japan
 1168  -  MIFF
-1170  -  ASCII Text
+1170  -  ASCII Text/Log/XML/CSV
 1171  -  Handheld Device Markup Language (HDML)
 1172  -  Compact HTML (CHTML)
 1173  -  XHTML Basic
 1174  -  AvantGo HTML
 1175  -  Web Clipping Application (WCA) HTML
+1176  -  XML Forms Data Format (XFDF)
 1177  -  Pocket Word - Pocket PC
 1178  -  Wireless HTML
 1179  -  Hangul 97 Word Processor
-1180  -  Hangul 2002/2007 Word Processor
+1180  -  Hangul 2002 - 2010 Word Processor
 1181  -  Internet HTML - Unicode
 1182  -  XML With Doctype HTML
 1184  -  EBCDIC encoded Text
@@ -206,20 +207,65 @@
 1219  -  CEO Decision Base
 1220  -  Windows Works 3.0 DB
 1221  -  Windows Works 4.0 DB
-1222  -  Microsoft Access 7
+1222  -  Microsoft Access 95/97
 1223  -  Microsoft Project 98
 1224  -  Microsoft Project 2000/2002/2003
 1225  -  Microsoft Project 2002
 1226  -  Microsoft Project 2007
-1227  -  Lotus Notes Database File
+1227  -  Lotus Notes Database (NSF) or Template (NTF) File
 1228  -  Microsoft Project 2010
+1229  -  Microsoft Access 2000/2002/2003/2016/2019
+1230  -  Microsoft Access 2007/2010/2013/2016/2019
+1231  -  Microsoft Access Web Database
+1232  -  Microsoft Access 2007/2010/2013 Template File
+1233  -  Microsoft Project 2013
+1234  -  XML Localization Interchange File Format (XLIFF)
+1235  -  SAV data file
+1236  -  TRC data file
+1237  -  Master Database File(MDF) / Log database file(LDF)
+1238  -  SQL/SQLITE database file format
+1239  -  4D Database (4DB & 4DD)
+1240  -  CAN Database DBC File
+1241  -  Microsoft Universal Data Link file
+1242  -  MySQL MyISAM Index file (MYI)
+1243  -  SQLite data file (DB3)
+1244  -  Microsoft Word Recovery file (ASD)
+1245  -  Microsoft Project 2016/2019/2021
+1260  -  ZST file
+1261  -  XZ file
+1262  -  LZO file
+1263  -  WUX file (Compressed of Wii U Disk Image WUD file)
+1264  -  DMG file (Mac OS X Disk Image file)
+1265  -  MPQ file
+1266  -  Amiga LZX Compressed File
+1267  -  PEA PeaZip file format
+1268  -  LZMA compressed archive
+1269  -  ALZ file (ALZip archive)
+1270  -  Bzip2 compressed data (.tbz/.bz2)
+1271  -  XAR Archive Compressed
+1272  -  Zlip compressed data
+1273  -  ARJ Archive Compressed
+1274  -  PowerISO Direct-Access-Archive (DAA)
+1275  -  ISO 9660 Disc Image File
+1276  -  ACE Archive Compressed
+1277  -  ZIM Wiki archive
+1278  -  RPM Package
+1279  -  LZ4 compressed data
+1282  -  DEB Debian Linux Package File
+1283  -  DAR Disk Archiver File
+1284  -  DZ Dzip Compressed Archive
+1285  -  MPX Microsoft Project Export File
+1290  -  LBR file
+1291  -  LZ file (Lzip compressed archive file)
+1292  -  KGB  archive
 1301  -  PST Fields File
-1302  -  Microsoft Outlook PST/OST 2003/2007
+1302  -  Microsoft Outlook PST/OST 2003/2007/2010/2013/2016/2019
 1303  -  Microsoft Outlook PAB
 1306  -  Yahoo! Messenger Archive
 1307  -  Microsoft Word XML 2003
+1308  -  Microsoft Word XML 2007-2016/2019
 1309  -  StarOffice 8 Writer (ODF 1.1)
-1311  -  Outlook Form Template
+1311  -  Outlook Email Form Template
 1312  -  Microsoft Word 2007/2008
 1313  -  Password Protected Microsoft Word 2007/2008
 1314  -  Microsoft Word 2007/2008 Template
@@ -239,11 +285,58 @@
 1333  -  Oracle Open Office 3.x Writer (ODF 1.2)
 1334  -  Samsung Jungum File
 1335  -  Kingsoft Office Writer File
-1336  -  Microsoft Word 2010
-1337  -  Microsoft Word 2010 Template
-1338  -  Microsoft Word 2010 Macro Enabled Document
-1339  -  Microsoft Word 2010 Macro Enabled Template
-1340  -  Password Protected Microsoft Word 2010
+1336  -  Microsoft Word 2010/2011
+1337  -  Microsoft Word 2010/2011 Template
+1338  -  Microsoft Word 2010/2011 Macro Enabled Document
+1339  -  Microsoft Word 2010/2011 Macro Enabled Template
+1341  -  Trillian Text Log File
+1342  -  Trillian XML Log File
+1343  -  Microsoft Live Messenger Log File
+1344  -  AOL Messenger Log File
+1345  -  Outlook Appointment
+1346  -  Outlook Appointment Form Template
+1347  -  Outlook Journal
+1348  -  Outlook Journal Form Template
+1349  -  Outlook Contact
+1350  -  Outlook Contact Form Template
+1351  -  Outlook Sticky Note
+1352  -  Outlook Sticky Note Form Template
+1353  -  Outlook Task
+1354  -  Outlook Task Form Template
+1355  -  Password Protected Microsoft Word 2010-2016/2019
+1356  -  Apple Mail 2.0 Message (EMLX)
+1357  -  Outlook Non Delivery Report
+1358  -  Outlook Non Delivery Report Form Template
+1359  -  Outlook Post
+1360  -  Outlook Post Form Template
+1361  -  Outlook Distribution List
+1362  -  Outlook Distribution List Form Template
+1363  -  Outlook Clear Signed Email
+1364  -  Outlook Clear Signed Email Form Template
+1365  -  Outlook Opaque Signed Email
+1366  -  Outlook Opaque Signed Email Form Template
+1367  -  Apple iWork Pages File
+1368  -  Apple iWork Pages File Preview
+1370  -  S/MIME (Secure/MIME)
+1371  -  Clear Signed S/MIME (Secure/MIME)
+1372  -  Microsoft Word 2013
+1373  -  Microsoft Word 2013 Template
+1374  -  Microsoft Word 2013 Macro Enabled Document
+1375  -  Microsoft Word 2013 Macro Enabled Template
+1379  -  Libre Office 3.x Writer (ODF 1.2)
+1380  -  Libre Office 4.x Writer (ODF 1.2)
+1381  -  Microsoft Outlook for Mac 2011
+1382  -  Apache Office 3.x Writer (ODF 1.2)
+1383  -  Apache Office 4.x Writer (ODF 1.2)
+1384  -  Microsoft Word 2016/2019/2021/M365
+1385  -  Microsoft Word 2016/2019/2021/M365 Template
+1386  -  Microsoft Word 2016/2019/2021/M365 Macro Enabled Document
+1387  -  Microsoft Word 2016/2019/2021/M365 Macro Enabled Template
+1388  -  Strict Open XML 2013 Document
+1389  -  Strict Open XML 2016/2019/2021 Document
+1390  -  Apple iWork 2013/2014 Pages File
+1391  -  Apple iWork 2020/2021 Pages File
+1392  -  Microsoft Compound Document File
 1400  -  Symphony
 1401  -  Lotus 1-2-3 1.0
 1402  -  Lotus 1-2-3 2.0
@@ -289,7 +382,7 @@
 1442  -  MS Excel Mac 4.0 Workbook
 1443  -  Lotus 1-2-3 98/Millennium Edition
 1444  -  Quattro Pro 8.0
-1445  -  Quattro Pro Win 9.0 / X3
+1445  -  Password Protected Quattro Pro Win 9.0 / X3 - X5
 1446  -  Microsoft Excel 2000
 1447  -  Quattro Pro Win 10.0
 1448  -  Microsoft Excel 2002
@@ -309,7 +402,7 @@
 1462  -  Open Office 2.x Calc (ODF 1.1)
 1463  -  IBM/Lotus Symphony Spreadsheet (ODF 1.1)
 1464  -  Microsoft Excel 2007/2008 Template
-1465  -  Microsoft Excel 2007/2008 Macro Enabled Workbook
+1465  -  Microsoft Excel 2007/2008 Macro Enabled / CELL Workbook
 1466  -  Microsoft Excel 2007/2008 Macro Enabled Template
 1467  -  Microsoft Excel XML 2003
 1468  -  Open Office 3.x Calc (ODF 1.2)
@@ -320,14 +413,29 @@
 1473  -  StarOffice 9 Calc (ODF 1.2)
 1474  -  Oracle Open Office 3.x Calc (ODF 1.2)
 1475  -  Kingsoft Office Spreadsheet File
-1476  -  Microsoft Excel 2010 Workbook
-1477  -  Microsoft Excel 2010 Macro Enabled Workbook
-1478  -  Microsoft Excel 2010 Template
-1479  -  Microsoft Excel 2010 Macro Enabled Template
-1480  -  Microsoft Excel 2010 Excel Add-in Macro File
-1481  -  Microsoft Excel 2010 Binary
-1482  -  Password Protected Microsoft Excel 2010
-1483  -  Password Protected Microsoft Excel 2010 Binary
+1476  -  Microsoft Excel 2010/2011 Workbook
+1477  -  Microsoft Excel 2010/2011 Macro Enabled Workbook
+1478  -  Microsoft Excel 2010/2011 Template
+1479  -  Microsoft Excel 2010/2011 Macro Enabled Template
+1480  -  Microsoft Excel 2010/2011 Excel Add-in Macro File
+1481  -  Microsoft Excel 2010/2011 Binary
+1482  -  Password Protected Microsoft Excel 2010-2016/2019
+1483  -  Password Protected Microsoft Excel 2010-2016/2019 Binary
+1484  -  Quattro Pro Win X5
+1485  -  Apple iWork Numbers File
+1486  -  Apple iWork Numbers File Preview
+1487  -  Microsoft Excel XML 2007-2016/2019
+1488  -  Microsoft Excel 2013 Workbook
+1489  -  Microsoft Excel 2013 Macro Enabled Workbook
+1490  -  Microsoft Excel 2013 Template
+1491  -  Microsoft Excel 2013 Macro Enabled Template
+1492  -  Microsoft Excel 2013 Excel Add-in Macro File
+1493  -  Microsoft Excel 2013 Binary
+1495  -  Quattro Pro Win X6
+1496  -  Libre Office 3.x Calc (ODF 1.2)
+1497  -  Libre Office 4.x Calc (ODF 1.2)
+1498  -  Apache Office 3.x Calc (ODF 1.2)
+1499  -  Apache Office 4.x Calc (ODF 1.2)
 1500  -  Windows Bitmap
 1501  -  Tagged Image File Format
 1502  -  Paintbrush
@@ -340,7 +448,7 @@
 1509  -  Lotus PIC
 1510  -  Mac PICT
 1511  -  Ami Draw
-1512  -  Targa
+1512  -  Targa Graphic Image File
 1513  -  GEM Image
 1514  -  OS/2 Bitmap
 1515  -  Windows Icon
@@ -382,8 +490,8 @@
 1552  -  AutoCAD Drawing 12
 1553  -  AutoCAD Drawing 13
 1554  -  Adobe Illustrator
-1555  -  Corel Presentations 7.0 - 12.0 / X3
-1556  -  WordPerfect Graphic 7.0 - 12.0 / X3-4
+1555  -  Corel Presentations 7.0 - 12.0 / X3-5
+1556  -  WordPerfect Graphic 7.0 - 12.0 / X3-5
 1557  -  Adobe Acrobat (PDF)
 1558  -  Framemaker
 1559  -  RAS - Sun Raster
@@ -458,14 +566,14 @@
 1628  -  JBIG2 Bitmap
 1629  -  Corel Draw 10.0
 1630  -  Corel Draw 11.0
-1631  -  Microsoft Visio 2003/2007
+1631  -  Microsoft Visio 2003/2007/2010
 1632  -  StarOffice 8 Draw (ODF 1.1)
 1633  -  StarOffice 8 Impress (ODF 1.1)
 1634  -  AutoCAD 2004/2005/2006 Drawing
 1635  -  Microsoft PowerPoint 2007/2008
 1636  -  Microsoft XML Paper Specification
 1637  -  Password Protected Microsoft PowerPoint 2007/2008
-1638  -  AutoCAD 2007 Drawing
+1638  -  AutoCAD 2007/2008/2009 Drawing
 1639  -  OS/2 v.2 Bitmap
 1640  -  StarView Metafile
 1641  -  eFax Document
@@ -482,11 +590,23 @@
 1652  -  Lotus Screen Snapshot
 1653  -  Interchange Format
 1654  -  Microsoft Escher Graphics
+1657  -  PAM (Portable Arbitrary Map)
+1658  -  Apple Icon Image
+1659  -  JPEG 2000 jpx Extension
+1660  -  JPEG Extended Range File
+1661  -  JPEG 2000 Compound File (JPM)
+1662  -  JPEG 2000 j2c/j2k/jpc Extension
+1663  -  JPEG 2000 jp2 Extension
+1664  -  Multiple-image Network Graphics Format
+1665  -  SketchUp File Format
+1666  -  Enhanced Compression Wavelet Image File
+1667  -  CIT Intergraph Raster bitmap
+1668  -  Printer Command Language
 1700  -  Windows Sound
 1701  -  Windows Video
 1702  -  MIDI File
 1703  -  Macromedia Director
-1704  -  Macromedia Flash
+1704  -  Macromedia Flash 4-8
 1705  -  Quicktime Movie
 1706  -  MPEG Layer3 ID3 Ver 1.x
 1707  -  MPEG Layer3 ID3 Ver 2.x
@@ -509,6 +629,26 @@
 1724  -  MPEG-4 file
 1725  -  MPEG-7 file
 1726  -  Resource Interchange File Format
+1727  -  Macromedia Flash 9
+1728  -  Macromedia Flash 10
+1729  -  High Efficiency Image File - (Brand: mif1, Type: image, Subtype: heif)
+1730  -  High Efficiency Image File - (Brand: msf1, Type: sequence, Subtype: heif-sequence)
+1731  -  High Efficiency Image File - (Brand: heic, Type: image, Subtype: heic)
+1732  -  High Efficiency Image File - (Brand: heix, Type: image, Subtype: heic)
+1733  -  High Efficiency Image File - (Brand: hevc, Type: sequence, Subtype: heic-sequence)
+1734  -  High Efficiency Image File - (Brand: hevx, Type: sequence, Subtype: heic-sequence)
+1735  -  WEBM Video File Format
+1736  -  JT Image File Format Version 8
+1737  -  JT Image File Format Version 9
+1738  -  JT Image File Format Version 10
+1739  -  Better Portable Graphics File
+1740  -  AV1 Image File Format
+1741  -  Cartesian Perceptual Compression File
+1742  -  Free Lossless Image Format
+1743  -  Gerber Image File Format
+1744  -  Gerber Image File (PCB) Format
+1745  -  OGG open container format for audio,video
+1746  -  OGPUS open container format for audio,video
 1800  -  EXE / DLL File
 1801  -  .COM File
 1802  -  .ZIP/JAR File
@@ -530,11 +670,23 @@
 1818  -  Lotus Notes Database R6.x
 1819  -  Generic Password Protected Microsoft Office 2007 Document
 1820  -  Microsoft Cabinet File
-1821  -  .RAR File
+1821  -  .RAR Archive File Version Type 1.x/2.x/3.x/4.x
 1822  -  Self extracting RAR File
 1823  -  Microsoft InfoPath File
-1824  -  Microsoft OneNote 2007
+1824  -  Microsoft OneNote Package
 1825  -  Windows Media Player Playlist
+1826  -  7z Archive File
+1827  -  Self extracting 7z Archive File
+1828  -  Microsoft OneNote Table of Contents File
+1829  -  Microsoft OneNote File
+1830  -  JavaScript Object Notation(JSON)-Text format for structured data
+1831  -  Microsoft Outlook OST 2013/2016/2019
+1832  -  Microsoft OneNote SOAP/HTTP File
+1833  -  .RAR Archive File Version Type 5.x/6.x
+1834  -  EPUB e-book File
+1835  -  MOBI e-book File
+1836  -  Advanced Function Presentation File
+1837  -  DJVU Compressed Image File
 1998  -  File Identification: None
 1999  -  Unknown format
 2004  -  Flexiondoc v4.0 (XML)
@@ -547,10 +699,14 @@
 2015  -  Mail Archive DXL
 2016  -  Mail Message DXL
 2017  -  Generic DXL
+2018  -  Mail Rule DXL
 2030  -  Flexiondoc v5.3 (XML)
 2031  -  OASIS OpenDocument v1.0 (XML)
 2032  -  Flexiondoc v5.4 (XML)
 2033  -  Flexiondoc, Latest version (XML)
+2034  -  Flexiondoc v5.5 (XML)
+2035  -  Flexiondoc v5.6 (XML)
+2036  -  Flexiondoc v5.7 (XML)
 2200  -  AutoCAD 2008 Drawing
 2201  -  Microsoft Publisher 2000/2003
 2202  -  Microsoft Publisher 2007
@@ -573,14 +729,94 @@
 2219  -  StarOffice 9 Draw (ODF 1.2)
 2220  -  Oracle Open Office 3.x Impress (ODF 1.2)
 2221  -  Oracle Open Office 3.x Draw (ODF 1.2)
-2222  -  Microsoft PowerPoint 2010
-2223  -  Microsoft PowerPoint 2010 Template
-2224  -  Microsoft PowerPoint 2010 Macro Enabled Template
-2225  -  Microsoft PowerPoint 2010 Slideshow
-2226  -  Microsoft PowerPoint 2010 Macro Enabled Presentation
-2227  -  Microsoft PowerPoint 2010 Macro Enabled Slideshow
-2228  -  Password Protected Microsoft PowerPoint 2010
+2222  -  Microsoft PowerPoint 2010/2011
+2223  -  Microsoft PowerPoint 2010/2011 Template
+2224  -  Microsoft PowerPoint 2010/2011 Macro Enabled Template
+2225  -  Microsoft PowerPoint 2010/2011 Slideshow
+2226  -  Microsoft PowerPoint 2010/2011 Macro Enabled Presentation
+2227  -  Microsoft PowerPoint 2010/2011 Macro Enabled Slideshow
+2228  -  Password Protected Microsoft PowerPoint 2010-2016/2019
+2229  -  AutoCAD 2010/2011/2012 Drawing
+2230  -  Corel Presentations X5
+2231  -  Apple iWork Keynote File
+2232  -  Apple iWork Keynote File Preview
+2233  -  Scalable Vector Graphics File
+2234  -  AutoDesk DWF Archive File
+2235  -  Microsoft PowerPoint 2013
+2236  -  Microsoft PowerPoint 2013 Template
+2237  -  Microsoft PowerPoint 2013 Macro Enabled Template
+2238  -  Microsoft PowerPoint 2013 Slideshow
+2239  -  Microsoft PowerPoint 2013 Macro Enabled Presentation
+2240  -  Microsoft PowerPoint 2013 Macro Enabled Slideshow
+2241  -  Microsoft Office Theme File
+2242  -  Adobe Photoshop Large Document Format
+2243  -  Digital Imaging and Communications in Medicine (DICOM) File
+2244  -  Corel Presentations X6
+2245  -  AutoCAD 2013/2014/2015/2016/2017 Drawing
+2246  -  Harvard Graphics 98
+2247  -  Microsoft Visio 2013
+2248  -  Microsoft Visio 2013 Template
+2249  -  Microsoft Visio 2013 Stencil
+2250  -  Microsoft Visio 2013 Macro Enabled Drawing
+2251  -  Microsoft Visio 2013 Macro Enabled Template
+2252  -  Microsoft Visio 2013 Macro Enabled Stencil
+2253  -  Libre Office 3.x Impress (ODF 1.2)
+2254  -  Libre Office 3.x Draw (ODF 1.2)
+2255  -  Libre Office 4.x Impress (ODF 1.2)
+2256  -  Libre Office 4.x Draw (ODF 1.2)
+2257  -  Apache Office 3.x Impress (ODF 1.2)
+2258  -  Apache Office 3.x Draw (ODF 1.2)
+2259  -  Apache Office 4.x Impress (ODF 1.2)
+2260  -  Apache Office 4.x Draw (ODF 1.2)
+2262  -  Microsoft PowerPoint 2016/2019/2021/M365
+2263  -  Microsoft PowerPoint 2016/2019/2021/M365 Template
+2264  -  Microsoft PowerPoint 2016/2019/2021/M365 Macro Enabled Template
+2265  -  Microsoft PowerPoint 2016/2019/2021/M365 Slideshow
+2266  -  Microsoft PowerPoint 2016/2019/2021/M365 Macro Enabled Presentation
+2267  -  Microsoft PowerPoint 2016/2019/2021/M365 Macro Enabled Slideshow
+2268  -  Corel Presentations X7
+2269  -  Strict Open XML 2013 Presentation
+2270  -  Strict Open XML 2016/2019 Presentation
+2271  -  Corel Draw X4 - X7
+2272  -  WebP Image
+2273  -  Apple iWork 2013/2014 Keynote File
+2274  -  Corel Draw X4 - X7 Template
+2276  -  AutoCAD 2018/2019/2020/2021 Drawing
+2277  -  Apple iWork 2020/2021 keynote File
+2278  -  Microsoft Publisher 2016/2019
+2279  -  Standard Generalized Markup Language File
 2300  -  Performance Filter
+2400  -  Microsoft Windows Explorer Command File
+2401  -  Windows shortcut
+2402  -  Windows Help File
+2403  -  Windows Compiled Help File
+2404  -  TrueType Font File
+2405  -  TrueType Font Collection File
+2406  -  TrueType (MAC) Font File
+2407  -  WOFF Font File
+2408  -  WOFF2 Font File
+2500  -  Microsoft Excel 2016/2019/2021/M365 Workbook
+2501  -  Microsoft Excel 2016/2019/2021/M365 Macro Enabled Workbook
+2502  -  Microsoft Excel 2016/2019/2021/M365 Template
+2503  -  Microsoft Excel 2016/2019/2021/M365 Macro Enabled Template
+2504  -  Microsoft Excel 2016/2019/2021/M365 Excel Add-in Macro File
+2505  -  Microsoft Excel 2016/2019/2021/M365 Binary
+2506  -  Quattro Pro Win X7
+2507  -  Strict Open XML 2013 Spreadsheet
+2508  -  Strict Open XML 2016/2019 Spreadsheet
+2509  -  Apple iWork 2013/2014 Numbers File
+2510  -  Apple iWork 2020/2021 Numbers File
+2511  -  Everything File List (EFU) Spreadsheet File
+2512  -  Ability Spreadsheet  (AST/AWS) File
+2513  -  Plan Maker(PMD) Spreadsheet File
+2515  -  GNUMERIC Spreadsheet File
+2516  -  FileMakerPro (FMP12) Spreadsheet file
+2517  -  CELL 2010 Workbook file
+2519  -  Wolfram notebook (nb) file format
+2520  -  IMP (Lotus Improv) Spreadsheet file
+2521  -  PMDX (PlanMaker) Spreadsheet file
+2522  -  TimeMap timeline (TMVT/TMV) Spreadsheet file
+2523  -  File Maker (FP7) Spredsheet file
 4000  -  Unknown (ASCII)
 4001  -  Unknown (Hex)
 4002  -  Unknown (ANSI)
@@ -601,10 +837,10 @@
 4017  -  Text - Hebrew (VAX E0)
 4018  -  Text - Hebrew (Windows ANSI 1255)
 4021  -  Text - Arabic (Windows ANSI 1256)
-4022  -  Text - 7-Bit File
+4022  -  7-Bit Text/CSV Spreadsheet File
 4023  -  Text - Japanese (JIS)
 4024  -  Text - Central European
-4025  -  UTF-8 encoded Text
+4025  -  UTF-8 encoded Text/CSV Spreadsheet file
 4026  -  Text - U.S. English/Portuguese (EBCDIC 37)
 4027  -  Text - Austrian/German (EBCDIC 273)
 4028  -  Text - Danish/Norwegian (EBCDIC 277)
@@ -726,3 +962,7 @@
 5013  -  IAF (internal bitmap)
 5014  -  IAF (internal bitmap)
 5015  -  PICT (internal bitmap)
+5016  -  Device Independent Bitmap File
+7001  -  Intermediate Format File
+
+Total format types: 966
