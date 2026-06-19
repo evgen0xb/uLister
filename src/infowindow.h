@@ -7,6 +7,13 @@ The plugin is provided as-is and without any warranty under the GPLv3 license.
 
 #include <windows.h>
 
+
+
+#define INFOWINDOWWIDTH 400
+#define INFOWINDOWHEIGHT 250
+
+
+
 class clsInfoWindow
 {
 public:
@@ -31,7 +38,6 @@ public:
 	HICON hWindowIcon;
 	HWND hwndFileInfo;
 	HWND hwndParentWindow;
-
 };
 
 #endif

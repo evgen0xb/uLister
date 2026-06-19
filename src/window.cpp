@@ -2,16 +2,17 @@
 The plugin is provided as-is and without any warranty under the GPLv3 license.
 */
 
-// VS 2005 FIX
-#define WM_MOUSEHWHEEL                  0x020E
-#define WM_MOUSEWHEEL                   0x020A
-#define GET_WHEEL_DELTA_WPARAM(wParam)  ((short)HIWORD(wParam))
-
 #include <windows.h>
 #include <CommCtrl.h>
 #include <float.h>
 #include <lomenu.h>
+
 #include "ulister.h"
+#include "window.h"
+#include "init.h"
+#include "utils.h"
+
+
 
 extern clsUlisterInstance	UlisterInstance;
 extern clsUlisterOptions	UlisterOptions;
@@ -23,339 +24,14 @@ const char *WNDCLASSNAME_SCCDISPLAY		= "SCCDISPLAY";
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-VTDWORD GetDisplayEngineVT(const HWND hWnd)
-{
-	// SCCVWTYPE_NONE		1  /* no file open in this view */
-	// SCCVWTYPE_UNKNOWN	2  /* unknown section type */
-	// SCCVWTYPE_WP			3  /* word processor section */
-	// SCCVWTYPE_SS			4  /* spreadsheet section */
-	// SCCVWTYPE_DB			5  /* database section */
-	// SCCVWTYPE_HEX		6  /* hex view of any file */
-	// SCCVWTYPE_IMAGE		7  /* bitmap image */
-	// SCCVWTYPE_ARCHIVE	8  /* archive */
-	// SCCVWTYPE_VECTOR		9	Vector graphics display engine
-	// SCCVWTYPE_SOUND		10 ***** /* sound file */ *****
-	// SCCVWTYPE_HTML		11 /* html file */
-	// SCCVWTYPE_EMAIL		12 /* email file */
-
-	SCCVWDISPLAYINFO40 locDisplayInfo;
-	locDisplayInfo.dwSize = sizeof(SCCVWDISPLAYINFO40);
-	SendMessage(hWnd, SCCVW_GETDISPLAYINFO, 0, (LPARAM)(PSCCVWDISPLAYINFO40)&locDisplayInfo);
-	return locDisplayInfo.dwType;
-}
+LRESULT CALLBACK SccdisplayWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-wchar_t* DisplayEngineName(const VTDWORD dwType)
-{
-	wchar_t* name[] =
-	{
-		L"COMMON UNKNOWN",
-		L"No file open",
-		L"Unknown type",
-		L"Word Processor",
-		L"Spreadsheet",
-		L"Database",
-		L"Hexadecimal view",
-		L"Bitmap image",
-		L"Archive",
-		L"Vector graphics",
-		L"Sound file",
-		L"HTML document",
-		L"email"
-	};
-	const unsigned int count = sizeof(name) / sizeof(name[0]) - 1;
-	return name[(dwType > count) ? 0 : dwType];
-}
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void ChangeViewMode(const HWND hWnd, const int dir)
-{
-	// dir =  1		- next view mode
-	// dir = -1		- prev view mode
-
-	LPCWSTR AUNK		= L"Unknown";
-	LPCWSTR ADRAFT		= L"Draft";
-	LPCWSTR ANORMAL		= L"Normal";
-	LPCWSTR APREVIEW	= L"Preview";
-	LPCWSTR AWEBLAY		= L"Weblayout";
-	LPCWSTR AHIDDEN		= L"Hidden";
-	LPCWSTR ANONE		= L"None";
-	LPCWSTR ANAME		= L"Name";
-	LPCWSTR ASIZE		= L"Size";
-	LPCWSTR ADATE		= L"Date";
-	LPCWSTR A0			= L"0\u00B0";
-	LPCWSTR A90			= L"90\u00B0";
-	LPCWSTR A180		= L"180\u00B0";
-	LPCWSTR A270		= L"270\u00B0";
-
-	LPCWSTR VIEWMODENAME = AUNK;
-
-	ALLMYDATA *mydata;
-	VTDWORD DispEng;
-	mydata = (ALLMYDATA *)GetWindowLongPtr(hWnd, GWLP_USERDATA);
-
-	union
-	{
-		VTDWORD viewmode;
-		VTDWORD bitmaprotation;
-		VTDWORD arcsortorder;
-		VTBOOL spreadsheetdraft;
-	};
-
-	SCCVWOPTIONSPEC40 locOptionSpec;
-	locOptionSpec.dwSize = sizeof(SCCVWOPTIONSPEC40);
-	locOptionSpec.dwFlags = SCCVWOPTION_CURRENT;
-	locOptionSpec.pData = &viewmode;
-
-	DispEng = GetDisplayEngineVT(mydata->SccviewerWindow); // call only from user-level defined messages!!!
-	if (DispEng == SCCVWTYPE_WP || DispEng == SCCVWTYPE_HTML || DispEng == SCCVWTYPE_EMAIL)
-	{
-		// word processor: draft->normal->preview->weblayout
-
-		if (DispEng == SCCVWTYPE_WP) locOptionSpec.dwId = SCCID_WPDISPLAYMODE;
-		else locOptionSpec.dwId = (DispEng == SCCVWTYPE_HTML) ? SCCID_HTMLDISPLAYMODE : SCCID_EMAILDISPLAYMODE;
-
-		SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
-
-		if (dir == UlisterNextMode::MNEXT) { viewmode++; if (viewmode > SCCVW_WPMODE_WEBLAYOUT) viewmode = SCCVW_WPMODE_WEBLAYOUT; }
-		else { viewmode--; if (viewmode < SCCVW_WPMODE_DRAFT) viewmode = SCCVW_WPMODE_DRAFT; }
-
-		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
-
-		if (viewmode == SCCVW_WPMODE_DRAFT) VIEWMODENAME = ADRAFT;
-		else if (viewmode == SCCVW_WPMODE_NORMAL) VIEWMODENAME = ANORMAL;
-		else if (viewmode == SCCVW_WPMODE_PREVIEW) VIEWMODENAME = APREVIEW;
-		else if (viewmode == SCCVW_WPMODE_WEBLAYOUT) VIEWMODENAME = AWEBLAY;
-		else VIEWMODENAME = AUNK;
-
-		mydata->ToolTip.InitPosition(mydata->TListerWindow, TOOLTIP_XOFFS, TOOLTIP_YOFFS, TOOLTIP_WIDTH, TOOLTIP_HEIGHT);
-		mydata->ToolTip.ShowTemporaryMessage(VIEWMODENAME, UlisterOptions.ToolTipTransparency, UlisterOptions.ToolTipTimer);
-	}
-	else if (DispEng == SCCVWTYPE_SS)
-	{
-		// SCCID_SSSHOWGRIDLINES ???
-
-		// spreadsheet: draft->normal->normal with hidden rows and columns displayed
-
-		VTBOOL spreadsheethiddencells;
-
-		//locOptionSpec.pData = &spreadsheetdraft;
-		locOptionSpec.dwId = SCCID_SSDRAFTMODE;
-		SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
-
-		locOptionSpec.pData = &spreadsheethiddencells;
-		locOptionSpec.dwId = SCCID_SSSHOWHIDDENCELLS;
-		SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
-
-		if (dir == UlisterNextMode::MNEXT)
-		{
-			if (spreadsheethiddencells == FALSE && spreadsheetdraft == TRUE) { spreadsheetdraft = FALSE; VIEWMODENAME = ANORMAL; } // draft->normal
-			else if (spreadsheethiddencells == FALSE && spreadsheetdraft == FALSE) { spreadsheethiddencells = TRUE; VIEWMODENAME = AHIDDEN; } // normal->normal with hidden rows and columns displayed
-			else if (spreadsheethiddencells == TRUE && spreadsheetdraft == FALSE) { VIEWMODENAME = AHIDDEN; } // normal with hidden rows and columns displayed->nothing
-			else { spreadsheethiddencells = FALSE; spreadsheetdraft = TRUE; VIEWMODENAME = ADRAFT; } // reset to draft
-		}
-		else
-		{
-			if (spreadsheethiddencells == TRUE && spreadsheetdraft == FALSE) { spreadsheethiddencells = FALSE; VIEWMODENAME = ANORMAL; } // normal with hidden rows and columns displayed->normal
-			else if (spreadsheethiddencells == FALSE && spreadsheetdraft == FALSE) { spreadsheetdraft = TRUE; VIEWMODENAME = ADRAFT; } // normal->draft
-			else if (spreadsheethiddencells == FALSE && spreadsheetdraft == TRUE) { VIEWMODENAME = ADRAFT; } // draft->nothing
-			else { spreadsheethiddencells = TRUE; spreadsheetdraft = FALSE; VIEWMODENAME = AHIDDEN; } // reset to normal with hidden rows and columns displayed
-		}
-
-		//locOptionSpec.pData = &spreadsheethiddencells;
-		//locOptionSpec.dwId = SCCID_SSSHOWHIDDENCELLS;
-		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
-
-		locOptionSpec.pData = &spreadsheetdraft;
-		locOptionSpec.dwId = SCCID_SSDRAFTMODE;
-		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
-
-		mydata->ToolTip.InitPosition(mydata->TListerWindow, TOOLTIP_XOFFS, TOOLTIP_YOFFS, TOOLTIP_WIDTH, TOOLTIP_HEIGHT);
-		mydata->ToolTip.ShowTemporaryMessage(VIEWMODENAME, UlisterOptions.ToolTipTransparency, UlisterOptions.ToolTipTimer);
-	}
-	else if (DispEng == SCCVWTYPE_ARCHIVE)
-	{
-		// NONE->NAME->SIZE->DATE
-
-		//locOptionSpec.pData = &arcsortorder;
-		locOptionSpec.dwId = SCCID_ARCSORTORDER;
-		SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
-
-		if (dir == UlisterNextMode::MNEXT) { arcsortorder++; if (arcsortorder > SCCVW_SORT_DATE) arcsortorder = SCCVW_SORT_DATE; }
-		else { arcsortorder--; if (arcsortorder < SCCVW_SORT_NONE) arcsortorder = SCCVW_SORT_NONE; }
-
-		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
-		// This option is saved in the .oit directory and does need to be reset to SCCVW_SORT_NAME when loading an archive file (see SendVTOptions function).
-
-		if (arcsortorder == SCCVW_SORT_NONE) VIEWMODENAME = ANONE;
-		else if (arcsortorder == SCCVW_SORT_NAME) VIEWMODENAME = ANAME;
-		else if (arcsortorder == SCCVW_SORT_SIZE) VIEWMODENAME = ASIZE;
-		else if (arcsortorder == SCCVW_SORT_DATE) VIEWMODENAME = ADATE;
-		else VIEWMODENAME = AUNK;
-
-		mydata->ToolTip.InitPosition(mydata->TListerWindow, TOOLTIP_XOFFS, TOOLTIP_YOFFS, TOOLTIP_WIDTH, TOOLTIP_HEIGHT);
-		mydata->ToolTip.ShowTemporaryMessage(VIEWMODENAME, UlisterOptions.ToolTipTransparency, UlisterOptions.ToolTipTimer);
-	}
-	else if (DispEng == SCCVWTYPE_IMAGE)
-	{
-		// SCCID_ANTIALIAS ??? SCCVW_ANTIALIAS_OFF | SCCVW_ANTIALIAS_ALL ???
-
-		// rotate 0->90->180->270->0->...
-		
-		//locOptionSpec.pData = &bitmaprotation;
-		locOptionSpec.dwId = SCCID_BMPROTATION;
-		SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
-
-		if (dir == UlisterNextMode::MNEXT) { bitmaprotation = bitmaprotation + 90; if (bitmaprotation > SCCVW_ROTATION_270) bitmaprotation = SCCVW_ROTATION_NONE; }
-		else { bitmaprotation = bitmaprotation - 90; if (bitmaprotation > SCCVW_ROTATION_270) bitmaprotation = SCCVW_ROTATION_270; } // unsigned int (VTDWORD) overflow hack
-
-		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
-		// It seems that this option is not saved in the .oit directory and does not need to be reset to SCCVW_ROTATION_NONE when loading an image file.
-
-		if (bitmaprotation == SCCVW_ROTATION_NONE) VIEWMODENAME = A0;
-		else if (bitmaprotation == SCCVW_ROTATION_90) VIEWMODENAME = A90;
-		else if (bitmaprotation == SCCVW_ROTATION_180) VIEWMODENAME = A180;
-		else if (bitmaprotation == SCCVW_ROTATION_270) VIEWMODENAME = A270;
-		else VIEWMODENAME = AUNK;
-
-		mydata->ToolTip.InitPosition(mydata->TListerWindow, TOOLTIP_XOFFS, TOOLTIP_YOFFS, TOOLTIP_WIDTH, TOOLTIP_HEIGHT);
-		mydata->ToolTip.ShowTemporaryMessage(VIEWMODENAME, UlisterOptions.ToolTipTransparency, UlisterOptions.ToolTipTimer);
-	}
-	/*
-	else if (DispEng == SCCVWTYPE_VECTOR)
-	{
-		// SCCID_VECSHOWFULLSCREEN ???
-		// SCCID_STROKE_TEXT ???
-	}
-	else if (DispEng == SCCVWTYPE_DB)
-	{
-		// SCCID_DBDRAFTMODE ???
-		// SCCID_DBSHOWGRIDLINES ???
-	}
-	else if (DispEng == SCCVWTYPE_HEX)
-	{
-		// ??? nothing
-	}
-	*/
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void ZoomBitmapVecFont(const HWND hWnd, const int dir)
-{
-	// dir =  1		- zoom in
-	// dir = -1		- zoom out
-	// dir =  0		- zoom reset to 100% (146% in Russian Federation)
-
-	ALLMYDATA *mydata;
-	VTDWORD DispEng;
-	mydata = (ALLMYDATA *)GetWindowLongPtr(hWnd, GWLP_USERDATA);
-
-	SCCVWOPTIONSPEC40 locOptionSpec;
-	VTDWORD zoom;
-	locOptionSpec.dwSize = sizeof(SCCVWOPTIONSPEC40);
-	locOptionSpec.dwFlags = SCCVWOPTION_CURRENT;
-	locOptionSpec.pData = &zoom;
-
-	DispEng = GetDisplayEngineVT(mydata->SccviewerWindow); // call only from user-level defined messages!!!
-	if (DispEng == SCCVWTYPE_IMAGE)
-	{
-		locOptionSpec.dwId = SCCID_BMPZOOMEVENT;
-		if (dir == UlisterZoom::ZRESET) zoom = SCCVW_ZOOM_RESET;
-		else zoom = (dir == UlisterZoom::ZIN) ? SCCVW_ZOOM_IN : SCCVW_ZOOM_OUT;
-		SendMessage(hWnd, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
-	}
-	else if (DispEng == SCCVWTYPE_VECTOR)
-	{
-		locOptionSpec.dwId = SCCID_VECZOOMEVENT;
-		if (dir == UlisterZoom::ZRESET) zoom = SCCVW_ZOOM_RESET;
-		else zoom = (dir == UlisterZoom::ZIN) ? SCCVW_ZOOM_IN : SCCVW_ZOOM_OUT;
-		SendMessage(hWnd, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
-	}
-	else if (DispEng == SCCVWTYPE_WP || DispEng == SCCVWTYPE_HTML || DispEng == SCCVWTYPE_EMAIL)
-	{
-		// oracle bug: SCCID_FONTSCALINGFACTOR not working if SCCVW_WPMODE_PREVIEW or SCCVW_WPMODE_WEBLAYOUT mode of Word Processor / HTML / EMAIL!
-		// From A.10.5 SCCID_FONTSCALINGFACTOR Note:
-		// For word processor documents, this only affects normal and draft modes.
-
-		VTDWORD WPdisplaymode;
-		locOptionSpec.dwId = SCCID_WPDISPLAYMODE;
-		locOptionSpec.pData = &WPdisplaymode;
-		SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
-
-		VTDWORD HTMLdisplaymode;
-		locOptionSpec.dwId = SCCID_HTMLDISPLAYMODE;
-		locOptionSpec.pData = &HTMLdisplaymode;
-		SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
-
-		VTDWORD EMAILdisplaymode;
-		locOptionSpec.dwId = SCCID_EMAILDISPLAYMODE;
-		locOptionSpec.pData = &EMAILdisplaymode;
-		SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
-
-		locOptionSpec.pData = &zoom;
-		locOptionSpec.dwId = SCCID_FONTSCALINGFACTOR;
-		SendMessage(hWnd, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
-		if (dir == UlisterZoom::ZRESET) zoom = 100; // percent
-		else zoom = (dir == UlisterZoom::ZIN) ? zoom * 10 / 8 : zoom * 8 / 10;
-		SendMessage(hWnd, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
-
-		// workaround:
-		if (DispEng == SCCVWTYPE_WP && (WPdisplaymode == SCCVW_WPMODE_PREVIEW || WPdisplaymode == SCCVW_WPMODE_WEBLAYOUT) ||
-			DispEng == SCCVWTYPE_HTML && (HTMLdisplaymode == SCCVW_WPMODE_PREVIEW || HTMLdisplaymode == SCCVW_WPMODE_WEBLAYOUT) ||
-			DispEng == SCCVWTYPE_EMAIL && (EMAILdisplaymode == SCCVW_WPMODE_PREVIEW || EMAILdisplaymode == SCCVW_WPMODE_WEBLAYOUT))
-		{ 
-			// temporarily switch to draft mode
-			zoom = SCCVW_WPMODE_DRAFT;
-
-			ShowWindow(hWnd, SW_HIDE);
-
-			locOptionSpec.dwId = SCCID_WPDISPLAYMODE;
-			SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
-
-			locOptionSpec.dwId = SCCID_HTMLDISPLAYMODE;
-			SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
-
-			locOptionSpec.dwId = SCCID_EMAILDISPLAYMODE;
-			SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
-
-			// and switch back
-
-			locOptionSpec.dwId = SCCID_WPDISPLAYMODE;
-			locOptionSpec.pData = &WPdisplaymode;
-			SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
-
-			locOptionSpec.dwId = SCCID_HTMLDISPLAYMODE;
-			locOptionSpec.pData = &HTMLdisplaymode;
-			SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
-
-			locOptionSpec.dwId = SCCID_EMAILDISPLAYMODE;
-			locOptionSpec.pData = &EMAILdisplaymode;
-			SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
-
-			ShowWindow(hWnd, SW_SHOW);
-		}
-	}
-	else if (DispEng == SCCVWTYPE_SS || DispEng == SCCVWTYPE_DB ||
-		DispEng == SCCVWTYPE_HEX || DispEng == SCCVWTYPE_ARCHIVE)
-	{
-		locOptionSpec.dwId = SCCID_FONTSCALINGFACTOR;
-		SendMessage(hWnd, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
-		if (dir == UlisterZoom::ZRESET) zoom = 100; // percent
-		else zoom = (dir == UlisterZoom::ZIN) ? zoom * 10 / 8 : zoom * 8 / 10;
-		SendMessage(hWnd, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
-	}
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
 LRESULT CALLBACK TListerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	_control87(MCW_EM, MCW_EM);
@@ -387,6 +63,9 @@ LRESULT CALLBACK TListerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARA
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 LRESULT CALLBACK WAwcWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	_control87(MCW_EM, MCW_EM);
@@ -416,6 +95,9 @@ LRESULT CALLBACK WAwcWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 LRESULT CALLBACK SccviewerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	HWND _SccdisplayWindow;
@@ -527,6 +209,9 @@ LRESULT CALLBACK SccviewerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 LRESULT CALLBACK SccdisplayWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	_control87(MCW_EM, MCW_EM);
@@ -599,6 +284,9 @@ LRESULT CALLBACK SccdisplayWindowProc(HWND hWnd, UINT message, WPARAM wParam, LP
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 HWND CreateListerWindow(HWND ParentWin) // TODO + UlisterInstance.hInstWLX
 {
 	HWND        SccviewerWnd, waWnd;

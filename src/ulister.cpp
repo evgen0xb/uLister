@@ -5,11 +5,15 @@ The plugin is provided as-is and without any warranty under the GPLv3 license.
 #include <windows.h>
 #include <stdio.h>
 #include <map>
-#include "ulister.h"
 #include "total.h"
 
+#include "ulister.h"
+#include "init.h"
+#include "utils.h"
+#include "window.h"
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 clsUlisterInstance	UlisterInstance;
 clsUlisterOptions	UlisterOptions;
 clsVTOptions		VTOptions;
@@ -23,11 +27,20 @@ const int MAXSEARCH = VTMAXSEARCHBUF - 1;
 std::map<HWND, char*> SearchStringPerWindowA;		// SearchStringW + SearchStringA + SearchParameter - into ALLMYDATA (TODO)
 std::map<HWND, wchar_t*> SearchStringPerWindowW;
 
+
+
 // Use [same] _wcsicmp [etc] everyweare to optimize .text dll-section memory usage
 
 
 
+extern "C" __declspec(dllexport)void __stdcall ListCloseWindow(HWND ListWin);
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 BOOL APIENTRY DllMain(HINSTANCE hinst, unsigned long reason, void* lpReserved)
 {
 	switch (reason)
@@ -67,6 +80,9 @@ BOOL APIENTRY DllMain(HINSTANCE hinst, unsigned long reason, void* lpReserved)
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 extern "C" __declspec(dllexport) HWND __stdcall ListLoadW(HWND ParentWin, wchar_t* FileToLoad, int ShowFlags)
 {
 
@@ -130,6 +146,9 @@ extern "C" __declspec(dllexport) HWND __stdcall ListLoadW(HWND ParentWin, wchar_
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 extern "C" __declspec(dllexport) HWND __stdcall ListLoad(HWND ParentWin, char* FileToLoad, int ShowFlags)
 {
 	wchar_t path[MAX_PATH] = L"";
@@ -140,6 +159,9 @@ extern "C" __declspec(dllexport) HWND __stdcall ListLoad(HWND ParentWin, char* F
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 extern "C" __declspec(dllexport) int __stdcall ListLoadNextW(HWND ParentWin, HWND ListWin, wchar_t* FileToLoad, int ShowFlags)
 {
 #if defined (__ULISTDEBUGMSG)
@@ -192,6 +214,9 @@ extern "C" __declspec(dllexport) int __stdcall ListLoadNextW(HWND ParentWin, HWN
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 extern "C" __declspec(dllexport) int __stdcall ListLoadNext(HWND ParentWin, HWND ListWin, char* FileToLoad, int ShowFlags)
 {
 	wchar_t path[MAX_PATH] = L"";
@@ -202,6 +227,9 @@ extern "C" __declspec(dllexport) int __stdcall ListLoadNext(HWND ParentWin, HWND
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 extern "C" __declspec(dllexport)void __stdcall ListCloseWindow(HWND ListWin)
 {
 #if defined (__ULISTDEBUGMSG)
@@ -255,6 +283,9 @@ extern "C" __declspec(dllexport)void __stdcall ListCloseWindow(HWND ListWin)
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 extern "C" __declspec(dllexport)int __stdcall ListSearchText(HWND ListWin, char* SearchString, int SearchParameter) { // ASCII
 // reserved for Windows 98 SE future support maybe
 #pragma warning( push )
@@ -336,6 +367,9 @@ extern "C" __declspec(dllexport)int __stdcall ListSearchText(HWND ListWin, char*
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 extern "C" __declspec(dllexport)int __stdcall ListSearchTextW(HWND ListWin, WCHAR* SearchStringW, int SearchParameter) { // UTF16
 #pragma warning( push )
 #pragma warning( disable : 4996 )
@@ -413,6 +447,9 @@ extern "C" __declspec(dllexport)int __stdcall ListSearchTextW(HWND ListWin, WCHA
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 extern "C" __declspec(dllexport)int __stdcall ListPrint(HWND ListWin, char* FileToPrint, char* DefPrinter, int PrintFlags, RECT* Margins)
 {
 	ALLMYDATA *mydata;
@@ -425,6 +462,9 @@ extern "C" __declspec(dllexport)int __stdcall ListPrint(HWND ListWin, char* File
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 extern "C" __declspec(dllexport)int __stdcall ListSendCommand(HWND ListWin, int Command, int Parameter)
 {
 	ALLMYDATA *mydata;
@@ -444,6 +484,9 @@ extern "C" __declspec(dllexport)int __stdcall ListSendCommand(HWND ListWin, int 
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 extern "C" __declspec(dllexport)HBITMAP __stdcall ListGetPreviewBitmapW(wchar_t* FileToLoad, int width, int height, char* contentbuf, int contentbuflen)
 {
 	__VTTYPENAMEBUF pTypeName;
@@ -456,6 +499,9 @@ extern "C" __declspec(dllexport)HBITMAP __stdcall ListGetPreviewBitmapW(wchar_t*
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 extern "C" __declspec(dllexport)HBITMAP __stdcall ListGetPreviewBitmap(char* FileToLoad, int width, int height, char* contentbuf, int contentbuflen)
 {
 	wchar_t path[MAX_PATH] = L"";

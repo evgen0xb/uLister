@@ -42,6 +42,9 @@
     <ClCompile Include="..\src\tooltip.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\init.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\externals\totalcmd\wlx-sdk\src\listplug.h">
@@ -204,6 +207,15 @@
       <Filter>Header Files\ulister</Filter>
     </ClInclude>
     <ClInclude Include="..\src\tooltip.h">
+      <Filter>Header Files\ulister</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\init.h">
+      <Filter>Header Files\ulister</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\utils.h">
+      <Filter>Header Files\ulister</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\window.h">
       <Filter>Header Files\ulister</Filter>
     </ClInclude>
   </ItemGroup>

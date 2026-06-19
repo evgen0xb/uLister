@@ -10,7 +10,13 @@ The plugin is provided as-is and without any warranty under the GPLv3 license.
 // vs2005 fix
 #include <WinUser.h>
 
+
+
 #include "ulister.h"
+#include "tooltip.h"
+#include "utils.h"
+
+
 
 clsToolTip::clsToolTip(UINT_PTR _IDTimerEvent)
 {
@@ -23,6 +29,8 @@ clsToolTip::clsToolTip(UINT_PTR _IDTimerEvent)
 	TargetHeight = 0;
 }
 
+
+
 void clsToolTip::InitPosition(HWND hWndParent, int _X, int _Y, int _Width, int _Height)
 {
 	hParentWnd = hWndParent;
@@ -31,6 +39,8 @@ void clsToolTip::InitPosition(HWND hWndParent, int _X, int _Y, int _Width, int _
 	TargetWidth = _Width;
 	TargetHeight = _Height;
 };
+
+
 
 bool clsToolTip::ShowTemporaryMessage(LPCWSTR InfoText, const WORD Transparency, const UINT Timer_ms)
 // BE CAREFUL! InfoText IS ONLY PTR, NOT A BUFFER! You can add malloc() with memcpy() in ShowTemporaryMessage and free() in ~destructor.
@@ -70,12 +80,16 @@ bool clsToolTip::ShowTemporaryMessage(LPCWSTR InfoText, const WORD Transparency,
 	}
 }
 
+
+
 void clsToolTip::DestroyTemporaryMessage()
 {
 	if (IsWindow(hParentWnd)) KillTimer(hParentWnd, nIDEvent);
 	if (hMsgWnd) DestroyWindow(hMsgWnd);
 	hMsgWnd = NULL; // don't touch the hParentWnd!
 }
+
+
 
 void clsToolTip::Move()
 // move and resize with parent window client
@@ -92,6 +106,8 @@ void clsToolTip::Move()
 			SWP_NOACTIVATE | SWP_NOZORDER);
 	}
 }
+
+
 
 void clsToolTip::PositionLimits(int *_X, int *_Y, int *_Width, int *_Height)
 // to get absolute window coordinate without "Windows 10 Invisible Resizing Borders" and "Drop Shadows" you must call DwmGetWindowAttribute with DWMWA_EXTENDED_FRAME_BOUNDS instead GetWindowRect.
@@ -177,6 +193,7 @@ void clsToolTip::PositionLimits(int *_X, int *_Y, int *_Width, int *_Height)
 #endif
 }
 
+
+
 void clsToolTip::Show() { if (hMsgWnd) { ShowWindow(hMsgWnd, SW_SHOWNOACTIVATE); UpdateWindow(hMsgWnd); } }
 void clsToolTip::Hide() { if (hMsgWnd) ShowWindow(hMsgWnd, SW_HIDE); }
-

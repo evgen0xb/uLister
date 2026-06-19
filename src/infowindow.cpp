@@ -19,7 +19,12 @@ The plugin is provided as-is and without any warranty under the GPLv3 license.
 
 #include <commctrl.h>
 #pragma comment(lib, "comctl32.lib")
+
+
+
 #include "ulister.h"
+#include "infowindow.h"
+#include "utils.h"
 
 
 
@@ -27,6 +32,13 @@ The plugin is provided as-is and without any warranty under the GPLv3 license.
 #define ID_EDIT_TEXT     102
 
 const wchar_t FILEINFOWINDOWCLASS[] = L"FileInfoWindowClass";
+
+
+
+void ShowSaveFileDialog(HWND hwndOwner);
+LRESULT CALLBACK FileInfoWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+LRESULT CALLBACK EditSubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData);
+LRESULT CALLBACK ButtonSubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData);
 
 
 
@@ -61,10 +73,6 @@ void clsInfoWindow::Init(LPCWSTR textToDisplay, const int _minWindowWidth, const
 }
 
 
-
-LRESULT CALLBACK FileInfoWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-LRESULT CALLBACK EditSubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData);
-LRESULT CALLBACK ButtonSubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData);
 
 bool clsInfoWindow::CreateWnd(const HINSTANCE hInstance, const HWND hwndParent)
 // return true if window is already exist else false
@@ -194,30 +202,6 @@ void clsInfoWindow::Hide() { if (hwndFileInfo) ShowWindow(hwndFileInfo, SW_HIDE)
 
 
 
-void ShowSaveFileDialog(HWND hwndOwner)
-{
-#ifdef ULISTER64
-	wchar_t szFileName[MAX_PATH] = L"formats64.txt";
-#else
-	wchar_t szFileName[MAX_PATH] = L"formats32.txt";
-#endif
-
-	OPENFILENAMEW ofn;
-
-	ZeroMemory(&ofn, sizeof(ofn));
-	ofn.lStructSize = sizeof(ofn);
-	ofn.hwndOwner = hwndOwner;
-	ofn.lpstrFilter = L"Text files (*.txt)\0*.txt\0All files (*.*)\0*.*\0";
-	ofn.lpstrFile = szFileName;
-	ofn.nMaxFile = MAX_PATH;
-	ofn.Flags = OFN_EXPLORER | OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY;
-	ofn.lpstrDefExt = L"txt";
-
-	if (GetSaveFileNameW(&ofn)) CreatFormatsTxt(ofn.lpstrFile);
-}
-
-
-
 LRESULT CALLBACK EditSubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
 {
 	HWND hParent = GetParent(hWnd);
@@ -300,3 +284,26 @@ LRESULT CALLBACK FileInfoWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 	return DefWindowProcW(hwnd, uMsg, wParam, lParam);
 }
 
+
+
+void ShowSaveFileDialog(HWND hwndOwner)
+{
+#ifdef ULISTER64
+	wchar_t szFileName[MAX_PATH] = L"formats64.txt";
+#else
+	wchar_t szFileName[MAX_PATH] = L"formats32.txt";
+#endif
+
+	OPENFILENAMEW ofn;
+
+	ZeroMemory(&ofn, sizeof(ofn));
+	ofn.lStructSize = sizeof(ofn);
+	ofn.hwndOwner = hwndOwner;
+	ofn.lpstrFilter = L"Text files (*.txt)\0*.txt\0All files (*.*)\0*.*\0";
+	ofn.lpstrFile = szFileName;
+	ofn.nMaxFile = MAX_PATH;
+	ofn.Flags = OFN_EXPLORER | OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY;
+	ofn.lpstrDefExt = L"txt";
+
+	if (GetSaveFileNameW(&ofn)) CreatFormatsTxt(ofn.lpstrFile);
+}

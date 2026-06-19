@@ -6,11 +6,18 @@ The plugin is provided as-is and without any warranty under the GPLv3 license.
 
 #include <windows.h>
 #include <stdio.h>
+
 #include "ulister.h"
+#include "utils.h"
+#include "init.h"
+
+
 
 extern clsUlisterInstance	UlisterInstance;
 extern clsUlisterOptions	UlisterOptions;
 extern clsVTOptions			VTOptions;
+
+
 
 #ifdef ULISTER64
 wchar_t *REDIST_NT6 = L"\\redist64\\";
@@ -20,12 +27,7 @@ wchar_t *REDIST_NT6 = L"\\redist32\\";
 wchar_t *REDIST_NT5 = L"\\XPdist32\\";
 #endif
 
-const wchar_t ULISTERINI[]		= L"\\ulister.ini"; // ! MUST BE ARRAY !
-const wchar_t *CLIPBOARDSECTION = L"clipboard";
-const wchar_t *VIEWERSECTION	= L"viewer";
-const wchar_t *ASKIP			= L"SKIP";
-const wchar_t *AON				= L"ON";
-const wchar_t *AOFF				= L"OFF";
+
 
 const char *AFIINIT				= "FIInit";
 const char *AFIDEINIT			= "FIDeInit";
@@ -33,11 +35,20 @@ const char *AFIGETFIRSTID		= "FIGetFirstId";
 const char *AFIGETNEXTID		= "FIGetNextId";
 const char *AFIIDFILEEX			= "FIIdFileEx";
 
+
+
 extern const char *WNDCLASSNAME_SCCVIEWER;
 
 
 
+void ErrMsgIssue(const int issuetype, const wchar_t *path, const DWORD dwError);
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 VTWORD GetVTFileType(const wchar_t* FileToLoad, __VTTYPENAMEBUF &pOutTypeName)
 // return:
 // Type Number (VTWORD)
@@ -80,6 +91,9 @@ VTWORD GetVTFileType(const wchar_t* FileToLoad, __VTTYPENAMEBUF &pOutTypeName)
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 void CreatFormatsTxt(const wchar_t* path)
 {
 	typedef VTDWORD(*FIInitFUNC)(VTVOID);
@@ -141,6 +155,9 @@ void CreatFormatsTxt(const wchar_t* path)
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 bool IsVTFileTypeAllowed(const VTWORD wType, const wchar_t* onlyload, const wchar_t* noload)
 {
 	// TRUE = OK
@@ -157,6 +174,9 @@ bool IsVTFileTypeAllowed(const VTWORD wType, const wchar_t* onlyload, const wcha
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 bool LoadVTFile(const HWND hViewWnd, const wchar_t* FileToLoad)
 {
 	// TRUE - file load OK
@@ -177,6 +197,8 @@ bool LoadVTFile(const HWND hViewWnd, const wchar_t* FileToLoad)
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 
 // This message is sent from the view window to the developer when another file should be viewed.
 // Currently, this occurs is when the user double - clicks or hits return on a file entry in an Archive view and on a hyperlink to a referenced document.
@@ -236,6 +258,9 @@ DWORD ViewThisFileHandler(const LPARAM lParam) // 4.74 SCCVW_VIEWTHISFILE
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 HBITMAP GetVTFilePreview(const wchar_t* FileToLoad, const int width, const int height)
 {
 	if (!UlisterInstance.ViewerLibraryInstanceInc()) return NULL;
@@ -314,6 +339,9 @@ HBITMAP GetVTFilePreview(const wchar_t* FileToLoad, const int width, const int h
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 #ifdef SMARTINIPATH
 void CreateDefaultUlisterIni(wchar_t *_inipath)
 {
@@ -393,274 +421,12 @@ void CreateDefaultUlisterIni(wchar_t *_inipath)
 }
 #endif
 
-void GetIniPathWLX(wchar_t *_inipath)
-{
-	wchar_t *pathposition;
-	GetModuleFileNameW(UlisterInstance.hInstWLX, _inipath, MAX_PATH);
-	_inipath[MAX_PATH - 1] = L'\0'; // Windows XP fix: The string is truncated to nSize characters and is not null-terminated
-	if (pathposition = wcsrchr(_inipath, L'\\')) *pathposition = L'\0';
-	wcscat_s(_inipath, MAX_PATH, ULISTERINI);
-}
-
-void GetIniPathCOMMANDER(wchar_t *_inipath)
-{
-	wchar_t *pathposition;
-	DWORD retlength = GetEnvironmentVariableW(L"COMMANDER_INI", _inipath, MAX_PATH);
-	if ((retlength < MAX_PATH) && retlength)
-	{
-		if (pathposition = wcsrchr(_inipath, L'\\')) *pathposition = L'\0';
-		wcscat_s(_inipath, MAX_PATH, ULISTERINI);
-	}
-	else _inipath[0] = L'\0';
-}
-
-void GetIniPathAPPDATA(wchar_t *_inipath)
-{
-	DWORD retlength = GetEnvironmentVariableW(L"APPDATA", _inipath, MAX_PATH);
-	if ((retlength + STRLEN(ULISTERINI)-1 < MAX_PATH) && retlength) wcscat_s(_inipath, MAX_PATH, ULISTERINI);
-	else _inipath[0] = L'\0';
-}
-
-bool GetIniPath(wchar_t *_inipath)
-// true  - ulister.ini was found
-// false - ulister.ini does not exist
-{
-	bool isexist = false;
-
-	// highest priority is to place ulister.ini in the plugin directory
-	GetIniPathWLX(_inipath);
-
-	if (GetFileAttributesW(_inipath) == INVALID_FILE_ATTRIBUTES)
-	{
-		// otherwise, look for ulister.ini in the same place as wincmd.ini
-		GetIniPathCOMMANDER(_inipath);
-
-		if (GetFileAttributesW(_inipath) == INVALID_FILE_ATTRIBUTES)
-		{
-			// lowest priority ulister.ini placed in %APPDATA%
-			GetIniPathAPPDATA(_inipath);
-			if (GetFileAttributesW(_inipath) != INVALID_FILE_ATTRIBUTES) isexist = true;
-		}
-		else isexist = true;
-	}
-	else isexist = true;
-
-#ifdef SMARTINIPATH
-	// last chance:
-	// try to create default ulister.ini in the plugin directory
-	if (!isexist)
-	{
-		GetIniPathWLX(_inipath);
-		CreateDefaultUlisterIni(_inipath);
-		if (GetFileAttributesW(_inipath) != INVALID_FILE_ATTRIBUTES) isexist = true;
-	}
-#endif
-
-	return isexist;
-}
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void InitUlister()
-{
-	const wchar_t *ULISTERSECTION = L"uLister";
-	const wchar_t *OIT_DATA_PATH = L"OIT_DATA_PATH";
-
-	wchar_t inioptdir[MAX_PATH];
-	wchar_t oitdatapath[MAX_PATH];
-
-	wchar_t buf[INT64STRMAXBUF];
-
-	GetPrivateProfileStringW(ULISTERSECTION, L"keepinmemory", L"1", buf, INT64STRMAXBUF, UlisterOptions.inipath);
-	if (_wcsicmp(buf, L"1") == 0) UlisterOptions.keepinmemory = true; else UlisterOptions.keepinmemory = false;
-
-	GetPrivateProfileStringW(ULISTERSECTION, L"mwhscrollinvert", AON, buf, INT64STRMAXBUF, UlisterOptions.inipath);
-	if (_wcsicmp(buf, AON) == 0) UlisterOptions.mwhscrollinvert = true; else UlisterOptions.mwhscrollinvert = false;
-
-	GetPrivateProfileStringW(ULISTERSECTION, L"optionsdir", L"", inioptdir, MAX_PATH, UlisterOptions.inipath);
-
-	GetPrivateProfileStringW(ULISTERSECTION, L"noloadtypes", L"", UlisterOptions.ininoloadtypes, ULISTMAXBUF, UlisterOptions.inipath);
-	GetPrivateProfileStringW(ULISTERSECTION, L"onlyloadtypes", L"", UlisterOptions.inionlyloadtypes, ULISTMAXBUF, UlisterOptions.inipath);
-	GetPrivateProfileStringW(ULISTERSECTION, L"nopreviewtypes", L"", UlisterOptions.ininopreviewtypes, ULISTMAXBUF, UlisterOptions.inipath);
-	GetPrivateProfileStringW(ULISTERSECTION, L"onlypreviewtypes", L"", UlisterOptions.inionlypreviewtypes, ULISTMAXBUF, UlisterOptions.inipath);
-
-	if (wcslen(inioptdir) > 0) {
-		ExpandEnvironmentStringsW(inioptdir, oitdatapath, MAX_PATH);
-		SetEnvironmentVariableW(OIT_DATA_PATH, oitdatapath);
-	}
-
-	GetPrivateProfileStringW(ULISTERSECTION, L"tooltipsdelayms", L"3000", buf, INT64STRMAXBUF, UlisterOptions.inipath);
-	UlisterOptions.ToolTipTimer = (UINT)wcstol(buf, NULL, 10);
-
-	GetPrivateProfileStringW(ULISTERSECTION, L"tooltipstransparency", L"244", buf, INT64STRMAXBUF, UlisterOptions.inipath);
-	UlisterOptions.ToolTipTransparency = (WORD)wcstol(buf, NULL, 10);
-	if (UlisterOptions.ToolTipTransparency > 255 || UlisterInstance.WindowsBuildNumber < WINDOWS8BUILDNUMBER) UlisterOptions.ToolTipTransparency = -1;
-}
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-__int8 ReadIniClipbOpt(const wchar_t *optionname)
-{
-	wchar_t buf[INT64STRMAXBUF];
-	__int8 result;
-
-	GetPrivateProfileStringW(CLIPBOARDSECTION, optionname, ASKIP, buf, INT64STRMAXBUF, UlisterOptions.inipath);
-	if (_wcsicmp(buf, AON) == 0) result = Opt::ON;
-	else if (_wcsicmp(buf, AOFF) == 0) result = Opt::OFF;
-	else result = Opt::SKIP;
-
-	return result;
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-VTDWORD ReadIniClipbSubFormat(const wchar_t *optionname)
-{
-	// Spreadsheet Or Database Copy-Paste
-	wchar_t buf[INT64STRMAXBUF];
-	VTDWORD result;
-
-	GetPrivateProfileStringW(CLIPBOARDSECTION, optionname, ASKIP, buf, INT64STRMAXBUF, UlisterOptions.inipath);
-	if (_wcsicmp(buf, L"rtf") == 0) result = SCCVW_CLIPSUBFORMAT_TABLE;
-	else if (_wcsicmp(buf, L"tabs") == 0) result = SCCVW_CLIPSUBFORMAT_TABS;
-	else if (_wcsicmp(buf, L"optimizedtabs") == 0) result = SCCVW_CLIPSUBFORMAT_OPTIMIZEDTABS;
-	else result = Opt::SKIP;
-
-	return result;
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-VTDWORD ReadIniViewOptDisplay(const wchar_t *optionname)
-{
-	// A.7.2 SCCID_WPDISPLAYMODE / SCCID_HTMLDISPLAYMODE / SCCID_EMAILDISPLAYMODE
-	wchar_t buf[INT64STRMAXBUF];
-	VTDWORD result;
-
-	GetPrivateProfileStringW(VIEWERSECTION, optionname, ASKIP, buf, INT64STRMAXBUF, UlisterOptions.inipath);
-	if (_wcsicmp(buf, L"draft") == 0) result = SCCVW_WPMODE_DRAFT;
-	else if (_wcsicmp(buf, L"normal") == 0) result = SCCVW_WPMODE_NORMAL;
-	else if (_wcsicmp(buf, L"preview") == 0) result = SCCVW_WPMODE_PREVIEW;
-	else if (_wcsicmp(buf, L"weblayout") == 0) result = SCCVW_WPMODE_WEBLAYOUT;
-	else result = Opt::SKIP;
-
-	return result;
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-VTDWORD ReadIniViewOptWebPrevFitMode(const wchar_t *optionname)
-{
-	// A.7.3 SCCID_WPFITMODE / SCCID_HTMLFITMODE / SCCID_EMAILFITMODE
-	wchar_t buf[INT64STRMAXBUF];
-	VTDWORD result;
-
-	GetPrivateProfileStringW(VIEWERSECTION, optionname, ASKIP, buf, INT64STRMAXBUF, UlisterOptions.inipath);
-	if (_wcsicmp(buf, L"original") == 0) result = SCCVW_FITMODE_ORIGINAL;
-	else if (_wcsicmp(buf, L"width") == 0) result = SCCVW_FITMODE_WINDOWWIDTH;
-	else if (_wcsicmp(buf, L"window") == 0) result = SCCVW_FITMODE_WINDOW;
-	else result = Opt::SKIP;
-
-	return result;
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-VTDWORD ReadIniViewOptGraphicFitMode(const wchar_t *optionname)
-{
-	// A.5.11 SCCID_VECFITMODE, A.5.4 SCCID_BMPFITMODE
-	wchar_t buf[INT64STRMAXBUF];
-	VTDWORD result;
-
-	GetPrivateProfileStringW(VIEWERSECTION, optionname, ASKIP, buf, INT64STRMAXBUF, UlisterOptions.inipath);
-	if (_wcsicmp(buf, L"best") == 0) result = SCCVW_FITMODE_BEST;
-	else if (_wcsicmp(buf, L"original") == 0) result = SCCVW_FITMODE_ORIGINAL;
-	else if (_wcsicmp(buf, L"window") == 0) result = SCCVW_FITMODE_WINDOW;
-	else if (_wcsicmp(buf, L"height") == 0) result = SCCVW_FITMODE_WINDOWHEIGHT;
-	else if (_wcsicmp(buf, L"width") == 0) result = SCCVW_FITMODE_WINDOWWIDTH;
-	else if (_wcsicmp(buf, L"stretch") == 0) result = SCCVW_FITMODE_STRETCHWINDOW;
-	else if (_wcsicmp(buf, L"imagesize") == 0) result = SCCVW_FITMODE_IMAGESIZE;
-	else result = Opt::SKIP;
-
-	return result;
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-__int8 ReadIniViewOptSpreadsheetDisplayMode(const wchar_t *optionname)
-{
-	wchar_t buf[INT64STRMAXBUF];
-	__int8 result;
-
-	GetPrivateProfileStringW(VIEWERSECTION, optionname, ASKIP, buf, INT64STRMAXBUF, UlisterOptions.inipath);
-	if (_wcsicmp(buf, L"draft") == 0) result = UlisterSSDisplayMode::DRAFT;
-	else if (_wcsicmp(buf, L"normal") == 0) result = UlisterSSDisplayMode::NORMAL;
-	else if (_wcsicmp(buf, L"normalhidden") == 0) result = UlisterSSDisplayMode::NORMALHIDDEN;
-	else result = Opt::SKIP;
-
-	return result;
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void InitClipboardOpts()
-{
-	VTOptions.VTClipboard.FORMAT_TEXT = ReadIniClipbOpt(L"ascii");
-	VTOptions.VTClipboard.FORMAT_RTF = ReadIniClipbOpt(L"rtf");
-	VTOptions.VTClipboard.FORMAT_UNICODE = ReadIniClipbOpt(L"unicode");
-	VTOptions.VTClipboard.FORMAT_WINBITMAP = ReadIniClipbOpt(L"bitmap");
-	VTOptions.VTClipboard.FORMAT_WINDIB = ReadIniClipbOpt(L"windib");
-	VTOptions.VTClipboard.FORMAT_WINMETAFILE = ReadIniClipbOpt(L"metafile");
-	VTOptions.VTClipboard.FORMAT_WINPALETTE = ReadIniClipbOpt(L"palette");
-
-	VTOptions.VTClipboard.OLE_ENABLEDRAGDROP = ReadIniClipbOpt(L"dragdrop");
-
-	VTOptions.VTClipboard.SSCLIPBOARDSUBFORMAT.Option = ReadIniClipbSubFormat(L"spreadsheet");
-	VTOptions.VTClipboard.DBCLIPBOARDSUBFORMAT.Option = ReadIniClipbSubFormat(L"database");
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void InitViewerOpts()
-{
-	VTOptions.VTViewer.WPDISPLAYMODE.Option = ReadIniViewOptDisplay(L"wpdisplaymode");
-	VTOptions.VTViewer.HTMLDISPLAYMODE.Option = ReadIniViewOptDisplay(L"htmldisplaymode");
-	VTOptions.VTViewer.EMAILDISPLAYMODE.Option = ReadIniViewOptDisplay(L"emaildisplaymode");
-
-	VTOptions.VTViewer.WEBPREVWPFITMODE.Option = ReadIniViewOptWebPrevFitMode(L"webprevwpfitmode");
-	VTOptions.VTViewer.WEBPREVHTMLFITMODE.Option = ReadIniViewOptWebPrevFitMode(L"webprevhtmlfitmode");
-	VTOptions.VTViewer.WEBPREVEMAILFITMODE.Option = ReadIniViewOptWebPrevFitMode(L"webprevemailfitmode");
-
-	VTOptions.VTViewer.VECTORFITMODE.Option = ReadIniViewOptGraphicFitMode(L"vectorfitmode");
-	VTOptions.VTViewer.BITMAPFITMODE.Option = ReadIniViewOptGraphicFitMode(L"bitmapfitmode");
-
-	VTOptions.VTViewer.SPREADSHEETDISPLAYMODE.Option = ReadIniViewOptSpreadsheetDisplayMode(L"spreadsheetdisplaymode");
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void IniParse()
-{
-	GetIniPath(UlisterOptions.inipath);
-	InitUlister();
-	InitClipboardOpts();
-	InitViewerOpts();
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
 bool GetLibPathVT(wchar_t *libpath, const wchar_t *libname, const int ntlev)
 {
 // OUT: build libpath and (!) check if it exists;   true=OK
@@ -684,6 +450,9 @@ bool GetLibPathVT(wchar_t *libpath, const wchar_t *libname, const int ntlev)
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 HINSTANCE LoadLibVT(const wchar_t *libname)
 {
 	HINSTANCE lib = NULL;
@@ -718,6 +487,9 @@ HINSTANCE LoadLibVT(const wchar_t *libname)
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 unsigned long long REGCurrentBuildNumber()
 {
 	char readbuf[INT64STRMAXBUF];
@@ -745,6 +517,9 @@ unsigned long long REGCurrentBuildNumber()
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 void ErrMsgIssue(const int issuetype, const wchar_t *path, const DWORD dwError)
 {
 #ifdef ULISTER64
@@ -773,7 +548,13 @@ void ErrMsgIssue(const int issuetype, const wchar_t *path, const DWORD dwError)
 }
 
 
-void AddFileInfo(ALLMYDATA *mydata)
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+void AddFileInfo(ALLMYDATA *mydata) // TODO mydata->AddFileInfo???
 {
 
 	wchar_t buf[ULISTMAXBUF];
@@ -783,15 +564,11 @@ void AddFileInfo(ALLMYDATA *mydata)
 		L"Display engine: %s\r\n",
 		mydata->LoadedFileInfo.pPath,
 		mydata->LoadedFileInfo.wType, mydata->LoadedFileInfo.pTypeName,
-		DisplayEngineName(GetDisplayEngineVT(mydata->SccviewerWindow)) );
+		DisplayEngineName(GetDisplayEngineVT(mydata->SccviewerWindow)));
 
 	mydata->InfoWindow.Init(buf, INFOWINDOWWIDTH, INFOWINDOWHEIGHT);
 
 }
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
 
 ALLMYDATA::ALLMYDATA() : ToolTip(TOOLTIP_TIMER_MSG)
 {
@@ -810,6 +587,8 @@ ALLMYDATA::ALLMYDATA() : ToolTip(TOOLTIP_TIMER_MSG)
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 
 void clsUlisterInstance::Init(const HINSTANCE _hInst)
 {
@@ -910,90 +689,7 @@ HINSTANCE clsUlisterInstance::FileIdentInstanceInc()
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-clsSSViewModeOption::clsSSViewModeOption() { Option = UlisterSSDisplayMode::SKIP; }
 
-VTBOOL clsSSViewModeOption::FilterSkipHiddenCells(VTBOOL val) const
-{
-	if (Option == UlisterSSDisplayMode::SKIP) return val;
-	return (Option == UlisterSSDisplayMode::NORMALHIDDEN) ? TRUE : FALSE;
-}
-
-VTBOOL clsSSViewModeOption::FilterSkipDraft(VTBOOL val) const
-{
-	if (Option == UlisterSSDisplayMode::SKIP) return val;
-	return (Option == UlisterSSDisplayMode::DRAFT) ? TRUE : FALSE;
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-clsVTDWORDOption::clsVTDWORDOption() { Option = Opt::SKIP; }
-VTDWORD clsVTDWORDOption::FilterSkip(VTDWORD val) const { if (Option == Opt::SKIP) return val; else return Option; }
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-clsVTOptionsClipboard::clsVTOptionsClipboard()
-{
-	FORMAT_TEXT = Opt::SKIP;
-	FORMAT_RTF = Opt::SKIP;
-	FORMAT_UNICODE = Opt::SKIP;
-	FORMAT_WINBITMAP = Opt::SKIP;
-	FORMAT_WINDIB = Opt::SKIP;
-	FORMAT_WINMETAFILE = Opt::SKIP;
-	FORMAT_WINPALETTE = Opt::SKIP;
-	OLE_ENABLEDRAGDROP = Opt::SKIP;
-}
-
-VTDWORD clsVTOptionsClipboard::Get_SCCVW_OLE(VTDWORD OLEFlags) const
-{
-	if (OLE_ENABLEDRAGDROP == Opt::SKIP) return OLEFlags;
-	return (OLE_ENABLEDRAGDROP) ? SCCVW_OLE_ENABLEDRAGDROP : 0;
-}
-
-VTDWORD clsVTOptionsClipboard::Get_SCCVW_CLIPFORMAT(VTDWORD ClipFormat) const
-{
-	/*
-	//ClipFormat = 0;
-	wchar_t buf[ULISTMAXBUF];
-	swprintf_s(buf, ULISTMAXBUF,
-		L"SRC ClipFormat: 0x%08X (%u)\n"
-		L"FORMAT_TEXT=%i\n"
-		L"FORMAT_RTF=%i\n"
-		L"FORMAT_UNICODE=%i\n"
-		L"FORMAT_WINBITMAP=%i\n"
-		L"FORMAT_WINDIB=%i\n"
-		L"FORMAT_WINMETAFILE=%i\n"
-		L"FORMAT_WINPALETTE=%i\n",
-		ClipFormat, ClipFormat,
-		FORMAT_TEXT, FORMAT_RTF, FORMAT_UNICODE, FORMAT_WINBITMAP, FORMAT_WINDIB, FORMAT_WINMETAFILE, FORMAT_WINPALETTE);
-	MessageBoxW(NULL, buf, L"Get_SCCVW_CLIPFORMAT", MB_OK);
-	*/
-
-	// skip/set/reset bits
-	if (FORMAT_TEXT != Opt::SKIP) ClipFormat = FORMAT_TEXT ? (ClipFormat | SCCVW_CLIPFORMAT_TEXT) : (ClipFormat & ~SCCVW_CLIPFORMAT_TEXT);
-	if (FORMAT_RTF != Opt::SKIP) ClipFormat = FORMAT_RTF ? (ClipFormat | SCCVW_CLIPFORMAT_RTF) : (ClipFormat & ~SCCVW_CLIPFORMAT_RTF);
-	if (FORMAT_UNICODE != Opt::SKIP) ClipFormat = FORMAT_UNICODE ? (ClipFormat | SCCVW_CLIPFORMAT_UNICODE) : (ClipFormat & ~SCCVW_CLIPFORMAT_UNICODE);
-	if (FORMAT_WINBITMAP != Opt::SKIP) ClipFormat = FORMAT_WINBITMAP ? (ClipFormat | SCCVW_CLIPFORMAT_WINBITMAP) : (ClipFormat & ~SCCVW_CLIPFORMAT_WINBITMAP);
-	if (FORMAT_WINDIB != Opt::SKIP) ClipFormat = FORMAT_WINDIB ? (ClipFormat | SCCVW_CLIPFORMAT_WINDIB) : (ClipFormat & ~SCCVW_CLIPFORMAT_WINDIB);
-	if (FORMAT_WINMETAFILE != Opt::SKIP) ClipFormat = FORMAT_WINMETAFILE ? (ClipFormat | SCCVW_CLIPFORMAT_WINMETAFILE) : (ClipFormat & ~SCCVW_CLIPFORMAT_WINMETAFILE);
-	if (FORMAT_WINPALETTE != Opt::SKIP) ClipFormat = FORMAT_WINPALETTE ? (ClipFormat | SCCVW_CLIPFORMAT_WINPALETTE) : (ClipFormat & ~SCCVW_CLIPFORMAT_WINPALETTE);
-
-	/*
-	swprintf_s(buf, ULISTMAXBUF,
-		L"DST ClipFormat: 0x%08X (%u)\n",
-		ClipFormat, ClipFormat);
-	MessageBoxW(NULL, buf, L"Get_SCCVW_CLIPFORMAT", MB_OK);
-	*/
-
-	return ClipFormat;
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
 
 clsLoadedFileInfo::clsLoadedFileInfo() { pPath = NULL; pTypeName = NULL; }
 
@@ -1009,6 +705,8 @@ void clsLoadedFileInfo::Init(LPCWSTR _pPath, const VTWORD _wType, LPCSTR _pTypeN
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 
 void SendVTOptions(const ALLMYDATA *mydata, const clsVTOptions *_VTOptions)
 {
@@ -1192,4 +890,348 @@ void SendVTOptions(const ALLMYDATA *mydata, const clsVTOptions *_VTOptions)
 	ArcSortOrder = SCCVW_SORT_NAME;
 	SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+VTDWORD GetDisplayEngineVT(const HWND hWnd)
+{
+	// SCCVWTYPE_NONE		1  /* no file open in this view */
+	// SCCVWTYPE_UNKNOWN	2  /* unknown section type */
+	// SCCVWTYPE_WP			3  /* word processor section */
+	// SCCVWTYPE_SS			4  /* spreadsheet section */
+	// SCCVWTYPE_DB			5  /* database section */
+	// SCCVWTYPE_HEX		6  /* hex view of any file */
+	// SCCVWTYPE_IMAGE		7  /* bitmap image */
+	// SCCVWTYPE_ARCHIVE	8  /* archive */
+	// SCCVWTYPE_VECTOR		9	Vector graphics display engine
+	// SCCVWTYPE_SOUND		10 ***** /* sound file */ *****
+	// SCCVWTYPE_HTML		11 /* html file */
+	// SCCVWTYPE_EMAIL		12 /* email file */
+
+	SCCVWDISPLAYINFO40 locDisplayInfo;
+	locDisplayInfo.dwSize = sizeof(SCCVWDISPLAYINFO40);
+	SendMessage(hWnd, SCCVW_GETDISPLAYINFO, 0, (LPARAM)(PSCCVWDISPLAYINFO40)&locDisplayInfo);
+	return locDisplayInfo.dwType;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+wchar_t* DisplayEngineName(const VTDWORD dwType)
+{
+	wchar_t* name[] =
+	{
+		L"COMMON UNKNOWN",
+		L"No file open",
+		L"Unknown type",
+		L"Word Processor",
+		L"Spreadsheet",
+		L"Database",
+		L"Hexadecimal view",
+		L"Bitmap image",
+		L"Archive",
+		L"Vector graphics",
+		L"Sound file",
+		L"HTML document",
+		L"email"
+	};
+	const unsigned int count = sizeof(name) / sizeof(name[0]) - 1;
+	return name[(dwType > count) ? 0 : dwType];
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+void ChangeViewMode(const HWND hWnd, const int dir)
+{
+	// dir =  1		- next view mode
+	// dir = -1		- prev view mode
+
+	LPCWSTR AUNK = L"Unknown";
+	LPCWSTR ADRAFT = L"Draft";
+	LPCWSTR ANORMAL = L"Normal";
+	LPCWSTR APREVIEW = L"Preview";
+	LPCWSTR AWEBLAY = L"Weblayout";
+	LPCWSTR AHIDDEN = L"Hidden";
+	LPCWSTR ANONE = L"None";
+	LPCWSTR ANAME = L"Name";
+	LPCWSTR ASIZE = L"Size";
+	LPCWSTR ADATE = L"Date";
+	LPCWSTR A0 = L"0\u00B0";
+	LPCWSTR A90 = L"90\u00B0";
+	LPCWSTR A180 = L"180\u00B0";
+	LPCWSTR A270 = L"270\u00B0";
+
+	LPCWSTR VIEWMODENAME = AUNK;
+
+	ALLMYDATA *mydata;
+	VTDWORD DispEng;
+	mydata = (ALLMYDATA *)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+
+	union
+	{
+		VTDWORD viewmode;
+		VTDWORD bitmaprotation;
+		VTDWORD arcsortorder;
+		VTBOOL spreadsheetdraft;
+	};
+
+	SCCVWOPTIONSPEC40 locOptionSpec;
+	locOptionSpec.dwSize = sizeof(SCCVWOPTIONSPEC40);
+	locOptionSpec.dwFlags = SCCVWOPTION_CURRENT;
+	locOptionSpec.pData = &viewmode;
+
+	DispEng = GetDisplayEngineVT(mydata->SccviewerWindow); // call only from user-level defined messages!!!
+	if (DispEng == SCCVWTYPE_WP || DispEng == SCCVWTYPE_HTML || DispEng == SCCVWTYPE_EMAIL)
+	{
+		// word processor: draft->normal->preview->weblayout
+
+		if (DispEng == SCCVWTYPE_WP) locOptionSpec.dwId = SCCID_WPDISPLAYMODE;
+		else locOptionSpec.dwId = (DispEng == SCCVWTYPE_HTML) ? SCCID_HTMLDISPLAYMODE : SCCID_EMAILDISPLAYMODE;
+
+		SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+
+		if (dir == UlisterNextMode::MNEXT) { viewmode++; if (viewmode > SCCVW_WPMODE_WEBLAYOUT) viewmode = SCCVW_WPMODE_WEBLAYOUT; }
+		else { viewmode--; if (viewmode < SCCVW_WPMODE_DRAFT) viewmode = SCCVW_WPMODE_DRAFT; }
+
+		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+		if (viewmode == SCCVW_WPMODE_DRAFT) VIEWMODENAME = ADRAFT;
+		else if (viewmode == SCCVW_WPMODE_NORMAL) VIEWMODENAME = ANORMAL;
+		else if (viewmode == SCCVW_WPMODE_PREVIEW) VIEWMODENAME = APREVIEW;
+		else if (viewmode == SCCVW_WPMODE_WEBLAYOUT) VIEWMODENAME = AWEBLAY;
+		else VIEWMODENAME = AUNK;
+
+		mydata->ToolTip.InitPosition(mydata->TListerWindow, TOOLTIP_XOFFS, TOOLTIP_YOFFS, TOOLTIP_WIDTH, TOOLTIP_HEIGHT);
+		mydata->ToolTip.ShowTemporaryMessage(VIEWMODENAME, UlisterOptions.ToolTipTransparency, UlisterOptions.ToolTipTimer);
+	}
+	else if (DispEng == SCCVWTYPE_SS)
+	{
+		// SCCID_SSSHOWGRIDLINES ???
+
+		// spreadsheet: draft->normal->normal with hidden rows and columns displayed
+
+		VTBOOL spreadsheethiddencells;
+
+		//locOptionSpec.pData = &spreadsheetdraft;
+		locOptionSpec.dwId = SCCID_SSDRAFTMODE;
+		SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+
+		locOptionSpec.pData = &spreadsheethiddencells;
+		locOptionSpec.dwId = SCCID_SSSHOWHIDDENCELLS;
+		SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+
+		if (dir == UlisterNextMode::MNEXT)
+		{
+			if (spreadsheethiddencells == FALSE && spreadsheetdraft == TRUE) { spreadsheetdraft = FALSE; VIEWMODENAME = ANORMAL; } // draft->normal
+			else if (spreadsheethiddencells == FALSE && spreadsheetdraft == FALSE) { spreadsheethiddencells = TRUE; VIEWMODENAME = AHIDDEN; } // normal->normal with hidden rows and columns displayed
+			else if (spreadsheethiddencells == TRUE && spreadsheetdraft == FALSE) { VIEWMODENAME = AHIDDEN; } // normal with hidden rows and columns displayed->nothing
+			else { spreadsheethiddencells = FALSE; spreadsheetdraft = TRUE; VIEWMODENAME = ADRAFT; } // reset to draft
+		}
+		else
+		{
+			if (spreadsheethiddencells == TRUE && spreadsheetdraft == FALSE) { spreadsheethiddencells = FALSE; VIEWMODENAME = ANORMAL; } // normal with hidden rows and columns displayed->normal
+			else if (spreadsheethiddencells == FALSE && spreadsheetdraft == FALSE) { spreadsheetdraft = TRUE; VIEWMODENAME = ADRAFT; } // normal->draft
+			else if (spreadsheethiddencells == FALSE && spreadsheetdraft == TRUE) { VIEWMODENAME = ADRAFT; } // draft->nothing
+			else { spreadsheethiddencells = TRUE; spreadsheetdraft = FALSE; VIEWMODENAME = AHIDDEN; } // reset to normal with hidden rows and columns displayed
+		}
+
+		//locOptionSpec.pData = &spreadsheethiddencells;
+		//locOptionSpec.dwId = SCCID_SSSHOWHIDDENCELLS;
+		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+
+		locOptionSpec.pData = &spreadsheetdraft;
+		locOptionSpec.dwId = SCCID_SSDRAFTMODE;
+		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+
+		mydata->ToolTip.InitPosition(mydata->TListerWindow, TOOLTIP_XOFFS, TOOLTIP_YOFFS, TOOLTIP_WIDTH, TOOLTIP_HEIGHT);
+		mydata->ToolTip.ShowTemporaryMessage(VIEWMODENAME, UlisterOptions.ToolTipTransparency, UlisterOptions.ToolTipTimer);
+	}
+	else if (DispEng == SCCVWTYPE_ARCHIVE)
+	{
+		// NONE->NAME->SIZE->DATE
+
+		//locOptionSpec.pData = &arcsortorder;
+		locOptionSpec.dwId = SCCID_ARCSORTORDER;
+		SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+
+		if (dir == UlisterNextMode::MNEXT) { arcsortorder++; if (arcsortorder > SCCVW_SORT_DATE) arcsortorder = SCCVW_SORT_DATE; }
+		else { arcsortorder--; if (arcsortorder < SCCVW_SORT_NONE) arcsortorder = SCCVW_SORT_NONE; }
+
+		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+		// This option is saved in the .oit directory and does need to be reset to SCCVW_SORT_NAME when loading an archive file (see SendVTOptions function).
+
+		if (arcsortorder == SCCVW_SORT_NONE) VIEWMODENAME = ANONE;
+		else if (arcsortorder == SCCVW_SORT_NAME) VIEWMODENAME = ANAME;
+		else if (arcsortorder == SCCVW_SORT_SIZE) VIEWMODENAME = ASIZE;
+		else if (arcsortorder == SCCVW_SORT_DATE) VIEWMODENAME = ADATE;
+		else VIEWMODENAME = AUNK;
+
+		mydata->ToolTip.InitPosition(mydata->TListerWindow, TOOLTIP_XOFFS, TOOLTIP_YOFFS, TOOLTIP_WIDTH, TOOLTIP_HEIGHT);
+		mydata->ToolTip.ShowTemporaryMessage(VIEWMODENAME, UlisterOptions.ToolTipTransparency, UlisterOptions.ToolTipTimer);
+	}
+	else if (DispEng == SCCVWTYPE_IMAGE)
+	{
+		// SCCID_ANTIALIAS ??? SCCVW_ANTIALIAS_OFF | SCCVW_ANTIALIAS_ALL ???
+
+		// rotate 0->90->180->270->0->...
+
+		//locOptionSpec.pData = &bitmaprotation;
+		locOptionSpec.dwId = SCCID_BMPROTATION;
+		SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+
+		if (dir == UlisterNextMode::MNEXT) { bitmaprotation = bitmaprotation + 90; if (bitmaprotation > SCCVW_ROTATION_270) bitmaprotation = SCCVW_ROTATION_NONE; }
+		else { bitmaprotation = bitmaprotation - 90; if (bitmaprotation > SCCVW_ROTATION_270) bitmaprotation = SCCVW_ROTATION_270; } // unsigned int (VTDWORD) overflow hack
+
+		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+		// It seems that this option is not saved in the .oit directory and does not need to be reset to SCCVW_ROTATION_NONE when loading an image file.
+
+		if (bitmaprotation == SCCVW_ROTATION_NONE) VIEWMODENAME = A0;
+		else if (bitmaprotation == SCCVW_ROTATION_90) VIEWMODENAME = A90;
+		else if (bitmaprotation == SCCVW_ROTATION_180) VIEWMODENAME = A180;
+		else if (bitmaprotation == SCCVW_ROTATION_270) VIEWMODENAME = A270;
+		else VIEWMODENAME = AUNK;
+
+		mydata->ToolTip.InitPosition(mydata->TListerWindow, TOOLTIP_XOFFS, TOOLTIP_YOFFS, TOOLTIP_WIDTH, TOOLTIP_HEIGHT);
+		mydata->ToolTip.ShowTemporaryMessage(VIEWMODENAME, UlisterOptions.ToolTipTransparency, UlisterOptions.ToolTipTimer);
+	}
+	/*
+	else if (DispEng == SCCVWTYPE_VECTOR)
+	{
+	// SCCID_VECSHOWFULLSCREEN ???
+	// SCCID_STROKE_TEXT ???
+	}
+	else if (DispEng == SCCVWTYPE_DB)
+	{
+	// SCCID_DBDRAFTMODE ???
+	// SCCID_DBSHOWGRIDLINES ???
+	}
+	else if (DispEng == SCCVWTYPE_HEX)
+	{
+	// ??? nothing
+	}
+	*/
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+void ZoomBitmapVecFont(const HWND hWnd, const int dir)
+{
+	// dir =  1		- zoom in
+	// dir = -1		- zoom out
+	// dir =  0		- zoom reset to 100% (146% in Russian Federation)
+
+	ALLMYDATA *mydata;
+	VTDWORD DispEng;
+	mydata = (ALLMYDATA *)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+
+	SCCVWOPTIONSPEC40 locOptionSpec;
+	VTDWORD zoom;
+	locOptionSpec.dwSize = sizeof(SCCVWOPTIONSPEC40);
+	locOptionSpec.dwFlags = SCCVWOPTION_CURRENT;
+	locOptionSpec.pData = &zoom;
+
+	DispEng = GetDisplayEngineVT(mydata->SccviewerWindow); // call only from user-level defined messages!!!
+	if (DispEng == SCCVWTYPE_IMAGE)
+	{
+		locOptionSpec.dwId = SCCID_BMPZOOMEVENT;
+		if (dir == UlisterZoom::ZRESET) zoom = SCCVW_ZOOM_RESET;
+		else zoom = (dir == UlisterZoom::ZIN) ? SCCVW_ZOOM_IN : SCCVW_ZOOM_OUT;
+		SendMessage(hWnd, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+	}
+	else if (DispEng == SCCVWTYPE_VECTOR)
+	{
+		locOptionSpec.dwId = SCCID_VECZOOMEVENT;
+		if (dir == UlisterZoom::ZRESET) zoom = SCCVW_ZOOM_RESET;
+		else zoom = (dir == UlisterZoom::ZIN) ? SCCVW_ZOOM_IN : SCCVW_ZOOM_OUT;
+		SendMessage(hWnd, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+	}
+	else if (DispEng == SCCVWTYPE_WP || DispEng == SCCVWTYPE_HTML || DispEng == SCCVWTYPE_EMAIL)
+	{
+		// oracle bug: SCCID_FONTSCALINGFACTOR not working if SCCVW_WPMODE_PREVIEW or SCCVW_WPMODE_WEBLAYOUT mode of Word Processor / HTML / EMAIL!
+		// From A.10.5 SCCID_FONTSCALINGFACTOR Note:
+		// For word processor documents, this only affects normal and draft modes.
+
+		VTDWORD WPdisplaymode;
+		locOptionSpec.dwId = SCCID_WPDISPLAYMODE;
+		locOptionSpec.pData = &WPdisplaymode;
+		SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+
+		VTDWORD HTMLdisplaymode;
+		locOptionSpec.dwId = SCCID_HTMLDISPLAYMODE;
+		locOptionSpec.pData = &HTMLdisplaymode;
+		SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+
+		VTDWORD EMAILdisplaymode;
+		locOptionSpec.dwId = SCCID_EMAILDISPLAYMODE;
+		locOptionSpec.pData = &EMAILdisplaymode;
+		SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+
+		locOptionSpec.pData = &zoom;
+		locOptionSpec.dwId = SCCID_FONTSCALINGFACTOR;
+		SendMessage(hWnd, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+		if (dir == UlisterZoom::ZRESET) zoom = 100; // percent
+		else zoom = (dir == UlisterZoom::ZIN) ? zoom * 10 / 8 : zoom * 8 / 10;
+		SendMessage(hWnd, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+		// workaround:
+		if (DispEng == SCCVWTYPE_WP && (WPdisplaymode == SCCVW_WPMODE_PREVIEW || WPdisplaymode == SCCVW_WPMODE_WEBLAYOUT) ||
+			DispEng == SCCVWTYPE_HTML && (HTMLdisplaymode == SCCVW_WPMODE_PREVIEW || HTMLdisplaymode == SCCVW_WPMODE_WEBLAYOUT) ||
+			DispEng == SCCVWTYPE_EMAIL && (EMAILdisplaymode == SCCVW_WPMODE_PREVIEW || EMAILdisplaymode == SCCVW_WPMODE_WEBLAYOUT))
+		{
+			// temporarily switch to draft mode
+			zoom = SCCVW_WPMODE_DRAFT;
+
+			ShowWindow(hWnd, SW_HIDE);
+
+			locOptionSpec.dwId = SCCID_WPDISPLAYMODE;
+			SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+			locOptionSpec.dwId = SCCID_HTMLDISPLAYMODE;
+			SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+			locOptionSpec.dwId = SCCID_EMAILDISPLAYMODE;
+			SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+			// and switch back
+
+			locOptionSpec.dwId = SCCID_WPDISPLAYMODE;
+			locOptionSpec.pData = &WPdisplaymode;
+			SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+			locOptionSpec.dwId = SCCID_HTMLDISPLAYMODE;
+			locOptionSpec.pData = &HTMLdisplaymode;
+			SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+			locOptionSpec.dwId = SCCID_EMAILDISPLAYMODE;
+			locOptionSpec.pData = &EMAILdisplaymode;
+			SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+			ShowWindow(hWnd, SW_SHOW);
+		}
+	}
+	else if (DispEng == SCCVWTYPE_SS || DispEng == SCCVWTYPE_DB ||
+		DispEng == SCCVWTYPE_HEX || DispEng == SCCVWTYPE_ARCHIVE)
+	{
+		locOptionSpec.dwId = SCCID_FONTSCALINGFACTOR;
+		SendMessage(hWnd, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+		if (dir == UlisterZoom::ZRESET) zoom = 100; // percent
+		else zoom = (dir == UlisterZoom::ZIN) ? zoom * 10 / 8 : zoom * 8 / 10;
+		SendMessage(hWnd, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+	}
 }
