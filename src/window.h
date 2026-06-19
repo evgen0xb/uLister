@@ -14,7 +14,7 @@ The plugin is provided as-is and without any warranty under the GPLv3 license.
 
 
 
-HWND CreateListerWindow(HWND ParentWin); // TODO + UlisterInstance.hInstWLX
+HWND CreateListerWindow(const HWND ParentWin, const HINSTANCE hInst);
 
 
 

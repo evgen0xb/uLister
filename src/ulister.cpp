@@ -104,7 +104,7 @@ extern "C" __declspec(dllexport) HWND __stdcall ListLoadW(HWND ParentWin, wchar_
 
 	if (!UlisterInstance.ViewerLibraryInstanceInc()) return NULL;
 
-	HWND hViewWnd = CreateListerWindow(ParentWin);
+	HWND hViewWnd = CreateListerWindow(ParentWin, UlisterInstance.hInstWLX);
 	if (!IsWindow(hViewWnd)) return NULL;
 
 	ALLMYDATA *mydata = (ALLMYDATA *)GetWindowLongPtr(hViewWnd, GWLP_USERDATA);

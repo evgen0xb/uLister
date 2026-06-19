@@ -287,7 +287,7 @@ LRESULT CALLBACK SccdisplayWindowProc(HWND hWnd, UINT message, WPARAM wParam, LP
 
 
 
-HWND CreateListerWindow(HWND ParentWin) // TODO + UlisterInstance.hInstWLX
+HWND CreateListerWindow(const HWND ParentWin, const HINSTANCE hInst)
 {
 	HWND        SccviewerWnd, waWnd;
 	RECT		r;
@@ -299,7 +299,7 @@ HWND CreateListerWindow(HWND ParentWin) // TODO + UlisterInstance.hInstWLX
 	wc.lpfnWndProc = (WNDPROC)WAwcWindowProc;
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
-	wc.hInstance = UlisterInstance.hInstWLX;
+	wc.hInstance = hInst;
 	wc.hIcon = NULL;
 	wc.hCursor = NULL;
 	wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
@@ -308,10 +308,10 @@ HWND CreateListerWindow(HWND ParentWin) // TODO + UlisterInstance.hInstWLX
 	RegisterClass(&wc);
 
 	GetClientRect(ParentWin, &r);
-	waWnd = CreateWindow		(WNDCLASSNAME_WAWC,		NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN, r.left, r.top, r.right - r.left, r.bottom - r.top, ParentWin,	0, UlisterInstance.hInstWLX, NULL);
+	waWnd = CreateWindow		(WNDCLASSNAME_WAWC,		NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN, r.left, r.top, r.right - r.left, r.bottom - r.top, ParentWin,	0, hInst, NULL);
 
 	GetClientRect(waWnd, &r);
-	SccviewerWnd = CreateWindow(WNDCLASSNAME_SCCVIEWER,	NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN, r.left, r.top, r.right - r.left, r.bottom - r.top, waWnd,		0, UlisterInstance.hInstWLX, NULL);
+	SccviewerWnd = CreateWindow(WNDCLASSNAME_SCCVIEWER,	NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN, r.left, r.top, r.right - r.left, r.bottom - r.top, waWnd,		0, hInst, NULL);
 
 	if (!IsWindow(SccviewerWnd)) return NULL;
 
