@@ -358,6 +358,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\init.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\src\tooltip.cpp"
 				>
 			</File>
@@ -595,6 +599,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\init.h"
+					>
+				</File>
+				<File
 					RelativePath="..\src\resource.h"
 					>
 				</File>
@@ -608,6 +616,14 @@
 				</File>
 				<File
 					RelativePath="..\src\ulister.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\utils.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\window.h"
 					>
 				</File>
 			</Filter>

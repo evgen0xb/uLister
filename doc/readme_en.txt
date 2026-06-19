@@ -493,3 +493,6 @@ Finally, the search procedure has been rewritten:
     - formats.txt has been updated (OutsideIn version 8.5.8)
     - added FILID.pdf documentation
     - updating plugin documentation
+
+2026-06-19
+    - refactoring
