@@ -27,6 +27,7 @@ public:
 	~clsInfoWindow();
 
 	void Init(LPCWSTR textToDisplay, const int _minWindowWidth, const int _minWindowHeight);
+	void Done();
 	bool CreateWnd(const HINSTANCE hInstance, const HWND hwndParent);
 
 	void Show();

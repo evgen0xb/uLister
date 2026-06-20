@@ -25,6 +25,7 @@ The plugin is provided as-is and without any warranty under the GPLv3 license.
 #include "ulister.h"
 #include "infowindow.h"
 #include "utils.h"
+#include "window.h"
 
 
 
@@ -57,16 +58,23 @@ clsInfoWindow::clsInfoWindow()
 
 
 
-clsInfoWindow::~clsInfoWindow()
+clsInfoWindow::~clsInfoWindow() { Done(); }
+
+
+
+void clsInfoWindow::Done()
 {
 	if (pText) free(pText);
 	if (hWindowIcon) DestroyIcon(hWindowIcon);
+	hWindowIcon = NULL;
+	pText = NULL;
 }
 
 
 
 void clsInfoWindow::Init(LPCWSTR textToDisplay, const int _minWindowWidth, const int _minWindowHeight)
 {
+	Done(); // ListLoadNextW memory leak fix
 	pText = _wcsdup(textToDisplay);
 	minWindowWidth = _minWindowWidth;
 	minWindowHeight = _minWindowHeight;
@@ -305,5 +313,13 @@ void ShowSaveFileDialog(HWND hwndOwner)
 	ofn.Flags = OFN_EXPLORER | OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY;
 	ofn.lpstrDefExt = L"txt";
 
-	if (GetSaveFileNameW(&ofn)) CreatFormatsTxt(ofn.lpstrFile);
+	if (GetSaveFileNameW(&ofn))
+	{
+		clsInfoWindow *pInfoWindow = (clsInfoWindow*)GetWindowLongPtrW(hwndOwner, GWLP_USERDATA);
+		if (!pInfoWindow) return;
+		clsVTWindowInstance *mydata = (clsVTWindowInstance *)GetWindowLongPtr(pInfoWindow->hwndParentWindow, GWLP_USERDATA); //hwndParentWindow === TListerWindow
+		if (!mydata) return;
+
+		mydata->pSharedPluginInstance->CreatFormatsTxt(ofn.lpstrFile);
+	}
 }

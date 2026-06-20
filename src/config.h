@@ -2,8 +2,8 @@
 The plugin is provided as-is and without any warranty under the GPLv3 license.
 */
 
-#ifndef ULISTERINITIALIZATION
-#define ULISTERINITIALIZATION
+#ifndef ULISTERCONFIG
+#define ULISTERCONFIG
 
 #include <windows.h>
 #include <sccvw.h>
@@ -15,27 +15,14 @@ The plugin is provided as-is and without any warranty under the GPLv3 license.
 #define VTMAXTYPENAMEBUF 128
 #define INT64STRMAXBUF 24
 
-#define SMARTINIPATH
 
+
+#define WINDOWS7BETABUILDNUMBER 7000
 #define WINDOWS8BUILDNUMBER 9200
 
+
+
 typedef char __VTTYPENAMEBUF[VTMAXTYPENAMEBUF];
-
-
-
-struct clsUlisterOptions
-{
-	wchar_t inipath[MAX_PATH];
-	wchar_t	ininoloadtypes[ULISTMAXBUF];
-	wchar_t	inionlyloadtypes[ULISTMAXBUF];
-	wchar_t	ininopreviewtypes[ULISTMAXBUF];
-	wchar_t	inionlypreviewtypes[ULISTMAXBUF];
-	bool	keepinmemory;
-	bool	mwhscrollinvert;
-
-	UINT ToolTipTimer;
-	WORD ToolTipTransparency;
-};
 
 
 
@@ -57,6 +44,25 @@ namespace UlisterSSDisplayMode {
 		NORMALHIDDEN,
 	};
 } // VS2005 fix
+
+
+
+class clsUlisterOptions
+{
+public:
+	wchar_t	ininoloadtypes[ULISTMAXBUF];
+	wchar_t	inionlyloadtypes[ULISTMAXBUF];
+	wchar_t	ininopreviewtypes[ULISTMAXBUF];
+	wchar_t	inionlypreviewtypes[ULISTMAXBUF];
+	bool	keepinmemory;
+	bool	mwhscrollinvert;
+
+	UINT ToolTipTimer;
+	WORD ToolTipTransparency;
+
+	void LoadUlisterOptions(wchar_t *inipath, unsigned long long WindowsBuildNumber);
+
+};
 
 
 
@@ -88,6 +94,12 @@ public:
 	clsVTOptionsClipboard();
 	VTDWORD Get_SCCVW_CLIPFORMAT(VTDWORD ClipFormat) const;
 	VTDWORD Get_SCCVW_OLE(VTDWORD OLEFlags) const;
+
+	void LoadClipboardOptions(wchar_t *inipath);
+
+private:
+	__int8 ReadIniClipbOpt(const wchar_t *optionname, wchar_t *inipath);
+	VTDWORD ReadIniClipbSubFormat(const wchar_t *optionname, wchar_t *inipath);
 
 }; // clsVTOptionsClipboard
 
@@ -121,6 +133,14 @@ public:
 
 	clsSSViewModeOption SPREADSHEETDISPLAYMODE;
 
+	void LoadViewerOptions(wchar_t *inipath);
+
+private:
+	VTDWORD ReadIniViewOptDisplay(const wchar_t *optionname, wchar_t *inipath);
+	VTDWORD ReadIniViewOptWebPrevFitMode(const wchar_t *optionname, wchar_t *inipath);
+	VTDWORD ReadIniViewOptGraphicFitMode(const wchar_t *optionname, wchar_t *inipath);
+	__int8 ReadIniViewOptSpreadsheetDisplayMode(const wchar_t *optionname, wchar_t *inipath);
+
 }; // clsVTOptionsViewer
 
 
@@ -130,12 +150,8 @@ class clsVTOptions
 public:
 	clsVTOptionsClipboard	VTClipboard;
 	clsVTOptionsViewer		VTViewer;
+
+	void LoadVTOptions(wchar_t *inipath);
 };
-
-
-
-void IniParse();
-
-
 
 #endif

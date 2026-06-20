@@ -496,3 +496,6 @@ Finally, the search procedure has been rewritten:
 
 2026-06-19
     - refactoring
+
+2026-06-20
+    - total refactoring

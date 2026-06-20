@@ -3,20 +3,76 @@ The plugin is provided as-is and without any warranty under the GPLv3 license.
 */
 
 #include <windows.h>
-#include <stdio.h>
 #include <map>
 #include "total.h"
 
 #include "ulister.h"
-#include "init.h"
+#include "config.h"
 #include "utils.h"
 #include "window.h"
+#include "sharedinstance.h"
+
+/*
+                    WLX
+		+-------------------------------------------+
+        |  clsSharedPluginInstance                  |
+        |                                           |
+        |   +----------------------------------+    |
+        |   |  clsUlisterInstance              |    |
+		|   +----------------------------------+    |
+        |                                           |
+		|   +----------------------------------+    |
+		|   |  clsUlisterOptions               |    |
+		|   +----------------------------------+    |
+        |                                           |
+        |   +----------------------------------+    |
+        |   |  clsVTOptions                    |    |
+		|   |                                  |    |
+        |   |   +-------------------------+    |    |
+        |   |   |  clsVTOptionsClipboard  |    |    |
+        |   |   +-------------------------+    |    |
+        |   |   +-------------------------+    |    |
+        |   |   |  clsVTOptionsViewer     |    |    |
+        |   |   +-------------------------+    |    |
+		|   +----------------------------------+    |
+		+-------------------------------------------+
+                                           ^    ^
+                                           |    |
+                                           |    |                        WINDOW 1
+                                           |    |                +----------------------------------+
+                                           |    |                |   clsVTWindowInstance            |
+                                           |    |                |                                  |
+                                           |    |                |   +-------------------------+    |
+                                           |    |                |   |  ToolTip                |    |
+                                           |    |                |   +-------------------------+    |
+                                           |    |                |   +-------------------------+    |
+                                           |    |                |   |  InfoWindow             |    |
+                                           |    |                |   +-------------------------+    |
+                                           |    |                |   +-------------------------+    |
+                                           |    |                |   |  LoadedFileInfo         |    |
+                                           |    |                |   +-------------------------+    |
+                                           |    |                |                                  |
+                                           |    |                |                                  |
+                                           |    |                |   +-------------------------+    |
+                                           |    +--------------------- *clsSharedPluginInstance|    |
+                                           |                     |   +-------------------------+    |
+                                           |                     +----------------------------------+
+                                           |
+                                           |                             WINDOW 2
+                                           |                     +----------------------------------+
+                                           |                     |                                  |
+                                           |                     |                                  |
+                                           |                     |                                  |
+                                           |                     |                                  |
+                                           +--------------------------                              |
+                                                                 |                                  |
+                                                                 +----------------------------------+
+
+*/
+
+clsSharedPluginInstance g_SharedPluginInstance;
 
 
-
-clsUlisterInstance	UlisterInstance;
-clsUlisterOptions	UlisterOptions;
-clsVTOptions		VTOptions;
 
 const char *ANOTFOUND = "Not found:";
 const wchar_t *WNOTFOUND = L"Not found:";
@@ -33,10 +89,6 @@ std::map<HWND, wchar_t*> SearchStringPerWindowW;
 
 
 
-extern "C" __declspec(dllexport)void __stdcall ListCloseWindow(HWND ListWin);
-
-
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -50,10 +102,7 @@ BOOL APIENTRY DllMain(HINSTANCE hinst, unsigned long reason, void* lpReserved)
 #if defined (__ULISTDEBUGMSG)
 		OutputDebugStringA("ULISTER::DLL_PROCESS_ATTACH");
 #endif
-
-		UlisterInstance.Init(hinst);
-		IniParse();
-
+		g_SharedPluginInstance.InitPlugin(hinst);
 		break;
 
 	case DLL_PROCESS_DETACH:
@@ -70,7 +119,7 @@ BOOL APIENTRY DllMain(HINSTANCE hinst, unsigned long reason, void* lpReserved)
 		for (itA = SearchStringPerWindowA.begin(); itA != SearchStringPerWindowA.end(); ++itA)
 			free(itA->second);
 
-		// < + CALL UlisterInstance::~clsUlisterInstance(); >
+		// < + CALL g_SharedPluginInstance::UlisterInstance::~clsUlisterInstance(); >
 
 		break;
 	}
@@ -85,62 +134,15 @@ BOOL APIENTRY DllMain(HINSTANCE hinst, unsigned long reason, void* lpReserved)
 
 extern "C" __declspec(dllexport) HWND __stdcall ListLoadW(HWND ParentWin, wchar_t* FileToLoad, int ShowFlags)
 {
-
 #if defined (__ULISTDEBUGMSG)
-	std::wstring msgW = L"ListLoadW (" + std::wstring(FileToLoad) + L", ParentWin=" + ToHexW(ParentWin) + L")";
-	OutputDebugStringW(msgW.c_str());
+	OutputDebugStringW(L"ListLoadW");
 #endif
+	clsVTWindowInstance *mydata = new clsVTWindowInstance();
+	if (!mydata) return NULL;
 
-	__VTTYPENAMEBUF pTypeName;
-	VTWORD wType = GetVTFileType(FileToLoad, pTypeName);
+	if (mydata->VTLoad(ParentWin, FileToLoad, &g_SharedPluginInstance)) return mydata->waWindow;
+	else { delete mydata; return NULL; }
 
-	if (!IsVTFileTypeAllowed(wType, UlisterOptions.inionlyloadtypes, UlisterOptions.ininoloadtypes))
-	{
-#if defined (__ULISTDEBUGMSG)
-		OutputDebugStringW(L"ListLoadW := NULL; // IsVTFileTypeAllowed");
-#endif
-		return NULL;
-	}
-
-	if (!UlisterInstance.ViewerLibraryInstanceInc()) return NULL;
-
-	HWND hViewWnd = CreateListerWindow(ParentWin, UlisterInstance.hInstWLX);
-	if (!IsWindow(hViewWnd)) return NULL;
-
-	ALLMYDATA *mydata = (ALLMYDATA *)GetWindowLongPtr(hViewWnd, GWLP_USERDATA);
-	if (mydata)
-	{
-		if (!LoadVTFile(mydata->SccviewerWindow, FileToLoad))
-		{
-			// TC SDK:
-			// Return a handle to your window if load succeeds, NULL otherwise. If NULL is returned, Lister will try the next plugin.
-
-			ListCloseWindow(hViewWnd);
-#if defined (__ULISTDEBUGMSG)
-			OutputDebugStringW(L"ListLoadW := NULL; // LoadVTFile");
-#endif
-			return NULL;
-		}
-
-		mydata->LoadedFileInfo.Init(FileToLoad, wType, pTypeName);
-		SendVTOptions(mydata, &VTOptions);
-		AddFileInfo(mydata);
-
-		//OutputDebugStringW(mydata->LoadedFileInfo.pPath);
-		//OutputDebugStringA(mydata->LoadedFileInfo.pTypeName);
-
-		//SetSccdisplayChildWndProc(hViewWnd);
-	}
-	else
-	{
-		return NULL;
-	}
-
-#if defined (__ULISTDEBUGMSG)
-	msgW = L"ListLoadW := (HWND) " + ToHexW(hViewWnd) + L";";
-	OutputDebugStringW(msgW.c_str());
-#endif
-	return hViewWnd;
 } // ListLoadW
 
 
@@ -165,50 +167,22 @@ extern "C" __declspec(dllexport) HWND __stdcall ListLoad(HWND ParentWin, char* F
 extern "C" __declspec(dllexport) int __stdcall ListLoadNextW(HWND ParentWin, HWND ListWin, wchar_t* FileToLoad, int ShowFlags)
 {
 #if defined (__ULISTDEBUGMSG)
-	std::wstring msgW = L"ListLoadNextW (" + std::wstring(FileToLoad) + L", ParentWin=" + ToHexW(ParentWin) +
-		L", ListWin=" + ToHexW(ListWin) + L")";
-	OutputDebugStringW(msgW.c_str());
+	OutputDebugStringW(L"ListLoadNextW");
 #endif
+	clsVTWindowInstance *mydata = (clsVTWindowInstance *)GetWindowLongPtr(ListWin, GWLP_USERDATA);
+	if (!mydata) return LISTPLUGIN_ERROR; // error return cause auto call ListCloseWindow()
 
-	__VTTYPENAMEBUF pTypeName;
-	VTWORD wType = GetVTFileType(FileToLoad, pTypeName);
+	DestroyWindow(mydata->InfoWindow.hwndFileInfo); mydata->InfoWindow.Done();
+	mydata->ToolTip.DestroyTemporaryMessage();
 
-	if (!IsVTFileTypeAllowed(wType, UlisterOptions.inionlyloadtypes, UlisterOptions.ininoloadtypes))
-	{
-#if defined (__ULISTDEBUGMSG)
-		OutputDebugStringW(L"ListLoadNextW := LISTPLUGIN_ERROR; // IsVTFileTypeAllowed");
-#endif
-		return LISTPLUGIN_ERROR; // error return cause auto call ListCloseWindow()
-	}
+	if (mydata->VTLoad(ParentWin, FileToLoad, &g_SharedPluginInstance)) return LISTPLUGIN_OK;
+	else return LISTPLUGIN_ERROR; // error return cause auto call ListCloseWindow()
 
-	ALLMYDATA *mydata = (ALLMYDATA *)GetWindowLongPtr(ListWin, GWLP_USERDATA);
-	if (mydata)
-	{
-		// TC SDK:
-		// Return LISTPLUGIN_OK if load succeeds, LISTPLUGIN_ERROR otherwise.
-		// FAKE: If LISTPLUGIN_ERROR is returned, Lister will try to load the file with the normal ListLoad function
-		// (also with other plugins). -- Lister will call ListCloseWindow() first!
+	// TC SDK:
+	// Return LISTPLUGIN_OK if load succeeds, LISTPLUGIN_ERROR otherwise.
+	// FAKE: If LISTPLUGIN_ERROR is returned, Lister will try to load the file with the normal ListLoad function
+	// (also with other plugins). -- Lister will call ListCloseWindow() first!
 
-		if (!LoadVTFile(mydata->SccviewerWindow, FileToLoad))
-		{
-#if defined (__ULISTDEBUGMSG)
-			OutputDebugStringW(L"ListLoadNextW := LISTPLUGIN_ERROR; // LoadVTFile");
-#endif
-			return LISTPLUGIN_ERROR; // error return cause auto call ListCloseWindow()
-		}
-
-		mydata->LoadedFileInfo.Init(FileToLoad, wType, pTypeName);
-		SendVTOptions(mydata, &VTOptions);
-		AddFileInfo(mydata);
-
-		//SetSccdisplayChildWndProc(mydata->waWindow);
-	}
-	else return LISTPLUGIN_ERROR; // actually, mydata is always valid in ListLoadNextW()
-
-#if defined (__ULISTDEBUGMSG)
-	OutputDebugStringW(L"ListLoadNextW := LISTPLUGIN_OK;");
-#endif
-	return LISTPLUGIN_OK;
 } // ListLoadNextW
 
 
@@ -243,41 +217,25 @@ extern "C" __declspec(dllexport)void __stdcall ListCloseWindow(HWND ListWin)
 
 	if (IsWindow(ListWin))
 	{
-		ALLMYDATA *mydata;
-		mydata = (ALLMYDATA *)GetWindowLongPtr(ListWin, GWLP_USERDATA);
+		clsVTWindowInstance *mydata = (clsVTWindowInstance *)GetWindowLongPtr(ListWin, GWLP_USERDATA);
 		if (mydata)
 		{
-			SendMessage(mydata->SccviewerWindow, SCCVW_SAVEOPTIONS, 0, 0L);
-			SendMessage(mydata->SccviewerWindow, SCCVW_CLOSEFILE, 0, 0L);
-			DestroyWindow(mydata->SccviewerWindow);
-			DestroyWindow(mydata->waWindow);
-
-			mydata->ToolTip.DestroyTemporaryMessage();
-
-			// WARNING!
-			// Calling ListCloseWindow doesn't necessarily mean the parent window will be "closed".
-			// It's necessary to return the original address of the window procedure to the parent window, since it may be used later by another plugin.
-			// TODO: ALLMYDATA struct->class with Load/Unload members?
-			if (mydata->OriginalTListerWindowProc) SetWindowLongPtr(mydata->TListerWindow, GWLP_WNDPROC, (LONG_PTR)mydata->OriginalTListerWindowProc);
-
-			UlisterInstance.ViewerLibraryInstanceDec(UlisterOptions.keepinmemory);
-
+			mydata->VTUnload();
 			delete mydata;
-
-			if (SearchStringPerWindowW.count(ListWin) != 0)
-			{
-				free(SearchStringPerWindowW[ListWin]);
-				SearchStringPerWindowW.erase(ListWin);
-			}
-			if (SearchStringPerWindowA.count(ListWin) != 0)
-			{
-				free(SearchStringPerWindowA[ListWin]);
-				SearchStringPerWindowA.erase(ListWin);
-			}
-
-
 		}
 	}
+
+	if (SearchStringPerWindowW.count(ListWin) != 0)
+	{
+		free(SearchStringPerWindowW[ListWin]);
+		SearchStringPerWindowW.erase(ListWin);
+	}
+	if (SearchStringPerWindowA.count(ListWin) != 0)
+	{
+		free(SearchStringPerWindowA[ListWin]);
+		SearchStringPerWindowA.erase(ListWin);
+	}
+		
 } // ListCloseWindow
 
 
@@ -286,16 +244,17 @@ extern "C" __declspec(dllexport)void __stdcall ListCloseWindow(HWND ListWin)
 
 
 
-extern "C" __declspec(dllexport)int __stdcall ListSearchText(HWND ListWin, char* SearchString, int SearchParameter) { // ASCII
+extern "C" __declspec(dllexport)int __stdcall ListSearchText(HWND ListWin, char* SearchString, int SearchParameter) // ASCII
+{
 // reserved for Windows 98 SE future support maybe
 #pragma warning( push )
 #pragma warning( disable : 4996 )
 
 	bool WindowWithoutSearchStringYet;
 	char *WindSearchStr;
-	ALLMYDATA *mydata;
+	clsVTWindowInstance *mydata;
 
-	mydata = (ALLMYDATA *)GetWindowLongPtr(ListWin, GWLP_USERDATA);
+	mydata = (clsVTWindowInstance *)GetWindowLongPtr(ListWin, GWLP_USERDATA);
 	if (mydata) {
 
 		// force internal search engine to ASCII (default)
@@ -370,15 +329,16 @@ extern "C" __declspec(dllexport)int __stdcall ListSearchText(HWND ListWin, char*
 
 
 
-extern "C" __declspec(dllexport)int __stdcall ListSearchTextW(HWND ListWin, WCHAR* SearchStringW, int SearchParameter) { // UTF16
+extern "C" __declspec(dllexport)int __stdcall ListSearchTextW(HWND ListWin, WCHAR* SearchStringW, int SearchParameter) // UTF16
+{
 #pragma warning( push )
 #pragma warning( disable : 4996 )
 
 	bool WindowWithoutSearchStringYet;
 	wchar_t *WindSearchStr;
-	ALLMYDATA *mydata;
+	clsVTWindowInstance *mydata;
 	
-	mydata = (ALLMYDATA *) GetWindowLongPtrW(ListWin, GWLP_USERDATA);
+	mydata = (clsVTWindowInstance *) GetWindowLongPtrW(ListWin, GWLP_USERDATA);
 	if (mydata) {
 		
 		// force internal search engine to UNICODE
@@ -452,8 +412,8 @@ extern "C" __declspec(dllexport)int __stdcall ListSearchTextW(HWND ListWin, WCHA
 
 extern "C" __declspec(dllexport)int __stdcall ListPrint(HWND ListWin, char* FileToPrint, char* DefPrinter, int PrintFlags, RECT* Margins)
 {
-	ALLMYDATA *mydata;
-	mydata = (ALLMYDATA *)GetWindowLongPtr(ListWin, GWLP_USERDATA);
+	clsVTWindowInstance *mydata;
+	mydata = (clsVTWindowInstance *)GetWindowLongPtr(ListWin, GWLP_USERDATA);
 	if (mydata)
 		SendMessage(mydata->SccviewerWindow, SCCVW_PRINT, 0, 0);
 	return LISTPLUGIN_OK;
@@ -467,8 +427,8 @@ extern "C" __declspec(dllexport)int __stdcall ListPrint(HWND ListWin, char* File
 
 extern "C" __declspec(dllexport)int __stdcall ListSendCommand(HWND ListWin, int Command, int Parameter)
 {
-	ALLMYDATA *mydata;
-	mydata = (ALLMYDATA *)GetWindowLongPtr(ListWin, GWLP_USERDATA);
+	clsVTWindowInstance *mydata;
+	mydata = (clsVTWindowInstance *)GetWindowLongPtr(ListWin, GWLP_USERDATA);
 	if (mydata)
 		switch (Command) {
 		case lc_copy:
@@ -490,9 +450,9 @@ extern "C" __declspec(dllexport)int __stdcall ListSendCommand(HWND ListWin, int 
 extern "C" __declspec(dllexport)HBITMAP __stdcall ListGetPreviewBitmapW(wchar_t* FileToLoad, int width, int height, char* contentbuf, int contentbuflen)
 {
 	__VTTYPENAMEBUF pTypeName;
-	VTWORD wType = GetVTFileType(FileToLoad, pTypeName);
-	if (!IsVTFileTypeAllowed(wType, UlisterOptions.inionlypreviewtypes, UlisterOptions.ininopreviewtypes)) return NULL;
-	HBITMAP bitmap = GetVTFilePreview(FileToLoad, width, height);
+	VTWORD wType = g_SharedPluginInstance.GetVTFileType(FileToLoad, pTypeName);
+	if (!g_SharedPluginInstance.IsVTFileTypeAllowed(wType, true)) return NULL;
+	HBITMAP bitmap = g_SharedPluginInstance.GetVTFilePreview(FileToLoad, width, height);
 	return bitmap;
 } // ListGetPreviewBitmapW
 
@@ -508,3 +468,25 @@ extern "C" __declspec(dllexport)HBITMAP __stdcall ListGetPreviewBitmap(char* Fil
 	MultiByteToWideChar(CP_ACP, 0, FileToLoad, -1, path, MAX_PATH);
 	return ListGetPreviewBitmapW(path, width, height, contentbuf, contentbuflen);
 } // ListGetPreviewBitmap
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+clsLoadedFileInfo::clsLoadedFileInfo() { pPath = NULL; pTypeName = NULL; }
+
+clsLoadedFileInfo::~clsLoadedFileInfo() { if (pPath) free(pPath); if (pTypeName) free(pTypeName); }
+
+void clsLoadedFileInfo::Init(LPCWSTR _pPath, const VTWORD _wType, LPCSTR _pTypeName, const bool quickview)
+{
+	pPath = _wcsdup(_pPath);
+	wType = _wType;
+	pTypeName = _strdup(_pTypeName);
+	isQuickviewMode = quickview;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////

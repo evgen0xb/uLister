@@ -42,7 +42,13 @@
     <ClCompile Include="..\src\tooltip.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\init.cpp">
+    <ClCompile Include="..\src\config.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ulisterinstance.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sharedinstance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -209,13 +215,19 @@
     <ClInclude Include="..\src\tooltip.h">
       <Filter>Header Files\ulister</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\init.h">
-      <Filter>Header Files\ulister</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\utils.h">
       <Filter>Header Files\ulister</Filter>
     </ClInclude>
     <ClInclude Include="..\src\window.h">
+      <Filter>Header Files\ulister</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\config.h">
+      <Filter>Header Files\ulister</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ulisterinstance.h">
+      <Filter>Header Files\ulister</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sharedinstance.h">
       <Filter>Header Files\ulister</Filter>
     </ClInclude>
   </ItemGroup>
