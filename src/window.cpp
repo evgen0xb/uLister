@@ -9,7 +9,7 @@ The plugin is provided as-is and without any warranty under the GPLv3 license.
 #include <lomenu.h>
 #include <sccvw.h>
 
-
+#include "total.h"
 
 #include "ulister.h"
 #include "window.h"
@@ -24,6 +24,12 @@ The plugin is provided as-is and without any warranty under the GPLv3 license.
 const char *WNDCLASSNAME_WAWC			= "WAwc";
 const char *WNDCLASSNAME_SCCVIEWER		= "SCCVIEWER";
 const char *WNDCLASSNAME_SCCDISPLAY		= "SCCDISPLAY";
+
+
+
+const char *ANOTFOUND = "Not found:";
+const wchar_t *WNOTFOUND = L"Not found:";
+const int MAXSEARCH = VTMAXSEARCHBUF - 1;
 
 
 
@@ -367,6 +373,9 @@ clsVTWindowInstance::clsVTWindowInstance() : ToolTip(TOOLTIP_TIMER_MSG)
 	SccdisplayWindow = NULL;
 
 	pSharedPluginInstance = NULL;
+
+	WindSearchStrW[0] = L'\0';
+	WindSearchStrA[0] = '\0';
 }
 
 
@@ -1082,6 +1091,155 @@ wchar_t* clsVTWindowInstance::DisplayEngineName(const VTDWORD dwType)
 
 
 
+#pragma warning( push )
+#pragma warning( disable : 4996 )
+
+void clsVTWindowInstance::ListSearchTextWHandler(const WCHAR* SearchStringW, const int SearchParameter)
+{
+	//OutputDebugStringW(L"ListSearchTextW");
+	//OutputDebugStringW(SearchStringW);
+
+	bool WindowWithoutSearchStringYet = (WindSearchStrW[0] == L'\0');
+
+	// TC doesn't store SearchStringW (or SearchString if ANSI) for each window separately; this parameter is global.
+	// Therefore, one TC window can change SearchStringW in another TC window.
+	// To ensure that each window has its own independent search string, the plugin needs to store its own WindSearchStrW search string for each window.
+	// WindSearchStrW needs to be updated from SearchStringW only when lcs_findfirst is called (step 1).
+	// When calling find next or find previous, you can't rely on SearchStringW; you must use your own copy of WindSearchStrW (from step 1).
+
+	// The same applies to the case-sensitive search parameter lcs_matchcase! It's global.
+	// Extract only lcs_backwards or lcs_findfirst from the SearchParameter argument, use your own stored window copy for the remaining flags.
+	// The plugin does not need to store the lcs_matchcase flag for each window, because the Viewer Technology library does this.
+
+	// If the "case sensitive" box is not checked in the TC search form, the string is transmitted in lowercase (i.e., small) letters -
+	// yes, TC changes capital (uppercase) letters without permission!
+
+	bool SearchStringWasChanged = false;
+
+	SetVTSearchUnicode();
+
+	if ((SearchParameter & lcs_findfirst) || WindowWithoutSearchStringYet)
+	{
+		//OutputDebugStringW(L"lcs_findfirst || WindowWithoutSearchStringYet");
+
+		// truncating the search string (MAXSEARCH) to ensure compatibility with the Viewer Technology library
+		SearchStringWasChanged = wcsncmp(SearchStringW, WindSearchStrW, MAXSEARCH) != 0; // for the forcefindfirst=on option // strncmp wcsncmp
+
+		// update internal search string
+		if (SearchStringWasChanged)
+		{
+			wcsncpy(WindSearchStrW, SearchStringW, MAXSEARCH);
+			WindSearchStrW[MAXSEARCH] = L'\0'; // fix potencial overflow
+		}
+
+		// call Viewer Technology library with new search parameters
+		SCCVWSEARCHINFO80 locSearchInfo80;
+
+		locSearchInfo80.dwSize = sizeof(SCCVWSEARCHINFO80);
+		wcsncpy((wchar_t*)locSearchInfo80.siText, WindSearchStrW, VTMAXSEARCHBUF);
+		locSearchInfo80.siTextLen = (VTWORD)wcslen((wchar_t*)locSearchInfo80.siText);
+
+		locSearchInfo80.siType = (SearchParameter & lcs_matchcase) ? SCCVW_SEARCHCASE : SCCVW_SEARCHNOCASE;
+		locSearchInfo80.siFrom = SCCVW_SEARCHCURRENT; // TODO: forcefindfirst; WindowWithoutSearchStringYet ---> SCCVW_SEARCHTOP???
+		locSearchInfo80.siDirection = (SearchParameter & lcs_backwards) ? SCCVW_SEARCHBACK : SCCVW_SEARCHFORWARD;
+
+		if (SendMessageW(SccviewerWindow, SCCVW_SEARCH, 0, (LPARAM)(PSCCVWSEARCHINFO80)&locSearchInfo80) != 0)
+			MessageBoxW(SccviewerWindow, WindSearchStrW, WNOTFOUND, MB_OK);
+	}
+	else
+		if (SearchParameter & lcs_backwards)
+			if (SendMessageW(SccviewerWindow, SCCVW_SEARCHNEXT, SCCVW_SEARCHBACK, 0) != 0)
+				MessageBoxW(SccviewerWindow, WindSearchStrW, WNOTFOUND, MB_OK);
+		else
+			if (SendMessageW(SccviewerWindow, SCCVW_SEARCHNEXT, SCCVW_SEARCHFORWARD, 0) != 0)
+				MessageBoxW(SccviewerWindow, WindSearchStrW, WNOTFOUND, MB_OK);
+
+	//OutputDebugStringW(WindSearchStrW);
+}
+
+
+
+void clsVTWindowInstance::ListSearchTextAHandler(const char* SearchString, const int SearchParameter)
+{
+	// reserved for Windows 98 SE future support maybe
+
+	bool WindowWithoutSearchStringYet = (WindSearchStrA[0] == '\0');
+
+	bool SearchStringWasChanged = false;
+
+	SetVTSearchANSI();
+
+	if ((SearchParameter & lcs_findfirst) || WindowWithoutSearchStringYet)
+	{
+		// truncating the search string (MAXSEARCH) to ensure compatibility with the Viewer Technology library
+		SearchStringWasChanged = strncmp(SearchString, WindSearchStrA, MAXSEARCH) != 0; // for the forcefindfirst=on option
+
+		// update internal search string
+		if (SearchStringWasChanged)
+		{
+			strncpy(WindSearchStrA, SearchString, MAXSEARCH);
+			WindSearchStrA[MAXSEARCH] = '\0'; // fix potencial overflow
+		}
+
+		// call Viewer Technology library with new search parameters
+		SCCVWSEARCHINFO40 locSearchInfo40;
+
+		locSearchInfo40.dwSize = sizeof(SCCVWSEARCHINFO40);
+		strncpy(locSearchInfo40.siText, WindSearchStrA, VTMAXSEARCHBUF);
+		locSearchInfo40.siTextLen = (VTWORD)strlen(locSearchInfo40.siText);
+
+		locSearchInfo40.siType = (SearchParameter & lcs_matchcase) ? SCCVW_SEARCHCASE : SCCVW_SEARCHNOCASE;
+		locSearchInfo40.siFrom = SCCVW_SEARCHCURRENT; // TODO: forcefindfirst; WindowWithoutSearchStringYet ---> SCCVW_SEARCHTOP???
+		locSearchInfo40.siDirection = (SearchParameter & lcs_backwards) ? SCCVW_SEARCHBACK : SCCVW_SEARCHFORWARD;
+
+		if (SendMessageW(SccviewerWindow, SCCVW_SEARCH, 0, (LPARAM)(PSCCVWSEARCHINFO80)&locSearchInfo40) != 0)
+			MessageBoxA(SccviewerWindow, WindSearchStrA, ANOTFOUND, MB_OK);
+	}
+	else
+		if (SearchParameter & lcs_backwards)
+			if (SendMessageW(SccviewerWindow, SCCVW_SEARCHNEXT, SCCVW_SEARCHBACK, 0) != 0)
+				MessageBoxA(SccviewerWindow, WindSearchStrA, ANOTFOUND, MB_OK);
+			else
+				if (SendMessageW(SccviewerWindow, SCCVW_SEARCHNEXT, SCCVW_SEARCHFORWARD, 0) != 0)
+					MessageBoxA(SccviewerWindow, WindSearchStrA, ANOTFOUND, MB_OK);
+}
+
+#pragma warning( pop )
+
+
+
+void clsVTWindowInstance::SetVTSearchUnicode()
+{
+	// force internal search engine to UNICODE
+	SCCVWOPTIONSPEC40 locOptionSpec;
+	VTDWORD SystemFlags;
+	locOptionSpec.dwSize = sizeof(SCCVWOPTIONSPEC40);
+	locOptionSpec.dwFlags = SCCVWOPTION_CURRENT;
+	locOptionSpec.dwId = SCCID_SYSTEMFLAGS;
+	locOptionSpec.pData = &SystemFlags;
+	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	SystemFlags = SystemFlags | SCCVW_SYSTEM_UNICODE; // set the unicode bit
+	SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+}
+
+
+
+void clsVTWindowInstance::SetVTSearchANSI()
+{
+	// force internal search engine to ASCII (default)
+	SCCVWOPTIONSPEC40 locOptionSpec;
+	VTDWORD SystemFlags;
+	locOptionSpec.dwSize = sizeof(SCCVWOPTIONSPEC40);
+	locOptionSpec.dwFlags = SCCVWOPTION_CURRENT;
+	locOptionSpec.dwId = SCCID_SYSTEMFLAGS;
+	locOptionSpec.pData = &SystemFlags;
+	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	SystemFlags = SystemFlags & (~SCCVW_SYSTEM_UNICODE); // reset the unicode bit
+	SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+}
+
+
+
 /*
 void SetSccdisplayChildWndProc(HWND waWnd)
 {
@@ -1107,4 +1265,3 @@ void SetSccdisplayChildWndProc(HWND waWnd)
 	OutputDebugStringA("------------------------------------------------");
 }
 */
-	

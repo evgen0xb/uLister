@@ -3,7 +3,6 @@ The plugin is provided as-is and without any warranty under the GPLv3 license.
 */
 
 #include <windows.h>
-#include <map>
 #include "total.h"
 
 #include "ulister.h"
@@ -43,13 +42,13 @@ The plugin is provided as-is and without any warranty under the GPLv3 license.
                                            |    |                |   clsVTWindowInstance            |
                                            |    |                |                                  |
                                            |    |                |   +-------------------------+    |
-                                           |    |                |   |  ToolTip                |    |
+                                           |    |                |   |  clsToolTip             |    |
                                            |    |                |   +-------------------------+    |
                                            |    |                |   +-------------------------+    |
-                                           |    |                |   |  InfoWindow             |    |
+                                           |    |                |   |  clsInfoWindow          |    |
                                            |    |                |   +-------------------------+    |
                                            |    |                |   +-------------------------+    |
-                                           |    |                |   |  LoadedFileInfo         |    |
+                                           |    |                |   |  clsLoadedFileInfo      |    |
                                            |    |                |   +-------------------------+    |
                                            |    |                |                                  |
                                            |    |                |                                  |
@@ -71,17 +70,6 @@ The plugin is provided as-is and without any warranty under the GPLv3 license.
 */
 
 clsSharedPluginInstance g_SharedPluginInstance;
-
-
-
-const char *ANOTFOUND = "Not found:";
-const wchar_t *WNOTFOUND = L"Not found:";
-const int MAXSEARCH = VTMAXSEARCHBUF - 1;
-
-// You need to remember the search string for each uLister window in order to correctly display the message about what exactly was NOT found,
-// since the FORWARD/BACK search string is independent in each window.
-std::map<HWND, char*> SearchStringPerWindowA;		// SearchStringW + SearchStringA + SearchParameter - into ALLMYDATA (TODO)
-std::map<HWND, wchar_t*> SearchStringPerWindowW;
 
 
 
@@ -110,15 +98,6 @@ BOOL APIENTRY DllMain(HINSTANCE hinst, unsigned long reason, void* lpReserved)
 #if defined (__ULISTDEBUGMSG)
 		OutputDebugStringA("ULISTER::DLL_PROCESS_DETACH");
 #endif
-
-		std::map<HWND, wchar_t*>::iterator itW; // VS2005 fix
-		for (itW = SearchStringPerWindowW.begin(); itW != SearchStringPerWindowW.end(); ++itW)
-			free(itW->second);
-
-		std::map<HWND, char*>::iterator itA; // VS2005 fix
-		for (itA = SearchStringPerWindowA.begin(); itA != SearchStringPerWindowA.end(); ++itA)
-			free(itA->second);
-
 		// < + CALL g_SharedPluginInstance::UlisterInstance::~clsUlisterInstance(); >
 
 		break;
@@ -224,18 +203,6 @@ extern "C" __declspec(dllexport)void __stdcall ListCloseWindow(HWND ListWin)
 			delete mydata;
 		}
 	}
-
-	if (SearchStringPerWindowW.count(ListWin) != 0)
-	{
-		free(SearchStringPerWindowW[ListWin]);
-		SearchStringPerWindowW.erase(ListWin);
-	}
-	if (SearchStringPerWindowA.count(ListWin) != 0)
-	{
-		free(SearchStringPerWindowA[ListWin]);
-		SearchStringPerWindowA.erase(ListWin);
-	}
-		
 } // ListCloseWindow
 
 
@@ -246,81 +213,14 @@ extern "C" __declspec(dllexport)void __stdcall ListCloseWindow(HWND ListWin)
 
 extern "C" __declspec(dllexport)int __stdcall ListSearchText(HWND ListWin, char* SearchString, int SearchParameter) // ASCII
 {
-// reserved for Windows 98 SE future support maybe
-#pragma warning( push )
-#pragma warning( disable : 4996 )
+	// reserved for Windows 98 SE future support maybe
 
-	bool WindowWithoutSearchStringYet;
-	char *WindSearchStr;
-	clsVTWindowInstance *mydata;
+	// Note. ListSearchTextW never called with SearchStringW="\0" (i.e. empty search string)
 
-	mydata = (clsVTWindowInstance *)GetWindowLongPtr(ListWin, GWLP_USERDATA);
-	if (mydata) {
+	clsVTWindowInstance *mydata = (clsVTWindowInstance *)GetWindowLongPtrW(ListWin, GWLP_USERDATA);
+	if (mydata) mydata->ListSearchTextAHandler(SearchString, SearchParameter);
 
-		// force internal search engine to ASCII (default)
-		SCCVWOPTIONSPEC40 locOptionSpec;
-		VTDWORD SystemFlags;
-		locOptionSpec.dwSize = sizeof(SCCVWOPTIONSPEC40);
-		locOptionSpec.dwFlags = SCCVWOPTION_CURRENT;
-		locOptionSpec.dwId = SCCID_SYSTEMFLAGS;
-		locOptionSpec.pData = &SystemFlags;
-		SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
-		SystemFlags = SystemFlags & (~SCCVW_SYSTEM_UNICODE); // reset the unicode bit
-		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
-
-		WindowWithoutSearchStringYet = (SearchStringPerWindowA.count(ListWin) == 0);
-
-		if ((SearchParameter & lcs_findfirst) || WindowWithoutSearchStringYet) {
-			if (WindowWithoutSearchStringYet) // new search string
-			{
-				// VS2005 fix WindSearchStr = (char *)malloc(sizeof(SCCVWSEARCHINFO40::siText));
-				WindSearchStr = (char *)malloc(member_size(SCCVWSEARCHINFO40, siText));
-				strncpy(WindSearchStr, SearchString, MAXSEARCH);
-				WindSearchStr[MAXSEARCH] = 0; // fix potencial overflow
-				SearchStringPerWindowA[ListWin] = WindSearchStr;
-			}
-			else // update search string
-			{
-				WindSearchStr = SearchStringPerWindowA[ListWin];
-				strncpy(WindSearchStr, SearchString, MAXSEARCH);
-				WindSearchStr[MAXSEARCH] = 0; // fix potencial overflow
-			}
-		}
-		else // get search string
-		{
-			WindSearchStr = SearchStringPerWindowA[ListWin];
-		}
-
-		if ((SearchParameter & lcs_findfirst) || WindowWithoutSearchStringYet) {
-
-			SCCVWSEARCHINFO40 locSearchInfo40;
-
-			locSearchInfo40.dwSize = sizeof(SCCVWSEARCHINFO40);
-			// original used strncpy, supress error about unsafe strcopy and using strncpy_s instead 
-			strncpy(locSearchInfo40.siText, WindSearchStr, MAXSEARCH);
-			locSearchInfo40.siText[MAXSEARCH] = 0;
-			locSearchInfo40.siTextLen = (VTWORD) strlen(locSearchInfo40.siText);
-
-			locSearchInfo40.siType = (SearchParameter & lcs_matchcase) ? SCCVW_SEARCHCASE : SCCVW_SEARCHNOCASE;
-			locSearchInfo40.siFrom = SCCVW_SEARCHCURRENT;
-			locSearchInfo40.siDirection = (SearchParameter & lcs_backwards) ? SCCVW_SEARCHBACK : SCCVW_SEARCHFORWARD;
-
-			//Updated for find to work
-			//if(SendMessage(mydata->oiWindow,SCCVW_SEARCH,0,(LPARAM)(PSCCVWSEARCHINFO40)&locSearchInfo)!=0)
-			if (SendMessage(mydata->SccviewerWindow, SCCVW_SEARCH, 0, (LPARAM)(PSCCVWSEARCHINFO80)&locSearchInfo40) != 0) // hack!
-				MessageBox(mydata->SccviewerWindow, WindSearchStr, ANOTFOUND, MB_OK);
-		}
-		else
-			if (SearchParameter & lcs_backwards) {
-				if (SendMessage(mydata->SccviewerWindow, SCCVW_SEARCHNEXT, SCCVW_SEARCHBACK, 0) != 0)
-					MessageBox(mydata->SccviewerWindow, WindSearchStr, ANOTFOUND, MB_OK);
-			}
-			else
-				if (SendMessage(mydata->SccviewerWindow, SCCVW_SEARCHNEXT, SCCVW_SEARCHFORWARD, 0) != 0)
-					MessageBox(mydata->SccviewerWindow, WindSearchStr, ANOTFOUND, MB_OK);
-	}
 	return LISTPLUGIN_OK;
-#pragma warning( pop ) 
 } // ListSearchText
 
 
@@ -331,77 +231,12 @@ extern "C" __declspec(dllexport)int __stdcall ListSearchText(HWND ListWin, char*
 
 extern "C" __declspec(dllexport)int __stdcall ListSearchTextW(HWND ListWin, WCHAR* SearchStringW, int SearchParameter) // UTF16
 {
-#pragma warning( push )
-#pragma warning( disable : 4996 )
+	// Note. ListSearchTextW never called with SearchStringW="\0" (i.e. empty search string)
 
-	bool WindowWithoutSearchStringYet;
-	wchar_t *WindSearchStr;
-	clsVTWindowInstance *mydata;
-	
-	mydata = (clsVTWindowInstance *) GetWindowLongPtrW(ListWin, GWLP_USERDATA);
-	if (mydata) {
-		
-		// force internal search engine to UNICODE
-		SCCVWOPTIONSPEC40 locOptionSpec;
-		VTDWORD SystemFlags;
-		locOptionSpec.dwSize = sizeof(SCCVWOPTIONSPEC40);
-		locOptionSpec.dwFlags = SCCVWOPTION_CURRENT;
-		locOptionSpec.dwId = SCCID_SYSTEMFLAGS;
-		locOptionSpec.pData = &SystemFlags;
-		SendMessage(mydata->SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
-		SystemFlags = SystemFlags | SCCVW_SYSTEM_UNICODE; // set the unicode bit
-		SendMessage(mydata->SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+	clsVTWindowInstance *mydata = (clsVTWindowInstance *)GetWindowLongPtrW(ListWin, GWLP_USERDATA);
+	if (mydata) mydata->ListSearchTextWHandler(SearchStringW, SearchParameter);
 
-		WindowWithoutSearchStringYet = (SearchStringPerWindowW.count(ListWin) == 0);
-
-		if ((SearchParameter & lcs_findfirst) || WindowWithoutSearchStringYet) {
-			if (WindowWithoutSearchStringYet) // new search string
-			{
-				// VS2005 fix WindSearchStr = (wchar_t *) malloc(sizeof(SCCVWSEARCHINFO80::siText));
-				WindSearchStr = (wchar_t *) malloc(member_size(SCCVWSEARCHINFO80, siText));
-				wcsncpy(WindSearchStr, SearchStringW, MAXSEARCH);
-				WindSearchStr[MAXSEARCH] = 0; // fix potencial overflow
-				SearchStringPerWindowW[ListWin] = WindSearchStr;
-			}
-			else // update search string
-			{
-				WindSearchStr = SearchStringPerWindowW[ListWin];
-				wcsncpy(WindSearchStr, SearchStringW, MAXSEARCH);
-				WindSearchStr[MAXSEARCH] = 0; // fix potencial overflow
-			}
-		}
-		else // get search string
-		{
-			WindSearchStr = SearchStringPerWindowW[ListWin];
-		}
-
-		if ((SearchParameter & lcs_findfirst) || WindowWithoutSearchStringYet) {
-
-			SCCVWSEARCHINFO80 locSearchInfo80;
-
-			locSearchInfo80.dwSize = sizeof(SCCVWSEARCHINFO80);
-			wcsncpy((wchar_t*)locSearchInfo80.siText, WindSearchStr, MAXSEARCH);
-			locSearchInfo80.siText[MAXSEARCH] = 0;
-			locSearchInfo80.siTextLen = (VTWORD) wcslen((wchar_t*)locSearchInfo80.siText);
-
-			locSearchInfo80.siType = (SearchParameter & lcs_matchcase) ? SCCVW_SEARCHCASE : SCCVW_SEARCHNOCASE;
-			locSearchInfo80.siFrom = SCCVW_SEARCHCURRENT;
-			locSearchInfo80.siDirection = (SearchParameter & lcs_backwards) ? SCCVW_SEARCHBACK : SCCVW_SEARCHFORWARD;
-
-			if (SendMessageW(mydata->SccviewerWindow, SCCVW_SEARCH, 0, (LPARAM)(PSCCVWSEARCHINFO80)&locSearchInfo80) != 0)
-				MessageBoxW(mydata->SccviewerWindow, WindSearchStr, WNOTFOUND, MB_OK);
-		}
-		else
-			if (SearchParameter & lcs_backwards) {
-				if (SendMessageW(mydata->SccviewerWindow, SCCVW_SEARCHNEXT, SCCVW_SEARCHBACK, 0) != 0)
-					MessageBoxW(mydata->SccviewerWindow, WindSearchStr, WNOTFOUND, MB_OK);
-			}
-			else
-				if (SendMessageW(mydata->SccviewerWindow, SCCVW_SEARCHNEXT, SCCVW_SEARCHFORWARD, 0) != 0)
-					MessageBoxW(mydata->SccviewerWindow, WindSearchStr, WNOTFOUND, MB_OK);
-	}
 	return LISTPLUGIN_OK;
-#pragma warning( pop ) 
 } // ListSearchTextW
 
 

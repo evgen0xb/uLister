@@ -19,6 +19,12 @@ The plugin is provided as-is and without any warranty under the GPLv3 license.
 #include "infowindow.h"
 #include "tooltip.h"
 #include "sharedinstance.h"
+#include "utils.h"
+
+
+
+//#define VTMAXSEARCHBUF 80 // don't change!
+#define VTMAXSEARCHBUF (member_size(SCCVWSEARCHINFO80, siText) / member_size(SCCVWSEARCHINFO80, siText[0]))
 
 
 
@@ -43,10 +49,6 @@ public:
 	clsInfoWindow InfoWindow;
 
 	// Common for all Viewer Technology windows:
-	//clsUlisterInstance *pUlisterInstance;
-	//clsUlisterOptions *pUlisterOptions;
-	//clsVTOptions *pVTOptions;
-	// TODO ------> clsSharedPluginInstance
 	clsSharedPluginInstance *pSharedPluginInstance;
 
 
@@ -62,11 +64,19 @@ public:
 	VTDWORD GetDisplayEngineVT();
 	static wchar_t* DisplayEngineName(const VTDWORD dwType);
 
+	void ListSearchTextWHandler(const WCHAR* SearchStringW, const int SearchParameter);
+	void ListSearchTextAHandler(const char* SearchString, const int SearchParameter);
+
 private:
 
 	bool CreateListerWindow(const HWND ParentWin, const HINSTANCE hInst);
 	void AddFileInfo();
 
+	wchar_t WindSearchStrW[VTMAXSEARCHBUF];
+	char WindSearchStrA[VTMAXSEARCHBUF];
+
+	void SetVTSearchUnicode();
+	void SetVTSearchANSI();
 };
 
 #endif

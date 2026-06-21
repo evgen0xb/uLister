@@ -11,7 +11,6 @@ The plugin is provided as-is and without any warranty under the GPLv3 license.
 
 
 #define ULISTMAXBUF 1024
-#define VTMAXSEARCHBUF 80 // don't change!
 #define VTMAXTYPENAMEBUF 128
 #define INT64STRMAXBUF 24
 

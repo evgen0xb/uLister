@@ -36,6 +36,8 @@ The settings are stored in the ulister.ini file, which is searched in the follow
 3) %APPDATA%
 The file will not be loaded if the path exceeds 260 characters (Windows limit).
 
+Since version 4.2.0.0, if the ulister.ini file is not found, the plugin will attempt to create a file with default settings in its directory.
+
 The name of the settings section is [ulister].
 
 The following parameters are available in version 4.0.0.4 of the plugin:
@@ -207,6 +209,7 @@ Outside In Viewer can work with simple containers such as ZIP files, MS ZIP-comp
 Double-click a link or file contained within it will unzip the file to a temporary directory and open it in a new viewing window.
 
 The keyboard shortcut Ctrl+Shift+R reload the configuration parameters from the ini file (some of them may take effect immediately).
+When reloading parameters, the plugin does not look for the new location of the ulister.ini file.
 
 Ctrl+M/Ctrl+Shift+M and Ctrl+Shift + Mouse Wheel:
     for Word Processor / HTML / EMAIL switching between view modes (draft->normal->preview->weblayout);
@@ -499,3 +502,6 @@ Finally, the search procedure has been rewritten:
 
 2026-06-20
     - total refactoring
+
+2026-06-21
+    - refactoring; memory and code optimization
