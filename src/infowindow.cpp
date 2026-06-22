@@ -82,6 +82,59 @@ void clsInfoWindow::Init(LPCWSTR textToDisplay, const int _minWindowWidth, const
 
 
 
+void clsInfoWindow::CenterChildPosition(const HWND hwndParent, int *_X, int *_Y)
+{
+	// This function should support multiple monitors, but I haven't tested this configuration because I only have one monitor.
+
+	RECT rcParent;
+	GetWindowRect(hwndParent, &rcParent);
+	RECT rcVisibleParent = rcParent;
+
+	HMONITOR hMonitor = MonitorFromWindow(hwndParent, MONITOR_DEFAULTTONEAREST);
+	MONITORINFO mi;
+	ZeroMemory(&mi, sizeof(mi));
+	mi.cbSize = sizeof(MONITORINFO);
+
+	bool hasMonitorInfo = GetMonitorInfo(hMonitor, &mi);
+
+	if (hasMonitorInfo)
+	{
+		// Clip the parent window coordinates by the monitor's work area boundaries
+		// This finds the intersection between the parent window and the screen (the actual visible part)
+		if (rcVisibleParent.left   < mi.rcWork.left)   rcVisibleParent.left = mi.rcWork.left;
+		if (rcVisibleParent.right  > mi.rcWork.right)  rcVisibleParent.right = mi.rcWork.right;
+		if (rcVisibleParent.top    < mi.rcWork.top)    rcVisibleParent.top = mi.rcWork.top;
+		if (rcVisibleParent.bottom > mi.rcWork.bottom) rcVisibleParent.bottom = mi.rcWork.bottom;
+	}
+
+	int visibleWidth = rcVisibleParent.right - rcVisibleParent.left;
+	int visibleHeight = rcVisibleParent.bottom - rcVisibleParent.top;
+
+	// Fallback: If the parent window is completely off-screen (dimensions became <= 0),
+	// revert to the original parent coordinates to prevent broken calculations
+	if (visibleWidth <= 0 || visibleHeight <= 0)
+	{
+		visibleWidth = rcParent.right - rcParent.left;
+		visibleHeight = rcParent.bottom - rcParent.top;
+		rcVisibleParent = rcParent;
+	}
+
+	*_X = rcVisibleParent.left + (visibleWidth - minWindowWidth) / 2;
+	*_Y = rcVisibleParent.top + (visibleHeight - minWindowHeight) / 2;
+
+	// If the child window is larger than the visible area
+	// and still spills over the monitor edges, clamp it strictly inside the work area
+	if (hasMonitorInfo)
+	{
+		if (*_X + minWindowWidth > mi.rcWork.right)  *_X = mi.rcWork.right - minWindowWidth;
+		if (*_X < mi.rcWork.left)                    *_X = mi.rcWork.left;
+		if (*_Y + minWindowHeight > mi.rcWork.bottom) *_Y = mi.rcWork.bottom - minWindowHeight;
+		if (*_Y < mi.rcWork.top)                     *_Y = mi.rcWork.top;
+	}
+}
+
+
+
 bool clsInfoWindow::CreateWnd(const HINSTANCE hInstance, const HWND hwndParent)
 // return true if window is already exist else false
 {
@@ -93,7 +146,7 @@ bool clsInfoWindow::CreateWnd(const HINSTANCE hInstance, const HWND hwndParent)
 
 	if (hwndFileInfo) return true;
 
-	WNDCLASSW wc; ZeroMemory(&wc, sizeof(wc)); //WNDCLASSW wc = {};
+	WNDCLASSW wc; ZeroMemory(&wc, sizeof(wc));
 
 	wc.lpfnWndProc = FileInfoWindowProc;
 	wc.hInstance = hInstance;
@@ -106,11 +159,14 @@ bool clsInfoWindow::CreateWnd(const HINSTANCE hInstance, const HWND hwndParent)
 
 	RegisterClassW(&wc);
 
+	int newX, newY;
+	CenterChildPosition(hwndParent, &newX, &newY);
+
 	hwndFileInfo = CreateWindowExW(
 		0, FILEINFOWINDOWCLASS,
 		Title,
 		WS_OVERLAPPEDWINDOW ^ WS_MINIMIZEBOX,
-		CW_USEDEFAULT, CW_USEDEFAULT, minWindowWidth, minWindowHeight,
+		newX, newY, minWindowWidth, minWindowHeight,
 		hwndParent, NULL,
 		hInstance, (LPVOID)this); // WM_NCCREATE -> SetWindowLongPtr(this);
 

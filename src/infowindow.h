@@ -39,6 +39,9 @@ public:
 	HICON hWindowIcon;
 	HWND hwndFileInfo;
 	HWND hwndParentWindow;
+
+private:
+	void CenterChildPosition(const HWND hwndParent, int *_X, int *_Y);
 };
 
 #endif

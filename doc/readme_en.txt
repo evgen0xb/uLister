@@ -505,3 +505,6 @@ Finally, the search procedure has been rewritten:
 
 2026-06-21
     - refactoring; memory and code optimization
+
+2026-06-22
+    - fix: center the "file info" window relative to its parent
