@@ -243,13 +243,13 @@ void clsSharedPluginInstance::CreatFormatsTxt(const wchar_t* path)
 				while (MoreIDs)
 				{
 					TotalIDs++;
-					_snprintf_s(buf, ULISTMAXBUF, _TRUNCATE, "%u  -  %s\n", TypeNumber, TypeName);
+					_snprintf_s(buf, ULISTMAXBUF, _TRUNCATE, "%u  -  %s\r\n", TypeNumber, TypeName);
 					//OutputDebugStringA(buf);
 					WriteFile(hFile, buf, (DWORD)strlen(buf), &bytesWritten, NULL);
 					MoreIDs = FIGetNextId(&figetTag, &TypeNumber, TypeName, VTMAXTYPENAMEBUF);
 				}
 				FIDeInit();
-				_snprintf_s(buf, ULISTMAXBUF, _TRUNCATE, "\nTotal format types: %u\n", TotalIDs);
+				_snprintf_s(buf, ULISTMAXBUF, _TRUNCATE, "\r\nTotal format types: %u\r\n", TotalIDs);
 				//OutputDebugStringA(buf);
 				WriteFile(hFile, buf, (DWORD)strlen(buf), &bytesWritten, NULL);
 

@@ -630,3 +630,6 @@ https://github.com/avogelba/uLister
 
 2026-06-22
     - fix: центрировать окно "информация о файле" относительно родительского
+
+2026-06-23
+    - fix: Unix LF -> Windows CR LF

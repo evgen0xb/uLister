@@ -508,3 +508,6 @@ Finally, the search procedure has been rewritten:
 
 2026-06-22
     - fix: center the "file info" window relative to its parent
+
+2026-06-23
+    - fix: Unix LF -> Windows CR LF
