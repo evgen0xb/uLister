@@ -1100,6 +1100,7 @@ void clsVTWindowInstance::ListSearchTextWHandler(const WCHAR* SearchStringW, con
 	//OutputDebugStringW(SearchStringW);
 
 	bool WindowWithoutSearchStringYet = (WindSearchStrW[0] == L'\0');
+	bool isSearchBack = SearchParameter & lcs_backwards;
 
 	// TC doesn't store SearchStringW (or SearchString if ANSI) for each window separately; this parameter is global.
 	// Therefore, one TC window can change SearchStringW in another TC window.
@@ -1140,14 +1141,16 @@ void clsVTWindowInstance::ListSearchTextWHandler(const WCHAR* SearchStringW, con
 		locSearchInfo80.siTextLen = (VTWORD)wcslen((wchar_t*)locSearchInfo80.siText);
 
 		locSearchInfo80.siType = (SearchParameter & lcs_matchcase) ? SCCVW_SEARCHCASE : SCCVW_SEARCHNOCASE;
-		locSearchInfo80.siFrom = SCCVW_SEARCHCURRENT; // TODO: forcefindfirst; WindowWithoutSearchStringYet ---> SCCVW_SEARCHTOP???
-		locSearchInfo80.siDirection = (SearchParameter & lcs_backwards) ? SCCVW_SEARCHBACK : SCCVW_SEARCHFORWARD;
+		// Now the "whole words only" checkbox means to start the search forward from the beginning of the document (or from the end if the search is reversed)
+		locSearchInfo80.siFrom = (SearchParameter & lcs_wholewords) ?
+			(isSearchBack ? SCCVW_SEARCHBOTTOM : SCCVW_SEARCHTOP) : SCCVW_SEARCHCURRENT;
+		locSearchInfo80.siDirection = (isSearchBack) ? SCCVW_SEARCHBACK : SCCVW_SEARCHFORWARD;
 
 		if (SendMessageW(SccviewerWindow, SCCVW_SEARCH, 0, (LPARAM)(PSCCVWSEARCHINFO80)&locSearchInfo80) != 0)
 			MessageBoxW(SccviewerWindow, WindSearchStrW, WNOTFOUND, MB_OK);
 	}
 	else
-		if (SearchParameter & lcs_backwards)
+		if (isSearchBack)
 		{
 			if (SendMessageW(SccviewerWindow, SCCVW_SEARCHNEXT, SCCVW_SEARCHBACK, 0) != 0)
 				MessageBoxW(SccviewerWindow, WindSearchStrW, WNOTFOUND, MB_OK);
