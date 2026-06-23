@@ -1148,12 +1148,15 @@ void clsVTWindowInstance::ListSearchTextWHandler(const WCHAR* SearchStringW, con
 	}
 	else
 		if (SearchParameter & lcs_backwards)
+		{
 			if (SendMessageW(SccviewerWindow, SCCVW_SEARCHNEXT, SCCVW_SEARCHBACK, 0) != 0)
 				MessageBoxW(SccviewerWindow, WindSearchStrW, WNOTFOUND, MB_OK);
+		}
 		else
+		{
 			if (SendMessageW(SccviewerWindow, SCCVW_SEARCHNEXT, SCCVW_SEARCHFORWARD, 0) != 0)
 				MessageBoxW(SccviewerWindow, WindSearchStrW, WNOTFOUND, MB_OK);
-
+		}
 	//OutputDebugStringW(WindSearchStrW);
 }
 
@@ -1197,11 +1200,15 @@ void clsVTWindowInstance::ListSearchTextAHandler(const char* SearchString, const
 	}
 	else
 		if (SearchParameter & lcs_backwards)
+		{
 			if (SendMessageW(SccviewerWindow, SCCVW_SEARCHNEXT, SCCVW_SEARCHBACK, 0) != 0)
 				MessageBoxA(SccviewerWindow, WindSearchStrA, ANOTFOUND, MB_OK);
-			else
-				if (SendMessageW(SccviewerWindow, SCCVW_SEARCHNEXT, SCCVW_SEARCHFORWARD, 0) != 0)
-					MessageBoxA(SccviewerWindow, WindSearchStrA, ANOTFOUND, MB_OK);
+		}
+		else
+		{
+			if (SendMessageW(SccviewerWindow, SCCVW_SEARCHNEXT, SCCVW_SEARCHFORWARD, 0) != 0)
+				MessageBoxA(SccviewerWindow, WindSearchStrA, ANOTFOUND, MB_OK);
+		}
 }
 
 #pragma warning( pop )
