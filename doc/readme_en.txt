@@ -514,3 +514,4 @@ Finally, the search procedure has been rewritten:
 
 2026-06-24
     - the "Whole words only" checkbox in the search window (Ctrl+F/F7) now means that the search starts from the beginning of the document (or from the end if searching in the opposite direction).
+    - custom context menu in the "File Info" window

@@ -20,6 +20,8 @@ The plugin is provided as-is and without any warranty under the GPLv3 license.
 #include <commctrl.h>
 #pragma comment(lib, "comctl32.lib")
 
+#pragma comment(lib, "user32.lib")
+
 
 
 #include "ulister.h"
@@ -32,6 +34,15 @@ The plugin is provided as-is and without any warranty under the GPLv3 license.
 #define ID_BUTTON_EXPORT 101
 #define ID_EDIT_TEXT     102
 
+#define ID_CUSTOM_COPY      10001
+#define ID_CUSTOM_SELECTALL 10002
+
+#define SYSSTRMAXBUF	64
+#define SYSSTRID_COPY	25
+#define SYSSTRID_SELALL	29
+
+
+
 const wchar_t FILEINFOWINDOWCLASS[] = L"FileInfoWindowClass";
 
 
@@ -41,6 +52,19 @@ LRESULT CALLBACK FileInfoWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 LRESULT CALLBACK EditSubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData);
 LRESULT CALLBACK ButtonSubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData);
 
+
+
+LPWSTR GetSystemString(UINT stringId)
+{
+	HMODULE hUser32 = GetModuleHandle(L"user32.dll");
+	static WCHAR buffer[SYSSTRMAXBUF]; // "&Copy\tCtrl+C"
+	if (hUser32 && LoadStringW(hUser32, stringId, buffer, STRLEN(buffer)) > 0) return buffer;
+	
+	// Fallback strings if resource loading fails
+	if (stringId == 25) return (LPWSTR)L"Copy";
+	else if (stringId == 29) return (LPWSTR)L"Select All";
+	else return (LPWSTR)L"UNKNOWN";
+}
 
 
 clsInfoWindow::clsInfoWindow()
@@ -277,6 +301,52 @@ LRESULT CALLBACK EditSubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 		if (wParam == VK_ESCAPE) { SendMessageW(hParent, WM_CLOSE, 0, 0); return 0; }
 		if (wParam == VK_TAB && pInfoWindow) { SetFocus(pInfoWindow->hButton); return 0; }
 		break;
+	case WM_CONTEXTMENU:
+	{
+		// custom pop-up menu
+		HMENU hMenu = CreatePopupMenu();
+		if (hMenu)
+		{
+			AppendMenuW(hMenu, MF_STRING, ID_CUSTOM_COPY, GetSystemString(SYSSTRID_COPY));
+			AppendMenuW(hMenu, MF_STRING, ID_CUSTOM_SELECTALL, GetSystemString(SYSSTRID_SELALL));
+
+			// disable "Copy" if no text is selected
+			DWORD startSel = 0, endSel = 0;
+			SendMessageW(hWnd, EM_GETSEL, (WPARAM)&startSel, (LPARAM)&endSel);
+			if (startSel == endSel) EnableMenuItem(hMenu, ID_CUSTOM_COPY, MF_BYCOMMAND | MF_GRAYED);
+
+			int xPos = LOWORD(lParam);
+			int yPos = HIWORD(lParam);
+
+			// keyboard Shift+F10 or Menu key
+			if (xPos == -1 && yPos == -1)
+			{
+				RECT rect;
+				GetWindowRect(hWnd, &rect);
+				xPos = rect.left + 10;
+				yPos = rect.top + 10;
+			}
+
+			// display menu and capture user selection
+			TrackPopupMenu(hMenu, TPM_LEFTALIGN | TPM_TOPALIGN | TPM_RIGHTBUTTON, xPos, yPos, 0, hWnd, NULL);
+			DestroyMenu(hMenu);
+		}
+		return 0;
+	}
+	case WM_COMMAND:
+	{
+		// handle custom menu actions: call native actions
+		switch (LOWORD(wParam))
+		{
+		case ID_CUSTOM_COPY:
+			SendMessageW(hWnd, WM_COPY, 0, 0);
+			return 0;
+		case ID_CUSTOM_SELECTALL:
+			SendMessageW(hWnd, EM_SETSEL, 0, -1);
+			return 0;
+		}
+		break;
+	}
 	}
 	return DefSubclassProc(hWnd, uMsg, wParam, lParam);
 }
