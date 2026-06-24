@@ -27,6 +27,8 @@ const char *WNDCLASSNAME_SCCDISPLAY		= "SCCDISPLAY";
 
 
 
+#define CLASSNAMEMAXBUF 64
+
 const char *ANOTFOUND = "Not found:";
 const wchar_t *WNOTFOUND = L"Not found:";
 const int MAXSEARCH = VTMAXSEARCHBUF - 1;
@@ -123,6 +125,31 @@ LRESULT CALLBACK TListerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARA
 		case WM_TIMER:
 			//OutputDebugStringA("WM_TIMER");
 			if (wParam == mydata->ToolTip.nIDEvent) mydata->ToolTip.DestroyTemporaryMessage();
+			break;
+		case WM_ACTIVATE:
+		// This procedure changes the text on the button from 'Whole words only' to 'FROM BEGINING' // TODO --> func?
+			if (LOWORD(wParam) == WA_INACTIVE)
+			{
+				HWND hwndPrevious = reinterpret_cast<HWND>(lParam);
+				if (hwndPrevious)
+				{
+					char className[CLASSNAMEMAXBUF];
+					GetClassNameA(hwndPrevious, className, STRLEN(className));
+					className[CLASSNAMEMAXBUF - 1] = '\0';
+
+					if (strcmp(className, "TSEARCHTEXT") == 0)
+					{
+						//OutputDebugStringA("GET IT: TSEARCHTEXT");
+						HWND hButton = mydata->FindButtonN(hwndPrevious, 8); // BUTTON N8 - 'Whole words only'
+						if (hButton)
+						{
+							//OutputDebugStringA("GET IT: hButton");
+							SetWindowTextA(hButton, "FROM BEGINING");
+						}
+					}
+				}
+			}
+
 			break;
 		}
 		return CallWindowProc(mydata->OriginalTListerWindowProc, hWnd, message, wParam, lParam); // Ghisler Handler
@@ -1246,6 +1273,29 @@ void clsVTWindowInstance::SetVTSearchANSI()
 	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
 	SystemFlags = SystemFlags & (~SCCVW_SYSTEM_UNICODE); // reset the unicode bit
 	SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+}
+
+
+
+HWND clsVTWindowInstance::FindButtonN(const HWND hParent, const int targetIndex)
+{
+	int buttonCount = 0;
+	HWND hChild = GetWindow(hParent, GW_CHILD);
+
+	while (hChild)
+	{
+		char className[CLASSNAMEMAXBUF];
+		GetClassNameA(hChild, className, sizeof(className));
+		className[CLASSNAMEMAXBUF - 1] = '\0';
+
+		if (strcmp(className, "Button") == 0)
+		{
+			buttonCount++;
+			if (buttonCount == targetIndex) return hChild;
+		}
+		hChild = GetWindow(hChild, GW_HWNDNEXT);
+	}
+	return NULL;
 }
 
 

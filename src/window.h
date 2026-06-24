@@ -67,6 +67,8 @@ public:
 	void ListSearchTextWHandler(const WCHAR* SearchStringW, const int SearchParameter);
 	void ListSearchTextAHandler(const char* SearchString, const int SearchParameter);
 
+	static HWND FindButtonN(const HWND hParent, const int targetIndex);
+
 private:
 
 	bool CreateListerWindow(const HWND ParentWin, const HINSTANCE hInst);
