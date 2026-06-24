@@ -79,6 +79,8 @@ private:
 
 	void SetVTSearchUnicode();
 	void SetVTSearchANSI();
+
+	void AddContextMenuItems();
 };
 
 #endif

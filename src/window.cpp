@@ -27,7 +27,14 @@ const char *WNDCLASSNAME_SCCDISPLAY		= "SCCDISPLAY";
 
 
 
-#define CLASSNAMEMAXBUF 64
+#define CLASSNAMEMAXBUF		64
+
+// must be less then SCCVW_DEFAULTMENUMAX:
+#define ID_CUSTOM_FULLSCR	101
+#define ID_CUSTOM_FILEINF	102
+
+const wchar_t *WFULLSCR = L"Full Screen";
+const wchar_t *WFILEINF = L"File Info";
 
 const char *ANOTFOUND = "Not found:";
 const wchar_t *WNOTFOUND = L"Not found:";
@@ -299,6 +306,23 @@ LRESULT CALLBACK SccviewerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 
 			}
 			break;
+		case WM_COMMAND:
+		{
+			// handle custom menu actions
+			switch (LOWORD(wParam))
+			{
+			case ID_CUSTOM_FULLSCR:
+				//OutputDebugStringA("ID_CUSTOM_FULLSCR");
+				// TODO?
+				return 0;
+			case ID_CUSTOM_FILEINF:
+				//OutputDebugStringA("ID_CUSTOM_FILEINF");
+				if (mydata->InfoWindow.CreateWnd(mydata->pSharedPluginInstance->UlisterInstance.hInstWLX, mydata->TListerWindow)) SetActiveWindow(mydata->InfoWindow.hwndFileInfo);
+				else mydata->InfoWindow.Show();
+				return 0;
+			}
+			break;
+		}
 		}
 		return CallWindowProc(mydata->OriginalSccviewerWindowProc, hWnd, message, wParam, lParam); // OIT Handler
 	}
@@ -541,6 +565,7 @@ bool clsVTWindowInstance::VTLoad(const HWND ParentWin, const wchar_t *FileToLoad
 	LoadedFileInfo.Init(FileToLoad, wType, pTypeName, quickview);
 	SendVTOptions();
 	AddFileInfo();
+	AddContextMenuItems();
 
 	//OutputDebugStringW(mydata->LoadedFileInfo.pPath);
 	//OutputDebugStringA(mydata->LoadedFileInfo.pTypeName);
@@ -1296,6 +1321,37 @@ HWND clsVTWindowInstance::FindButtonN(const HWND hParent, const int targetIndex)
 		hChild = GetWindow(hChild, GW_HWNDNEXT);
 	}
 	return NULL;
+}
+
+
+
+void clsVTWindowInstance::AddContextMenuItems()
+{
+	// use the custom ID_CUSTOM_FULLSCR handler to enter Full Screen Mode
+	// A.10.3 SCCID_DIALOGFLAGS -> SCCVW_DIALOG_NOADDSHOWFULLSCREEN: The dialog should not display the "Show Full Screen" menu option from the context menu.
+	VTWORD VTDialogFlags;
+	SCCVWOPTIONSPEC40 locOptionSpec;
+	locOptionSpec.dwSize = sizeof(SCCVWOPTIONSPEC40);
+	locOptionSpec.dwFlags = SCCVWOPTION_CURRENT;
+	locOptionSpec.dwId = SCCID_DIALOGFLAGS;
+	locOptionSpec.pData = &VTDialogFlags;
+	VTDialogFlags = SCCVW_DIALOG_NOADDSHOWFULLSCREEN; // full screen mode is implemented for the vector graphics only - will use own?
+	SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+
+	SCCVWDISPLAYINFO40 locSccvwDisplayInfo40;
+	locSccvwDisplayInfo40.dwSize = sizeof(SCCVWDISPLAYINFO40);
+	SendMessage(SccviewerWindow, SCCVW_GETDISPLAYINFO, 0, (LPARAM)(PSCCVWDISPLAYINFO40)&locSccvwDisplayInfo40);
+	if (locSccvwDisplayInfo40.hMenu)
+	{
+		// short-circuit evaluation fix:
+		bool retcode1 = DeleteMenu(reinterpret_cast<HMENU>(locSccvwDisplayInfo40.hMenu), ID_CUSTOM_FULLSCR, MF_BYCOMMAND);
+		bool retcode2 = DeleteMenu(reinterpret_cast<HMENU>(locSccvwDisplayInfo40.hMenu), ID_CUSTOM_FILEINF, MF_BYCOMMAND);
+		if (retcode1 || retcode2) DeleteMenu(reinterpret_cast<HMENU>(locSccvwDisplayInfo40.hMenu), GetMenuItemCount(reinterpret_cast<HMENU>(locSccvwDisplayInfo40.hMenu)) - 1, MF_BYPOSITION); // MF_SEPARATOR
+
+		AppendMenuW(reinterpret_cast<HMENU>(locSccvwDisplayInfo40.hMenu), MF_SEPARATOR, 0, NULL);
+		//AppendMenuW(reinterpret_cast<HMENU>(locSccvwDisplayInfo40.hMenu), MF_STRING, ID_CUSTOM_FULLSCR, WFULLSCR); // TODO: FULL SCREEN?
+		AppendMenuW(reinterpret_cast<HMENU>(locSccvwDisplayInfo40.hMenu), MF_STRING, ID_CUSTOM_FILEINF, WFILEINF);
+	}
 }
 
 

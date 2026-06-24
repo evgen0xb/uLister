@@ -59,7 +59,7 @@ LPWSTR GetSystemString(UINT stringId)
 	HMODULE hUser32 = GetModuleHandle(L"user32.dll");
 	static WCHAR buffer[SYSSTRMAXBUF]; // "&Copy\tCtrl+C"
 	if (hUser32 && LoadStringW(hUser32, stringId, buffer, STRLEN(buffer)) > 0) return buffer;
-	
+
 	// Fallback strings if resource loading fails
 	if (stringId == 25) return (LPWSTR)L"Copy";
 	else if (stringId == 29) return (LPWSTR)L"Select All";

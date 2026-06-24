@@ -11,7 +11,7 @@ The plugin is provided as-is and without any warranty under the GPLv3 license.
 
 
 #define ULISTMAXBUF 1024
-#define VTMAXTYPENAMEBUF 128
+#define VTMAXTYPENAMEBUF 128 // Oracle BUG - (more then 80!) #define SCCVW_FILEIDNAMEMAX     80 ///// use MAX_DISPLAYINFO_SZNAME_SIZE? /////
 #define INT64STRMAXBUF 24
 
 
