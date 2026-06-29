@@ -518,3 +518,6 @@ Finally, the search procedure has been rewritten:
     - custom context menu in the "File Info" window
     - in the TC search window (Ctrl+F/F7), replace the text of the 'Whole words only' button with 'FROM BEGINING' (heuristics)
     - the 'File info' item has been added to the context menu
+
+2026-06-29
+    - File ID documentation update - PDF version 8.5.4
