@@ -522,3 +522,4 @@ Finally, the search procedure has been rewritten:
 2026-06-29
     - File ID documentation update - PDF version 8.5.4
     - updating plugin documentation (RU)
+    - added formats*.md
