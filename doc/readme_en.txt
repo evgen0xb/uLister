@@ -526,3 +526,4 @@ Finally, the search procedure has been rewritten:
 
 2026-07-01
     - slightly more detailed error messages
+    - refactoring

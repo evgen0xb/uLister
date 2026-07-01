@@ -134,29 +134,7 @@ LRESULT CALLBACK TListerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARA
 			if (wParam == mydata->ToolTip.nIDEvent) mydata->ToolTip.DestroyTemporaryMessage();
 			break;
 		case WM_ACTIVATE:
-		// This procedure changes the text on the button from 'Whole words only' to 'FROM BEGINING' // TODO --> func?
-			if (LOWORD(wParam) == WA_INACTIVE)
-			{
-				HWND hwndPrevious = reinterpret_cast<HWND>(lParam);
-				if (hwndPrevious)
-				{
-					char className[CLASSNAMEMAXBUF];
-					GetClassNameA(hwndPrevious, className, STRLEN(className));
-					className[CLASSNAMEMAXBUF - 1] = '\0';
-
-					if (strcmp(className, "TSEARCHTEXT") == 0)
-					{
-						//OutputDebugStringA("GET IT: TSEARCHTEXT");
-						HWND hButton = mydata->FindButtonN(hwndPrevious, 8); // BUTTON N8 - 'Whole words only'
-						if (hButton)
-						{
-							//OutputDebugStringA("GET IT: hButton");
-							SetWindowTextA(hButton, "FROM BEGINING");
-						}
-					}
-				}
-			}
-
+			if (LOWORD(wParam) == WA_INACTIVE) mydata->OEM_ReplaceButtonFROMBEGINING(reinterpret_cast<HWND>(lParam)); // lParam===hwndPrevious
 			break;
 		}
 		return CallWindowProc(mydata->OriginalTListerWindowProc, hWnd, message, wParam, lParam); // Ghisler Handler
@@ -1321,6 +1299,31 @@ HWND clsVTWindowInstance::FindButtonN(const HWND hParent, const int targetIndex)
 		hChild = GetWindow(hChild, GW_HWNDNEXT);
 	}
 	return NULL;
+}
+
+
+
+void clsVTWindowInstance::OEM_ReplaceButtonFROMBEGINING(const HWND hwndParent)
+// This procedure changes the text on the button from 'Whole words only' to 'FROM BEGINING'
+{
+	if (hwndParent)
+	{
+		char className[CLASSNAMEMAXBUF];
+		GetClassNameA(hwndParent, className, STRLEN(className));
+		className[CLASSNAMEMAXBUF - 1] = '\0';
+
+		if (strcmp(className, "TSEARCHTEXT") == 0)
+		{
+			//OutputDebugStringA("GET IT: TSEARCHTEXT");
+			const HWND hButton = FindButtonN(hwndParent, 8); // BUTTON N8 - 'Whole words only'
+			if (hButton)
+			{
+				//OutputDebugStringA("GET IT: hButton");
+				SetWindowTextA(hButton, "FROM BEGINING");
+			}
+		}
+	}
+
 }
 
 

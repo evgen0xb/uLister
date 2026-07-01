@@ -67,7 +67,7 @@ public:
 	void ListSearchTextWHandler(const WCHAR* SearchStringW, const int SearchParameter);
 	void ListSearchTextAHandler(const char* SearchString, const int SearchParameter);
 
-	static HWND FindButtonN(const HWND hParent, const int targetIndex);
+	void OEM_ReplaceButtonFROMBEGINING(const HWND hwndPrevious);
 
 private:
 
@@ -81,6 +81,8 @@ private:
 	void SetVTSearchANSI();
 
 	void AddContextMenuItems();
+
+	static HWND FindButtonN(const HWND hParent, const int targetIndex);
 };
 
 #endif
