@@ -524,6 +524,6 @@ Finally, the search procedure has been rewritten:
     - updating plugin documentation (RU)
     - added formats*.md
 
-2026-07-01
+2026-07-01 4.3.2.0
     - slightly more detailed error messages
     - refactoring
