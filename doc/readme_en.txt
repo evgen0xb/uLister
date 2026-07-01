@@ -523,3 +523,6 @@ Finally, the search procedure has been rewritten:
     - File ID documentation update - PDF version 8.5.4
     - updating plugin documentation (RU)
     - added formats*.md
+
+2026-07-01
+    - slightly more detailed error messages

@@ -396,14 +396,27 @@ void clsUlisterInstance::ErrMsgIssue(const int issuetype, const wchar_t *path, c
 		issuename = L"Can't load:";
 
 	wchar_t buf[ULISTMAXBUF];
+#ifdef ULISTER64
 	swprintf_s(buf, ULISTMAXBUF,
-		L"%s\n"
+		L"\t%s\n\n"
 		L"[%s].\n"
 		L"Error code: 0x%08X   (%lu)\n"
 		L"INI=[%s]\n\n"
-		L"1. Check Outside In dlls in plugin dir.\n"
-		L"2. Install the required version of Microsoft Visual C++ Redistributable.\n"
+		L"\t1. Check Outside In DLLs in plugin dir redist64.\n"
+		L"\t2. Make sure that redist64 contains the 64-bit version\n\t    of the Outside In library.\n"
+		L"\t3. Install the required version of Microsoft\n\t    Visual C++ Redistributable x64.\n\n"
 		L"See readme.txt, install section.", issuename, path, dwError, dwError, inipath);
+#else
+	swprintf_s(buf, ULISTMAXBUF,
+		L"\t%s\n\n"
+		L"[%s].\n"
+		L"Error code: 0x%08X   (%lu)\n"
+		L"INI=[%s]\n\n"
+		L"\t1. Check Outside In DLLs in plugin dir redist32.\n"
+		L"\t2. Make sure that redist32 contains the 32-bit version\n\t    of the Outside In library.\n"
+		L"\t3. Install the required version of Microsoft\n\t    Visual C++ Redistributable x86.\n\n"
+		L"See readme.txt, install section.", issuename, path, dwError, dwError, inipath);
+#endif
 
 	MessageBoxW(NULL, buf, title, MB_OK);
 }
