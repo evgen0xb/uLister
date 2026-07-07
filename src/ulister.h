@@ -15,7 +15,8 @@ The plugin is provided as-is and without any warranty under the GPLv3 license.
 
 //#define __ULISTDEBUGMSG
 //#define __ULISTDEBUGKEEPINMEMORY
-//#define __ULISTDEBUGBALLOON
+//#define __ULISTDEBUGTOOLTIPS
+//#define __ULISTDEBUGBUFFCFG
 
 
 

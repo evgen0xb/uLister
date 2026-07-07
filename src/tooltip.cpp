@@ -114,7 +114,7 @@ void clsToolTip::PositionLimits(int *_X, int *_Y, int *_Width, int *_Height)
 // however this function may not be implemented in older Windows versions.
 // we will use old school GetClientRect and ClientToScreen instead
 {
-#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGBALLOON)
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGTOOLTIPS)
 	OutputDebugStringW(L"*** PositionLimits ***");
 #endif
 
@@ -132,7 +132,7 @@ void clsToolTip::PositionLimits(int *_X, int *_Y, int *_Width, int *_Height)
 	rectParentClient.right = rectParentClient.right + pointParentClientTopLeft.x;
 	rectParentClient.bottom = rectParentClient.bottom + pointParentClientTopLeft.y;
 
-#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGBALLOON)
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGTOOLTIPS)
 	std::wstring msgW = L"parent client absolute (" + ToStrW(pointParentClientTopLeft.x) + L", " + ToStrW(pointParentClientTopLeft.y) + L", " + ToStrW(rectParentClient.right) + L", " + ToStrW(rectParentClient.bottom) + L")";
 	OutputDebugStringW(msgW.c_str());
 #endif
@@ -143,7 +143,7 @@ void clsToolTip::PositionLimits(int *_X, int *_Y, int *_Width, int *_Height)
 		// it's impossible!
 		// GetWindowRect fails due just created window is HIDDEN.
 
-#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGBALLOON)
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGTOOLTIPS)
 		OutputDebugStringW(L"GetWindowRect fails. Correcting coordinates.");
 #endif
 
@@ -153,7 +153,7 @@ void clsToolTip::PositionLimits(int *_X, int *_Y, int *_Width, int *_Height)
 		rectMsgWindow.bottom += pointParentClientTopLeft.y;
 	}
 
-#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGBALLOON)
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGTOOLTIPS)
 	msgW = L"msg absolute (" + ToStrW(rectMsgWindow.left) + L", " + ToStrW(rectMsgWindow.top) + L", " + ToStrW(rectMsgWindow.right) + L", " + ToStrW(rectMsgWindow.bottom) + L")";
 	OutputDebugStringW(msgW.c_str());
 #endif
@@ -165,7 +165,7 @@ void clsToolTip::PositionLimits(int *_X, int *_Y, int *_Width, int *_Height)
 	scrollbarWidth = GetSystemMetrics(SM_CXVSCROLL);
 	*_Width = rectParentClient.right - rectMsgWindow.left - scrollbarWidth;
 
-#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGBALLOON)
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGTOOLTIPS)
 	msgW = L"max: newwidth=" + ToStrW(*_Width);
 	OutputDebugStringW(msgW.c_str());
 	msgW = L"max: newheight=" + ToStrW(*_Height);
@@ -175,7 +175,7 @@ void clsToolTip::PositionLimits(int *_X, int *_Y, int *_Width, int *_Height)
 	*_Height = (*_Height < 0) ? 0 : *_Height; // 0 if negative
 	*_Width = (*_Width < 0) ? 0 : *_Width;
 
-#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGBALLOON)
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGTOOLTIPS)
 	msgW = L"positive: newwidth=" + ToStrW(*_Width);
 	OutputDebugStringW(msgW.c_str());
 	msgW = L"positive: newheight=" + ToStrW(*_Height);
@@ -185,7 +185,7 @@ void clsToolTip::PositionLimits(int *_X, int *_Y, int *_Width, int *_Height)
 	*_Height = (*_Height < TargetHeight) ? *_Height : TargetHeight; // min
 	*_Width = (*_Width < TargetWidth) ? *_Width : TargetWidth;
 
-#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGBALLOON)
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGTOOLTIPS)
 	msgW = L"min: newwidth=" + ToStrW(*_Width);
 	OutputDebugStringW(msgW.c_str());
 	msgW = L"min: newheight=" + ToStrW(*_Height);

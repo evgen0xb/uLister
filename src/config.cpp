@@ -12,6 +12,7 @@ The plugin is provided as-is and without any warranty under the GPLv3 license.
 
 const wchar_t *CLIPBOARDSECTION = L"clipboard";
 const wchar_t *VIEWERSECTION = L"viewer";
+const wchar_t *MEMORYSECTION = L"memory";
 const wchar_t *ASKIP = L"SKIP";
 const wchar_t *AON = L"ON";
 const wchar_t *AOFF = L"OFF";
@@ -152,6 +153,20 @@ __int8 clsVTOptionsViewer::ReadIniViewOptSpreadsheetDisplayMode(const wchar_t *o
 
 
 
+VTDWORD clsVTOptionsViewer::ReadIniViewOptBufferSize(const wchar_t *optionname, wchar_t *inipath)
+{
+	wchar_t buf[INT64STRMAXBUF];
+
+	GetPrivateProfileStringW(MEMORYSECTION, optionname, ASKIP, buf, INT64STRMAXBUF, inipath);
+	return (_wcsicmp(buf, ASKIP) == 0) ? Opt::SKIP : (VTDWORD)wcstol(buf, NULL, 0); // boundary check in clsVTWindowInstance::SendVTOptions; BASE=0 (AUTO)
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 void clsVTOptionsViewer::LoadViewerOptions(wchar_t *inipath)
 {
 	WPDISPLAYMODE.Option = ReadIniViewOptDisplay(L"wpdisplaymode", inipath);
@@ -166,6 +181,10 @@ void clsVTOptionsViewer::LoadViewerOptions(wchar_t *inipath)
 	BITMAPFITMODE.Option = ReadIniViewOptGraphicFitMode(L"bitmapfitmode", inipath);
 
 	SPREADSHEETDISPLAYMODE.Option = ReadIniViewOptSpreadsheetDisplayMode(L"spreadsheetdisplaymode", inipath);
+
+	ReadBufferSize.Option = ReadIniViewOptBufferSize(L"readbuffersizekb", inipath);
+	MMapBufferSize.Option = ReadIniViewOptBufferSize(L"mmapbuffersizekb", inipath);
+	TempBufferSize.Option = ReadIniViewOptBufferSize(L"tempbuffersizekb", inipath);
 }
 
 

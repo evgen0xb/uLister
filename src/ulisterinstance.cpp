@@ -287,7 +287,19 @@ void clsUlisterInstance::CreateDefaultUlisterIni(wchar_t *_inipath)
 "; skip|best|original|window|height|width|stretch|imagesize\r\n"
 "vectorfitmode=window\r\n"
 "bitmapfitmode=window\r\n"
+"\r\n"
+"[memory]\r\n"
+"; buffers\r\n"
+"readbuffersizekb=skip\r\n"
+"mmapbuffersizekb=skip\r\n"
+"tempbuffersizekb=skip\r\n"
 ;
+
+/*
+readbuffersizekb = 1024
+mmapbuffersizekb = 32768
+tempbuffersizekb = 8192
+*/
 	const DWORD cfglength = STRLEN(defaultconfig) - 1;
 
 	HANDLE hFile = CreateFileW(_inipath, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);

@@ -11,7 +11,7 @@ Although the plugin is freeware, it uses third-party Oracle libraries. Please re
 https://www.oracle.com/downloads/licenses/standard-license.html
 
 Outside In Viewer (C) 1991, 2026 Oracle(R)
-(C) 2011 Egor Vlaznev
+(C) 2011 Egor Vlaznev (aka arax)
 (C) 2016 Michael Loster (aka milo1012)
 (C) 2024 Marek Jasinski (aka Marek)
 (C) 2024 Vogelbacher Andreas (aka avogelba)
@@ -159,6 +159,45 @@ spreadsheetdisplaymode=skip|draft|normal|normalhidden
     draft       - draft document display with a single font of the same size, without graphics, etc
     normal      - display without restrictions
     normalhidden- additionally display hidden rows and columns
+
+In version 4.4.0.0 of the plugin, the following memory management settings are available in the memory section:
+
+[memory]
+readbuffersizekb=skip|Size_KB
+mmapbuffersizekb=skip|Size_KB
+tempbuffersizekb=skip|Size_KB
+
+(A.12.1 SCCID_IO_BUFFERSIZE)
+
+The value is specified in kilobytes, you can specify hexadecimal using the "0x" prefix
+(or octal with "0" if you're on a PDP-11, so it's best to never write numbers starting with a zero here, like "012"!).
+
+ReadBufferSizeKB used to define the number of Kbytes that will read from disk into memory at any given time.
+Once the buffer has data, further file reads will proceed within the buffer until the end of the buffer is reached,
+at which point the buffer will again be filled from the disk. This can lead to performance improvements in many file formats,
+regardless of the size of the document.
+
+The default value is 2 KB,
+the minimum is to read 1 KB at a time, and the maximum is 4194303 (4 GB minus 1 KB, or 0x003fffff)
+
+MMapBufferSizeKB used to define a maximum size that a document can be and use a memory-mapped I/O model.
+In this situation, the entire file is read from disk into memory and all further I/O is performed on the data in memory.
+This can lead to significantly improved performance, but note that either the entire file can be read into memory, or it cannot.
+If both of these buffers are set, then if the file is smaller than the MMapBufferSizeKB, the entire file will be read into memory;
+if not, it will be read in blocks defined by the ReadBufferSizeKB.
+
+The default is 8192 KB (memory-mapped files up to 8 MB),
+the minimum value is 0 KB (do not use memory-mapped I/O), and the maximum is 4194303 (4 GB minus 1 KB, or 0x003fffff).
+
+TempBufferSizeKB is maximum size that a temporary file can occupy in memory before being written to disk as a physical file.
+Storing temporary files in memory can boost performance on archives and files that have embedded objects or attachments.
+
+The default is 2048 KB (temporary files in memory are limited to 2 MB).
+The minimum value is 0 KB (all temporary files are immediately written to disk). The maximum is 4194303 (4 GB minus 1 KB, or 0x003fffff).
+(Note from evgen_b - this likely refers to the total size for all required temporary files, not just one.)
+
+TODO: In the future, it would be useful to heuristically select a more optimal value for these parameters, AUTO, dynamically,
+depending on the amount of free RAM and the file size, before opening it (is this possible?).
 
 Options are set the first time you launch the plugin. Restart Total Commander for the changes to take effect.
 

@@ -31,7 +31,7 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "Egor Vlaznev"
-            VALUE "FileDescription", "uLister is a powerful document viewer which can open more than 500 file formats."
+            VALUE "FileDescription", "uLister is a powerful document viewer which can open more than 250 file formats."
             VALUE "FileVersion", "4.3.2.0"
             VALUE "LegalCopyright", "GPLv3"
             VALUE "OriginalFilename", "uLister.wlx"

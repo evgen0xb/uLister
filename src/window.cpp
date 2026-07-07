@@ -629,6 +629,8 @@ void clsVTWindowInstance::SendVTOptions()
 
 		VTBOOL SpreadsheetDraftMode;
 		VTBOOL SpreadsheetHiddenCells;
+
+		SCCBUFFEROPTIONS iobufsize;
 	};
 
 	// unicode clipboard:
@@ -782,7 +784,72 @@ void clsVTWindowInstance::SendVTOptions()
 	ArcSortOrder = SCCVW_SORT_NAME;
 	SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 
-}
+	/****************************************************/
+
+	// memory buffers:
+	// We will only send a new value if it has actually changed in the ulister.ini file.
+	locOptionSpec.dwId = SCCOPT_IO_BUFFERSIZE;
+	//locOptionSpec.pData = &iobufsize;
+	iobufsize.dwFlags = 0;
+	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)&locOptionSpec); // return: iobufsize.dwFlags:=7 (undocumented)!!!
+
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGBUFFCFG)
+	std::wstring msgW = L"(ReadBufferSize=" + ToStrW(iobufsize.dwReadBufferSize) + L", MMapBufferSize=" + ToStrW(iobufsize.dwMMapBufferSize) + L", TempBufferSize=" + ToStrW(iobufsize.dwTempBufferSize) + L", Flags=" + ToStrW(iobufsize.dwFlags) + L")";
+	OutputDebugStringW(msgW.c_str());
+	msgW = L"(INI_ReadBuffer=" + ToStrW(pSharedPluginInstance->VTOptions.VTViewer.ReadBufferSize.Option) + L", INI_MMapBuffer=" + ToStrW(pSharedPluginInstance->VTOptions.VTViewer.MMapBufferSize.Option) + L", INI_TempBuffer=" + ToStrW(pSharedPluginInstance->VTOptions.VTViewer.TempBufferSize.Option) + L")";
+	OutputDebugStringW(msgW.c_str());
+#endif
+
+	iobufsize.dwFlags = 0; // !!!
+
+	if (pSharedPluginInstance->VTOptions.VTViewer.ReadBufferSize.Option != Opt::SKIP)
+		if (pSharedPluginInstance->VTOptions.VTViewer.ReadBufferSize.Option != iobufsize.dwReadBufferSize) // if possible, do not change the value
+		{
+			//OutputDebugStringW(L"-1-");
+			iobufsize.dwFlags = iobufsize.dwFlags | SCCBUFOPT_SET_READBUFSIZE;
+			iobufsize.dwReadBufferSize = pSharedPluginInstance->VTOptions.VTViewer.ReadBufferSize.Option;
+
+			if (iobufsize.dwReadBufferSize < SCCBUFOPT_MIN_READBUFSIZE) iobufsize.dwReadBufferSize = SCCBUFOPT_MIN_READBUFSIZE;
+			if (iobufsize.dwReadBufferSize > SCCBUFOPT_MAX_READBUFSIZE) iobufsize.dwReadBufferSize = SCCBUFOPT_MAX_READBUFSIZE;
+		}
+
+	if (pSharedPluginInstance->VTOptions.VTViewer.MMapBufferSize.Option != Opt::SKIP)
+		if (pSharedPluginInstance->VTOptions.VTViewer.MMapBufferSize.Option != iobufsize.dwMMapBufferSize) // if possible, do not change the value
+		{
+			//OutputDebugStringW(L"-2-");
+			iobufsize.dwFlags = iobufsize.dwFlags | SCCBUFOPT_SET_MMAPBUFSIZE;
+			iobufsize.dwMMapBufferSize = pSharedPluginInstance->VTOptions.VTViewer.MMapBufferSize.Option;
+
+			//if (iobufsize.dwMMapBufferSize < SCCBUFOPT_MIN_MMAPBUFSIZE) iobufsize.dwMMapBufferSize = SCCBUFOPT_MIN_MMAPBUFSIZE;
+			if (iobufsize.dwMMapBufferSize > SCCBUFOPT_MAX_MMAPBUFSIZE) iobufsize.dwMMapBufferSize = SCCBUFOPT_MAX_MMAPBUFSIZE;
+		}
+
+	if (pSharedPluginInstance->VTOptions.VTViewer.TempBufferSize.Option != Opt::SKIP)
+		if (pSharedPluginInstance->VTOptions.VTViewer.TempBufferSize.Option != iobufsize.dwTempBufferSize) // if possible, do not change the value
+		{
+			//OutputDebugStringW(L"-3-");
+			iobufsize.dwFlags = iobufsize.dwFlags | SCCBUFOPT_SET_TEMPBUFSIZE;
+			iobufsize.dwTempBufferSize = pSharedPluginInstance->VTOptions.VTViewer.TempBufferSize.Option;
+
+			//if (iobufsize.dwTempBufferSize < SCCBUFOPT_MIN_TEMPBUFSIZE) iobufsize.dwTempBufferSize = SCCBUFOPT_MIN_TEMPBUFSIZE;
+			if (iobufsize.dwTempBufferSize > SCCBUFOPT_MAX_TEMPBUFSIZE) iobufsize.dwTempBufferSize = SCCBUFOPT_MAX_TEMPBUFSIZE;
+		}
+
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGBUFFCFG)
+	msgW = L"(dwReadBuffer=" + ToStrW(iobufsize.dwReadBufferSize) + L", dwMMapBuffer=" + ToStrW(iobufsize.dwMMapBufferSize) + L", dwTempBuffer=" + ToStrW(iobufsize.dwTempBufferSize) + L", flags=" + ToStrW(iobufsize.dwFlags) + L")";
+	OutputDebugStringW(msgW.c_str());
+#endif
+
+	if (iobufsize.dwFlags) SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec); // if possible, do not change the value
+
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGBUFFCFG)
+	iobufsize.dwFlags = 0;
+	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)&locOptionSpec);
+	msgW = L"(NEW_ReadBufferSize=" + ToStrW(iobufsize.dwReadBufferSize) + L", NEW_MMapBufferSize=" + ToStrW(iobufsize.dwMMapBufferSize) + L", NEW_TempBufferSize=" + ToStrW(iobufsize.dwTempBufferSize) + L")";
+	OutputDebugStringW(msgW.c_str());
+#endif
+
+} // clsVTWindowInstance::SendVTOptions
 
 
 
