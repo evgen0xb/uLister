@@ -3,6 +3,7 @@ The plugin is provided as-is and without any warranty under the GPLv3 license.
 */
 
 #include <windows.h>
+#include <sccvw.h>
 
 #include "ulister.h"
 #include "config.h"
@@ -65,7 +66,7 @@ void clsUlisterOptions::LoadUlisterOptions(wchar_t *inipath, const unsigned long
 
 
 
-VTDWORD clsVTOptionsViewer::ReadIniViewOptDisplay(const wchar_t *optionname, wchar_t *inipath)
+VTDWORD clsVTOptionsViewer::ReadIniViewOptDisplay(const wchar_t *optionname, const wchar_t *inipath)
 {
 	// A.7.2 SCCID_WPDISPLAYMODE / SCCID_HTMLDISPLAYMODE / SCCID_EMAILDISPLAYMODE
 	wchar_t buf[INT64STRMAXBUF];
@@ -87,7 +88,7 @@ VTDWORD clsVTOptionsViewer::ReadIniViewOptDisplay(const wchar_t *optionname, wch
 
 
 
-VTDWORD clsVTOptionsViewer::ReadIniViewOptWebPrevFitMode(const wchar_t *optionname, wchar_t *inipath)
+VTDWORD clsVTOptionsViewer::ReadIniViewOptWebPrevFitMode(const wchar_t *optionname, const wchar_t *inipath)
 {
 	// A.7.3 SCCID_WPFITMODE / SCCID_HTMLFITMODE / SCCID_EMAILFITMODE
 	wchar_t buf[INT64STRMAXBUF];
@@ -108,7 +109,7 @@ VTDWORD clsVTOptionsViewer::ReadIniViewOptWebPrevFitMode(const wchar_t *optionna
 
 
 
-VTDWORD clsVTOptionsViewer::ReadIniViewOptGraphicFitMode(const wchar_t *optionname, wchar_t *inipath)
+VTDWORD clsVTOptionsViewer::ReadIniViewOptGraphicFitMode(const wchar_t *optionname, const wchar_t *inipath)
 {
 	// A.5.11 SCCID_VECFITMODE, A.5.4 SCCID_BMPFITMODE
 	wchar_t buf[INT64STRMAXBUF];
@@ -133,7 +134,7 @@ VTDWORD clsVTOptionsViewer::ReadIniViewOptGraphicFitMode(const wchar_t *optionna
 
 
 
-__int8 clsVTOptionsViewer::ReadIniViewOptSpreadsheetDisplayMode(const wchar_t *optionname, wchar_t *inipath)
+__int8 clsVTOptionsViewer::ReadIniViewOptSpreadsheetDisplayMode(const wchar_t *optionname, const wchar_t *inipath)
 {
 	wchar_t buf[INT64STRMAXBUF];
 	__int8 result;
@@ -153,7 +154,7 @@ __int8 clsVTOptionsViewer::ReadIniViewOptSpreadsheetDisplayMode(const wchar_t *o
 
 
 
-void clsVTOptionsViewer::LoadViewerOptions(wchar_t *inipath)
+void clsVTOptionsViewer::LoadViewerOptions(const wchar_t *inipath)
 {
 	WPDISPLAYMODE.Option = ReadIniViewOptDisplay(L"wpdisplaymode", inipath);
 	HTMLDISPLAYMODE.Option = ReadIniViewOptDisplay(L"htmldisplaymode", inipath);
@@ -167,6 +168,161 @@ void clsVTOptionsViewer::LoadViewerOptions(wchar_t *inipath)
 	BITMAPFITMODE.Option = ReadIniViewOptGraphicFitMode(L"bitmapfitmode", inipath);
 
 	SPREADSHEETDISPLAYMODE.Option = ReadIniViewOptSpreadsheetDisplayMode(L"spreadsheetdisplaymode", inipath);
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+void clsVTOptionsViewer::SendVTViewOptions(const HWND SccviewerWindow)
+{
+	SCCVWOPTIONSPEC40 locOptionSpec;
+	locOptionSpec.dwSize = sizeof(SCCVWOPTIONSPEC40);
+	locOptionSpec.dwFlags = SCCVWOPTION_CURRENT;
+
+	union
+	{
+		VTDWORD WPdisplaymode;
+		VTDWORD HTMLdisplaymode;
+		VTDWORD EMAILdisplaymode;
+
+		VTDWORD WebPrevWPfitmode;
+		VTDWORD WebPrevHTMLfitmode;
+		VTDWORD WebPrevEMAILfitmode;
+
+		VTDWORD Vectorfitmode;
+		VTDWORD Bitmapfitmode;
+
+		VTDWORD ArcSortOrder;
+
+		VTBOOL SpreadsheetDraftMode;
+		VTBOOL SpreadsheetHiddenCells;
+	};
+
+	// word processor display engine:
+	locOptionSpec.dwId = SCCID_WPDISPLAYMODE;
+	locOptionSpec.pData = &WPdisplaymode;
+	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	WPdisplaymode = WPDISPLAYMODE.FilterSkip(WPdisplaymode);
+	SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+	// HTML display engine:
+	locOptionSpec.dwId = SCCID_HTMLDISPLAYMODE;
+	//locOptionSpec.pData = &HTMLdisplaymode;
+	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	HTMLdisplaymode = HTMLDISPLAYMODE.FilterSkip(HTMLdisplaymode);
+	SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+	// email display engine:
+	locOptionSpec.dwId = SCCID_EMAILDISPLAYMODE;
+	//locOptionSpec.pData = &EMAILdisplaymode;
+	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	EMAILdisplaymode = EMAILDISPLAYMODE.FilterSkip(EMAILdisplaymode);
+	SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+	/*
+	It's not working propertly due Outside In Viewer library internal bug.
+	The last call SendMessage::SCCVW_SETOPTION always sets the settings for all document types, ignoring the SCCID_WPFITMODE, SCCID_HTMLFITMODE, and SCCID_EMAILFITMODE types.
+	However, after calling SendMessage::SCCVW_SETOPTION, these settings are stored inside the library (in the .oit directory).
+	Only settings later read by the library from the internal .oit storage work correctly.
+	A workaround would be to have SendMessage::SCCVW_SETOPTION settings sent to the library only if they have been changed in the ini file.
+	Thus, only the first call after the changes, due to the effect of SendMessage::SCCVW_SETOPTION, the view will be incorrect.
+
+	// size of word processor pages when using weblayout/preview mode:
+	locOptionSpec.dwId = SCCID_WPFITMODE;
+	//locOptionSpec.pData = &WebPrevWPfitmode;
+	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	WebPrevWPfitmode = WEBPREVWPFITMODE.FilterSkip(WebPrevWPfitmode);
+	SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+	// size of HTML pages when using weblayout/preview mode:
+	locOptionSpec.dwId = SCCID_HTMLFITMODE;
+	//locOptionSpec.pData = &WebPrevHTMLfitmode;
+	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	WebPrevHTMLfitmode = WEBPREVHTMLFITMODE.FilterSkip(WebPrevHTMLfitmode);
+	SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+	// size of EMAIL pages when using weblayout/preview mode:
+	locOptionSpec.dwId = SCCID_EMAILFITMODE;
+	//locOptionSpec.pData = &WebPrevEMAILfitmode;
+	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	WebPrevEMAILfitmode = WEBPREVEMAILFITMODE.FilterSkip(WebPrevEMAILfitmode);
+	SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+	*/
+
+	/******************** WORKAROUND ********************/
+
+	// size of word processor pages when using weblayout/preview mode:
+	locOptionSpec.dwId = SCCID_WPFITMODE;
+	//locOptionSpec.pData = &WebPrevWPfitmode;
+	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	if (WEBPREVWPFITMODE.Option != Opt::SKIP && WEBPREVWPFITMODE.Option != WebPrevWPfitmode)
+	{
+		WebPrevWPfitmode = WEBPREVWPFITMODE.Option;
+		SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+	}
+
+	// size of HTML pages when using weblayout/preview mode:
+	locOptionSpec.dwId = SCCID_HTMLFITMODE;
+	//locOptionSpec.pData = &WebPrevHTMLfitmode;
+	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	if (WEBPREVHTMLFITMODE.Option != Opt::SKIP && WEBPREVHTMLFITMODE.Option != WebPrevHTMLfitmode)
+	{
+		WebPrevHTMLfitmode = WEBPREVHTMLFITMODE.Option;
+		SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+	}
+
+	// size of EMAIL pages when using weblayout/preview mode:
+	locOptionSpec.dwId = SCCID_EMAILFITMODE;
+	//locOptionSpec.pData = &WebPrevEMAILfitmode;
+	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	if (WEBPREVEMAILFITMODE.Option != Opt::SKIP && WEBPREVEMAILFITMODE.Option != WebPrevEMAILfitmode)
+	{
+		WebPrevEMAILfitmode = WEBPREVEMAILFITMODE.Option;
+		SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+	}
+
+	/****************************************************/
+
+	// vector display engine:
+	locOptionSpec.dwId = SCCID_VECFITMODE;
+	//locOptionSpec.pData = &Vectorfitmode;
+	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	Vectorfitmode = VECTORFITMODE.FilterSkip(Vectorfitmode);
+	SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+	// bitmap display engine:
+	locOptionSpec.dwId = SCCID_BMPFITMODE;
+	//locOptionSpec.pData = &Bitmapfitmode;
+	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	Bitmapfitmode = BITMAPFITMODE.FilterSkip(Bitmapfitmode);
+	SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+	// spreadsheet display engine-1:
+	locOptionSpec.dwId = SCCID_SSDRAFTMODE;
+	//locOptionSpec.pData = &SpreadsheetDraftMode;
+	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	SpreadsheetDraftMode = SPREADSHEETDISPLAYMODE.FilterSkipDraft(SpreadsheetDraftMode);
+	SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+	// spreadsheet display engine-2:
+	locOptionSpec.dwId = SCCID_SSSHOWHIDDENCELLS;
+	//locOptionSpec.pData = &SpreadsheetHiddenCells;
+	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	SpreadsheetHiddenCells = SPREADSHEETDISPLAYMODE.FilterSkipHiddenCells(SpreadsheetHiddenCells);
+	SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+	/****************************************************/
+
+	// reset to default non-INI options:
+
+	// archive display engine:
+	locOptionSpec.dwId = SCCID_ARCSORTORDER;
+	//locOptionSpec.pData = &ArcSortOrder;
+	ArcSortOrder = SCCVW_SORT_NAME;
+	SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 }
 
 
@@ -266,7 +422,7 @@ VTDWORD clsVTOptionsClipboard::Get_SCCVW_CLIPFORMAT(VTDWORD ClipFormat) const
 
 
 
-__int8 clsVTOptionsClipboard::ReadIniClipbOpt(const wchar_t *optionname, wchar_t *inipath)
+__int8 clsVTOptionsClipboard::ReadIniClipbOpt(const wchar_t *optionname, const wchar_t *inipath)
 {
 	wchar_t buf[INT64STRMAXBUF];
 	__int8 result;
@@ -281,7 +437,7 @@ __int8 clsVTOptionsClipboard::ReadIniClipbOpt(const wchar_t *optionname, wchar_t
 
 
 
-VTDWORD clsVTOptionsClipboard::ReadIniClipbSubFormat(const wchar_t *optionname, wchar_t *inipath)
+VTDWORD clsVTOptionsClipboard::ReadIniClipbSubFormat(const wchar_t *optionname, const wchar_t *inipath)
 {
 	// Spreadsheet Or Database Copy-Paste
 	wchar_t buf[INT64STRMAXBUF];
@@ -298,7 +454,7 @@ VTDWORD clsVTOptionsClipboard::ReadIniClipbSubFormat(const wchar_t *optionname, 
 
 
 
-void clsVTOptionsClipboard::LoadClipboardOptions(wchar_t *inipath)
+void clsVTOptionsClipboard::LoadClipboardOptions(const wchar_t *inipath)
 {
 	FORMAT_TEXT = ReadIniClipbOpt(L"ascii", inipath);
 	FORMAT_RTF = ReadIniClipbOpt(L"rtf", inipath);
@@ -316,16 +472,48 @@ void clsVTOptionsClipboard::LoadClipboardOptions(wchar_t *inipath)
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-VTDWORD clsVTOptionsMemoryManager::ReadIniViewOptBufferSize(const wchar_t *optionname, wchar_t *inipath)
+void clsVTOptionsClipboard::SendVTClipOptions(const HWND SccviewerWindow)
 {
-	wchar_t buf[INT64STRMAXBUF];
+	SCCVWOPTIONSPEC40 locOptionSpec;
+	locOptionSpec.dwSize = sizeof(SCCVWOPTIONSPEC40);
+	locOptionSpec.dwFlags = SCCVWOPTION_CURRENT;
 
-	GetPrivateProfileStringW(MEMORYSECTION, optionname, ASKIP, buf, INT64STRMAXBUF, inipath);
-	return (_wcsicmp(buf, ASKIP) == 0) ? Opt::SKIP : (VTDWORD)wcstol(buf, NULL, 0); // boundary check in clsVTWindowInstance::SendVTOptions; BASE=0 (AUTO)
+	union
+	{
+		VTDWORD ClipFormat;
+		VTDWORD OLEFlags;
+
+		VTDWORD SpreadsheetClipboard;
+		VTDWORD DatabaseClipboard;
+	};
+
+	// unicode clipboard:
+	locOptionSpec.dwId = SCCID_TOCLIPBOARD;
+	locOptionSpec.pData = &ClipFormat;
+	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	ClipFormat = Get_SCCVW_CLIPFORMAT(ClipFormat);
+	SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+	// drag-and-drop copying:
+	locOptionSpec.dwId = SCCID_OLEFLAGS;
+	//locOptionSpec.pData = &OLEFlags;
+	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	OLEFlags = Get_SCCVW_OLE(OLEFlags);
+	SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+	// spreadsheet copying:
+	locOptionSpec.dwId = SCCID_SSCLIPBOARD;
+	//locOptionSpec.pData = &SpreadsheetClipboard;
+	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	SpreadsheetClipboard = SSCLIPBOARDSUBFORMAT.FilterSkip(SpreadsheetClipboard);
+	SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+	// database copying:
+	locOptionSpec.dwId = SCCID_DBCLIPBOARD;
+	//locOptionSpec.pData = &DatabaseClipboard;
+	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	DatabaseClipboard = DBCLIPBOARDSUBFORMAT.FilterSkip(DatabaseClipboard);
+	SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 }
 
 
@@ -334,7 +522,21 @@ VTDWORD clsVTOptionsMemoryManager::ReadIniViewOptBufferSize(const wchar_t *optio
 
 
 
-VTDWORD clsVTOptionsMemoryManager::ReadIniViewOptMemoryMode(const wchar_t *optionname, wchar_t *inipath)
+VTDWORD clsVTOptionsMemoryManager::ReadIniViewOptBufferSize(const wchar_t *optionname, const wchar_t *inipath)
+{
+	wchar_t buf[INT64STRMAXBUF];
+
+	GetPrivateProfileStringW(MEMORYSECTION, optionname, ASKIP, buf, INT64STRMAXBUF, inipath);
+	return (_wcsicmp(buf, ASKIP) == 0) ? Opt::SKIP : (VTDWORD)wcstol(buf, NULL, 0); // boundary check in clsVTOptionsMemoryManager::SendVTMemOptions; BASE=0 (AUTO)
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+VTDWORD clsVTOptionsMemoryManager::ReadIniViewOptMemoryMode(const wchar_t *optionname, const wchar_t *inipath)
 {
 	wchar_t buf[INT64STRMAXBUF];
 	VTDWORD result;
@@ -356,7 +558,7 @@ VTDWORD clsVTOptionsMemoryManager::ReadIniViewOptMemoryMode(const wchar_t *optio
 
 
 
-void clsVTOptionsMemoryManager::LoadMemoryOptions(wchar_t *inipath)
+void clsVTOptionsMemoryManager::LoadMemoryOptions(const wchar_t *inipath)
 {
 	ReadBufferSize.Option = ReadIniViewOptBufferSize(L"readbuffersizekb", inipath);
 	MMapBufferSize.Option = ReadIniViewOptBufferSize(L"mmapbuffersizekb", inipath);
@@ -371,10 +573,125 @@ void clsVTOptionsMemoryManager::LoadMemoryOptions(wchar_t *inipath)
 
 
 
-void clsVTOptions::LoadVTOptions(wchar_t *inipath)
+void clsVTOptionsMemoryManager::SendVTMemOptions(const HWND SccviewerWindow)
+{
+	SCCVWOPTIONSPEC40 locOptionSpec;
+	locOptionSpec.dwSize = sizeof(SCCVWOPTIONSPEC40);
+	locOptionSpec.dwFlags = SCCVWOPTION_CURRENT;
+
+	union
+	{
+		SCCBUFFEROPTIONS iobufsize;
+
+		VTDWORD VTMemoryMode;
+	};
+
+	// memory buffers:
+	// We will only send a new value if it has actually changed in the ulister.ini file.
+	locOptionSpec.dwId = SCCOPT_IO_BUFFERSIZE;
+	locOptionSpec.pData = &iobufsize;
+	iobufsize.dwFlags = 0;
+	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)&locOptionSpec); // return: iobufsize.dwFlags:=7 (undocumented)!!!
+
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGMEMCFG)
+	std::wstring msgW = L"(ReadBufferSize=" + ToStrW(iobufsize.dwReadBufferSize) + L", MMapBufferSize=" + ToStrW(iobufsize.dwMMapBufferSize) + L", TempBufferSize=" + ToStrW(iobufsize.dwTempBufferSize) + L", Flags=" + ToStrW(iobufsize.dwFlags) + L")";
+	OutputDebugStringW(msgW.c_str());
+	msgW = L"(INI_ReadBuffer=" + ToStrW(ReadBufferSize.Option) + L", INI_MMapBuffer=" + ToStrW(MMapBufferSize.Option) + L", INI_TempBuffer=" + ToStrW(TempBufferSize.Option) + L")";
+	OutputDebugStringW(msgW.c_str());
+#endif
+
+	iobufsize.dwFlags = 0; // !!!
+
+	if (ReadBufferSize.Option != Opt::SKIP)
+		if (ReadBufferSize.Option != iobufsize.dwReadBufferSize) // if possible, do not change the value
+		{
+			//OutputDebugStringW(L"-1-");
+			iobufsize.dwFlags = iobufsize.dwFlags | SCCBUFOPT_SET_READBUFSIZE;
+			iobufsize.dwReadBufferSize = ReadBufferSize.Option;
+
+			if (iobufsize.dwReadBufferSize < SCCBUFOPT_MIN_READBUFSIZE) iobufsize.dwReadBufferSize = SCCBUFOPT_MIN_READBUFSIZE;
+			if (iobufsize.dwReadBufferSize > SCCBUFOPT_MAX_READBUFSIZE) iobufsize.dwReadBufferSize = SCCBUFOPT_MAX_READBUFSIZE;
+		}
+
+	if (MMapBufferSize.Option != Opt::SKIP)
+		if (MMapBufferSize.Option != iobufsize.dwMMapBufferSize) // if possible, do not change the value
+		{
+			//OutputDebugStringW(L"-2-");
+			iobufsize.dwFlags = iobufsize.dwFlags | SCCBUFOPT_SET_MMAPBUFSIZE;
+			iobufsize.dwMMapBufferSize = MMapBufferSize.Option;
+
+			//if (iobufsize.dwMMapBufferSize < SCCBUFOPT_MIN_MMAPBUFSIZE) iobufsize.dwMMapBufferSize = SCCBUFOPT_MIN_MMAPBUFSIZE;
+			if (iobufsize.dwMMapBufferSize > SCCBUFOPT_MAX_MMAPBUFSIZE) iobufsize.dwMMapBufferSize = SCCBUFOPT_MAX_MMAPBUFSIZE;
+		}
+
+	if (TempBufferSize.Option != Opt::SKIP)
+		if (TempBufferSize.Option != iobufsize.dwTempBufferSize) // if possible, do not change the value
+		{
+			//OutputDebugStringW(L"-3-");
+			iobufsize.dwFlags = iobufsize.dwFlags | SCCBUFOPT_SET_TEMPBUFSIZE;
+			iobufsize.dwTempBufferSize = TempBufferSize.Option;
+
+			//if (iobufsize.dwTempBufferSize < SCCBUFOPT_MIN_TEMPBUFSIZE) iobufsize.dwTempBufferSize = SCCBUFOPT_MIN_TEMPBUFSIZE;
+			if (iobufsize.dwTempBufferSize > SCCBUFOPT_MAX_TEMPBUFSIZE) iobufsize.dwTempBufferSize = SCCBUFOPT_MAX_TEMPBUFSIZE;
+		}
+
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGMEMCFG)
+	msgW = L"(dwReadBuffer=" + ToStrW(iobufsize.dwReadBufferSize) + L", dwMMapBuffer=" + ToStrW(iobufsize.dwMMapBufferSize) + L", dwTempBuffer=" + ToStrW(iobufsize.dwTempBufferSize) + L", flags=" + ToStrW(iobufsize.dwFlags) + L")";
+	OutputDebugStringW(msgW.c_str());
+#endif
+
+	if (iobufsize.dwFlags) SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec); // if possible, do not change the value
+
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGMEMCFG)
+	iobufsize.dwFlags = 0;
+	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)&locOptionSpec);
+	msgW = L"(NEW_ReadBufferSize=" + ToStrW(iobufsize.dwReadBufferSize) + L", NEW_MMapBufferSize=" + ToStrW(iobufsize.dwMMapBufferSize) + L", NEW_TempBufferSize=" + ToStrW(iobufsize.dwTempBufferSize) + L")";
+	OutputDebugStringW(msgW.c_str());
+#endif
+
+	/****************************************************/
+
+	// chunker memory:
+	locOptionSpec.dwId = SCCOPT_DOCUMENTMEMORYMODE;
+	//locOptionSpec.pData = &VTMemoryMode;
+	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGMEMCFG)
+	msgW = L"MemoryMode=" + ToStrW(VTMemoryMode);
+	OutputDebugStringW(msgW.c_str());
+#endif
+	if (MemoryMode.Option != Opt::SKIP)
+		if (MemoryMode.Option != VTMemoryMode) // if possible, do not change the value
+		{
+			OutputDebugStringW(L"* Change MemoryMode *");
+			VTMemoryMode = MemoryMode.Option;
+			SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+		}
+
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGMEMCFG)
+	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	msgW = L"NEW_MemoryMode=" + ToStrW(VTMemoryMode);
+	OutputDebugStringW(msgW.c_str());
+#endif
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+void clsVTOptions::LoadVTOptions(const wchar_t *inipath)
 {
 	VTClipboard.LoadClipboardOptions(inipath);
 	VTViewer.LoadViewerOptions(inipath);
 	VTMemoryManager.LoadMemoryOptions(inipath);
 }
 
+
+
+void clsVTOptions::SendVTOptions(const HWND SccviewerWindow)
+{
+	VTClipboard.SendVTClipOptions(SccviewerWindow);
+	VTViewer.SendVTViewOptions(SccviewerWindow);
+	VTMemoryManager.SendVTMemOptions(SccviewerWindow);
+}

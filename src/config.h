@@ -94,11 +94,12 @@ public:
 	VTDWORD Get_SCCVW_CLIPFORMAT(VTDWORD ClipFormat) const;
 	VTDWORD Get_SCCVW_OLE(VTDWORD OLEFlags) const;
 
-	void LoadClipboardOptions(wchar_t *inipath);
+	void LoadClipboardOptions(const wchar_t *inipath);
+	void SendVTClipOptions(const HWND SccviewerWindow);
 
 private:
-	__int8 ReadIniClipbOpt(const wchar_t *optionname, wchar_t *inipath);
-	VTDWORD ReadIniClipbSubFormat(const wchar_t *optionname, wchar_t *inipath);
+	__int8 ReadIniClipbOpt(const wchar_t *optionname, const wchar_t *inipath);
+	VTDWORD ReadIniClipbSubFormat(const wchar_t *optionname, const wchar_t *inipath);
 
 }; // clsVTOptionsClipboard
 
@@ -132,13 +133,14 @@ public:
 
 	clsSSViewModeOption SPREADSHEETDISPLAYMODE;
 
-	void LoadViewerOptions(wchar_t *inipath);
+	void LoadViewerOptions(const wchar_t *inipath);
+	void SendVTViewOptions(const HWND SccviewerWindow);
 
 private:
-	VTDWORD ReadIniViewOptDisplay(const wchar_t *optionname, wchar_t *inipath);
-	VTDWORD ReadIniViewOptWebPrevFitMode(const wchar_t *optionname, wchar_t *inipath);
-	VTDWORD ReadIniViewOptGraphicFitMode(const wchar_t *optionname, wchar_t *inipath);
-	__int8 ReadIniViewOptSpreadsheetDisplayMode(const wchar_t *optionname, wchar_t *inipath);
+	VTDWORD ReadIniViewOptDisplay(const wchar_t *optionname, const wchar_t *inipath);
+	VTDWORD ReadIniViewOptWebPrevFitMode(const wchar_t *optionname, const wchar_t *inipath);
+	VTDWORD ReadIniViewOptGraphicFitMode(const wchar_t *optionname, const wchar_t *inipath);
+	__int8 ReadIniViewOptSpreadsheetDisplayMode(const wchar_t *optionname, const wchar_t *inipath);
 
 }; // clsVTOptionsViewer
 
@@ -152,11 +154,12 @@ public:
 
 	clsVTDWORDOption MemoryMode;
 
-	void LoadMemoryOptions(wchar_t *inipath);
+	void LoadMemoryOptions(const wchar_t *inipath);
+	void SendVTMemOptions(const HWND SccviewerWindow);
 
 private:
-	VTDWORD ReadIniViewOptBufferSize(const wchar_t *optionname, wchar_t *inipath);
-	VTDWORD ReadIniViewOptMemoryMode(const wchar_t *optionname, wchar_t *inipath);
+	VTDWORD ReadIniViewOptBufferSize(const wchar_t *optionname, const wchar_t *inipath);
+	VTDWORD ReadIniViewOptMemoryMode(const wchar_t *optionname, const wchar_t *inipath);
 
 }; // clsVTOptionsMemoryManager
 
@@ -169,7 +172,8 @@ public:
 	clsVTOptionsViewer			VTViewer;
 	clsVTOptionsMemoryManager	VTMemoryManager;
 
-	void LoadVTOptions(wchar_t *inipath);
+	void LoadVTOptions(const wchar_t *inipath);
+	void SendVTOptions(const HWND SccviewerWindow);
 };
 
 #endif

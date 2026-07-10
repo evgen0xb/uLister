@@ -57,7 +57,6 @@ public:
 	bool VTLoad(const HWND ParentWin, const wchar_t *FileToLoad, clsSharedPluginInstance *_pSharedPluginInstance);
 	void VTUnload();
 
-	void SendVTOptions();
 	void ChangeViewMode(const int dir);
 	void ZoomBitmapVecFont(const int dir);
 
