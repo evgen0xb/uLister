@@ -236,6 +236,7 @@ older library versions are also unnecessary, and everything will work as before 
 
 7. Keyboard Shortcuts
 Enter a search string - Ctrl+F/F7
+In version 4.4.0.0, the search can also be launched from the context menu using the right mouse button.
 Find Next/Previous - F3/Shift+F3
 (Search is not available in some formats; case-insensitive search option is supported)
 You can zoom in or out using Ctrl "+" / Ctrl "-" or Ctrl + Mouse Wheel (in older versions of the OutsideIn library, as for WinXP, it is not available for some viewing modes).
@@ -582,3 +583,4 @@ Finally, the search procedure has been rewritten:
     - added option memorymode
     - refactoring
     - "Options->Drag'n'Drop" has been added to the context menu
+    - the "Find" item has been added to the context menu

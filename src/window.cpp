@@ -33,11 +33,13 @@ const char *WNDCLASSNAME_SCCDISPLAY		= "SCCDISPLAY";
 #define ID_CUSTOM_FULLSCR	101
 #define ID_CUSTOM_FILEINF	102
 #define ID_CUSTOM_DRGNDRP	103
+#define ID_CUSTOM_FINDTXT	104
 
 const wchar_t *WFULLSCR = L"Full Screen";
 const wchar_t *WFILEINF = L"File Info";
 const wchar_t *WOPTIONS = L"Options";
 const wchar_t *WDRAGNDR = L"Drag'n'Drop";
+const wchar_t *WFIND	= L"Find";
 
 const char *ANOTFOUND = "Not found:";
 const wchar_t *WNOTFOUND = L"Not found:";
@@ -307,6 +309,12 @@ LRESULT CALLBACK SccviewerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			case ID_CUSTOM_DRGNDRP:
 				//OutputDebugStringA("ID_CUSTOM_DRGNDRP");
 				mydata->SetDragnDrop(!mydata->isDragnDropEnabled());
+				return 0;
+			case ID_CUSTOM_FINDTXT:
+				//OutputDebugStringA("ID_CUSTOM_FINDTXT");
+				SetFocus(mydata->TListerWindow);
+				PostMessage(mydata->TListerWindow, WM_KEYDOWN, VK_F7, 0);
+				PostMessage(mydata->TListerWindow, WM_KEYUP, VK_F7, 0);
 				return 0;
 			}
 			break;
@@ -1167,11 +1175,13 @@ void clsVTWindowInstance::OEM_AddNewContextMenuItems()
 	{
 		// short-circuit evaluation fix:
 		bool retcode1 = DeleteMenu(reinterpret_cast<HMENU>(locSccvwDisplayInfo40.hMenu), ID_CUSTOM_FULLSCR, MF_BYCOMMAND);
-		bool retcode2 = DeleteMenu(reinterpret_cast<HMENU>(locSccvwDisplayInfo40.hMenu), ID_CUSTOM_FILEINF, MF_BYCOMMAND);
-		if (retcode1 || retcode2) DeleteMenu(reinterpret_cast<HMENU>(locSccvwDisplayInfo40.hMenu), GetMenuItemCount(reinterpret_cast<HMENU>(locSccvwDisplayInfo40.hMenu)) - 1, MF_BYPOSITION); // MF_SEPARATOR
+		bool retcode2 = DeleteMenu(reinterpret_cast<HMENU>(locSccvwDisplayInfo40.hMenu), ID_CUSTOM_FINDTXT, MF_BYCOMMAND);
+		bool retcode3 = DeleteMenu(reinterpret_cast<HMENU>(locSccvwDisplayInfo40.hMenu), ID_CUSTOM_FILEINF, MF_BYCOMMAND);
+		if (retcode1 || retcode2 || retcode3) DeleteMenu(reinterpret_cast<HMENU>(locSccvwDisplayInfo40.hMenu), GetMenuItemCount(reinterpret_cast<HMENU>(locSccvwDisplayInfo40.hMenu)) - 1, MF_BYPOSITION); // MF_SEPARATOR
 
 		AppendMenuW(reinterpret_cast<HMENU>(locSccvwDisplayInfo40.hMenu), MF_SEPARATOR, 0, NULL);
 		//AppendMenuW(reinterpret_cast<HMENU>(locSccvwDisplayInfo40.hMenu), MF_STRING, ID_CUSTOM_FULLSCR, WFULLSCR); // TODO: FULL SCREEN?
+		AppendMenuW(reinterpret_cast<HMENU>(locSccvwDisplayInfo40.hMenu), MF_STRING, ID_CUSTOM_FINDTXT, WFIND);
 		AppendMenuW(reinterpret_cast<HMENU>(locSccvwDisplayInfo40.hMenu), MF_STRING, ID_CUSTOM_FILEINF, WFILEINF);
 	}
 
