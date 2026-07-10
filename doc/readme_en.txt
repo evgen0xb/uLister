@@ -100,6 +100,7 @@ palette=skip|on|off
 
 The following setting enables or disables drag-and-drop copying of a selected block (SDK A.10.6 SCCID_OLEFLAGS).
 dragdrop=skip|on|off
+This option can also be controlled from the context menu "Options->Drag'n'Drop" (plugin version 4.4.0.0).
 
 It is recommended to set all clipboard section parameters to "on" (especially for unicode).
 
@@ -201,6 +202,7 @@ The minimum value is 0 KB (all temporary files are immediately written to disk).
 
 The MemoryMode option determines the maximum amount of memory that the chunker may use to store the document's data,
 from 4 MB to 1 GB. The more memory the chunker has available to it, the less often it needs to re-read data from the document.
+The default is 256 MB.
 
 TODO: In the future, it would be useful to heuristically select a more optimal value for these parameters, AUTO, dynamically,
 depending on the amount of free RAM and the file size, before opening it (is this possible?).
@@ -579,3 +581,4 @@ Finally, the search procedure has been rewritten:
 2026-07-10
     - added option memorymode
     - refactoring
+    - "Options->Drag'n'Drop" has been added to the context menu

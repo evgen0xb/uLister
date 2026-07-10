@@ -32,9 +32,12 @@ const char *WNDCLASSNAME_SCCDISPLAY		= "SCCDISPLAY";
 // must be less then SCCVW_DEFAULTMENUMAX:
 #define ID_CUSTOM_FULLSCR	101
 #define ID_CUSTOM_FILEINF	102
+#define ID_CUSTOM_DRGNDRP	103
 
 const wchar_t *WFULLSCR = L"Full Screen";
 const wchar_t *WFILEINF = L"File Info";
+const wchar_t *WOPTIONS = L"Options";
+const wchar_t *WDRAGNDR = L"Drag'n'Drop";
 
 const char *ANOTFOUND = "Not found:";
 const wchar_t *WNOTFOUND = L"Not found:";
@@ -170,6 +173,9 @@ LRESULT CALLBACK WAwcWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
 		case SCCVW_VIEWTHISFILE:
 			return (ViewThisFileHandler(lParam) == 0) ? SCCVWERR_MESSAGEHANDLED : 0;
 			break;
+		case SCCVW_CONTEXTMENU:
+			mydata->OEM_AddNewContextMenuItems();
+			break;
 		}
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
@@ -298,10 +304,14 @@ LRESULT CALLBACK SccviewerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 				if (mydata->InfoWindow.CreateWnd(mydata->pSharedPluginInstance->UlisterInstance.hInstWLX, mydata->TListerWindow)) SetActiveWindow(mydata->InfoWindow.hwndFileInfo);
 				else mydata->InfoWindow.Show();
 				return 0;
+			case ID_CUSTOM_DRGNDRP:
+				//OutputDebugStringA("ID_CUSTOM_DRGNDRP");
+				mydata->SetDragnDrop(!mydata->isDragnDropEnabled());
+				return 0;
 			}
 			break;
 		}
-		}
+		} // switch
 		return CallWindowProc(mydata->OriginalSccviewerWindowProc, hWnd, message, wParam, lParam); // OIT Handler
 	}
 	return DefWindowProc(hWnd, message, wParam, lParam);
@@ -543,7 +553,6 @@ bool clsVTWindowInstance::VTLoad(const HWND ParentWin, const wchar_t *FileToLoad
 	LoadedFileInfo.Init(FileToLoad, wType, pTypeName, quickview);
 	pSharedPluginInstance->VTOptions.SendVTOptions(SccviewerWindow);
 	AddFileInfo();
-	AddContextMenuItems();
 
 	//OutputDebugStringW(mydata->LoadedFileInfo.pPath);
 	//OutputDebugStringA(mydata->LoadedFileInfo.pTypeName);
@@ -1138,7 +1147,7 @@ void clsVTWindowInstance::OEM_ReplaceButtonFROMBEGINING(const HWND hwndParent)
 
 
 
-void clsVTWindowInstance::AddContextMenuItems()
+void clsVTWindowInstance::OEM_AddNewContextMenuItems()
 {
 	// use the custom ID_CUSTOM_FULLSCR handler to enter Full Screen Mode
 	// A.10.3 SCCID_DIALOGFLAGS -> SCCVW_DIALOG_NOADDSHOWFULLSCREEN: The dialog should not display the "Show Full Screen" menu option from the context menu.
@@ -1165,7 +1174,83 @@ void clsVTWindowInstance::AddContextMenuItems()
 		//AppendMenuW(reinterpret_cast<HMENU>(locSccvwDisplayInfo40.hMenu), MF_STRING, ID_CUSTOM_FULLSCR, WFULLSCR); // TODO: FULL SCREEN?
 		AppendMenuW(reinterpret_cast<HMENU>(locSccvwDisplayInfo40.hMenu), MF_STRING, ID_CUSTOM_FILEINF, WFILEINF);
 	}
+
+	HMENU hMenuOptions = FindSubMenuByName(reinterpret_cast<HMENU>(locSccvwDisplayInfo40.hMenu), WOPTIONS, true); // get submenu handle
+	if (hMenuOptions)
+	{
+		int menuidx = static_cast<int>(reinterpret_cast<INT_PTR>(FindSubMenuByName(reinterpret_cast<HMENU>(hMenuOptions), WDRAGNDR, false))); // but get menu item index here!
+		//std::wstring msgW = L"menuidx=" + ToStrW(menuidx); OutputDebugStringW(msgW.c_str());
+		if (menuidx) DeleteMenu(hMenuOptions, menuidx - 1, MF_BYPOSITION);
+		AppendMenuW(hMenuOptions, MF_STRING | (isDragnDropEnabled() ? MF_CHECKED : MF_UNCHECKED) , ID_CUSTOM_DRGNDRP, WDRAGNDR);
+	}
+
+
 }
+
+
+
+bool clsVTWindowInstance::isDragnDropEnabled()
+{
+	VTDWORD OLEFlags;
+
+	SCCVWOPTIONSPEC40 locOptionSpec;
+	locOptionSpec.dwSize = sizeof(SCCVWOPTIONSPEC40);
+	locOptionSpec.dwFlags = SCCVWOPTION_CURRENT;
+	locOptionSpec.dwId = SCCID_OLEFLAGS;
+	locOptionSpec.pData = &OLEFlags;
+	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+
+	return (OLEFlags & SCCVW_OLE_ENABLEDRAGDROP);
+}
+
+
+
+void clsVTWindowInstance::SetDragnDrop(bool enable)
+{
+	VTDWORD OLEFlags = enable ? SCCVW_OLE_ENABLEDRAGDROP : 0;
+
+	SCCVWOPTIONSPEC40 locOptionSpec;
+	locOptionSpec.dwSize = sizeof(SCCVWOPTIONSPEC40);
+	locOptionSpec.dwFlags = SCCVWOPTION_CURRENT;
+	locOptionSpec.dwId = SCCID_OLEFLAGS;
+	locOptionSpec.pData = &OLEFlags;
+	SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+}
+
+
+
+HMENU clsVTWindowInstance::FindSubMenuByName(const HMENU hMenu, const wchar_t* targetName, const bool isSubMenu)
+// return HMENU if SubMenu exists
+// return menu index+1 (use with MF_BYPOSITION) if menu item exist
+// else return 0 (first menu index == 1 !!! not 0)
+{
+	for (int i = 0, count = GetMenuItemCount(hMenu); i < count; i++)
+	{
+		wchar_t menuText[CLASSNAMEMAXBUF];
+
+		MENUITEMINFOW mii;
+		ZeroMemory(&mii, sizeof(mii));
+		mii.cbSize = sizeof(MENUITEMINFO);
+		mii.fMask = MIIM_STRING | (isSubMenu ? MIIM_SUBMENU : 0);
+		mii.dwTypeData = menuText;
+		mii.cch = STRLEN(menuText);
+
+		if (GetMenuItemInfoW(hMenu, i, TRUE, &mii))
+			if (_wcsicmp(menuText, targetName) == 0)
+				if (isSubMenu && mii.hSubMenu != NULL)
+				{
+					//std::wstring msgW = L"SubMenu idx: " + ToStrW(i) + L"\n"; OutputDebugStringW(msgW.c_str());
+					return mii.hSubMenu;
+				}
+				else if (!isSubMenu && mii.hSubMenu == NULL)
+				{
+					//std::wstring msgW = L"Menu Item idx: " + ToStrW(i) + L"\n"; OutputDebugStringW(msgW.c_str());
+					return reinterpret_cast<HMENU>(static_cast<INT_PTR>(i + 1));
+				}
+	}
+	return NULL;
+}
+
 
 
 

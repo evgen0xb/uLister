@@ -67,6 +67,10 @@ public:
 	void ListSearchTextAHandler(const char* SearchString, const int SearchParameter);
 
 	void OEM_ReplaceButtonFROMBEGINING(const HWND hwndPrevious);
+	void OEM_AddNewContextMenuItems();
+
+	bool isDragnDropEnabled();
+	void SetDragnDrop(bool enable);
 
 private:
 
@@ -79,9 +83,9 @@ private:
 	void SetVTSearchUnicode();
 	void SetVTSearchANSI();
 
-	void AddContextMenuItems();
-
 	static HWND FindButtonN(const HWND hParent, const int targetIndex);
+
+	HMENU FindSubMenuByName(const HMENU hMenu, const wchar_t* targetName, const bool isSubMenu);
 };
 
 #endif
