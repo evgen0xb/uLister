@@ -51,6 +51,7 @@ public:
 	// Common for all Viewer Technology windows:
 	clsSharedPluginInstance *pSharedPluginInstance;
 
+	bool isFullScreenMode;
 
 	clsVTWindowInstance();
 
@@ -72,6 +73,8 @@ public:
 	bool isDragnDropEnabled();
 	void SetDragnDrop(bool enable);
 
+	void ChangeFullScrMode();
+
 private:
 
 	bool CreateListerWindow(const HWND ParentWin, const HINSTANCE hInst);
@@ -86,6 +89,16 @@ private:
 	static HWND FindButtonN(const HWND hParent, const int targetIndex);
 
 	HMENU FindSubMenuByName(const HMENU hMenu, const wchar_t* targetName, const bool isSubMenu);
+
+	// full screen:
+	void EnterToFullScreenMode();
+	void ExitFromFullScrMode_QuickView();
+	void ExitFromFullScrMode_Orig();
+
+	RECT rectFSOrigPosition;
+	HWND hWndFSOrigParent;
+	LONG lngFSOrigWindowStyle;
+	HMENU hFSOrigMenu;
 };
 
 #endif

@@ -584,3 +584,6 @@ Finally, the search procedure has been rewritten:
     - refactoring
     - "Options->Drag'n'Drop" has been added to the context menu
     - the "Find" item has been added to the context menu
+
+2026-07-11
+    - full-screen mode support has been implemented for all document types (via a context menu item)

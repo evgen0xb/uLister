@@ -299,7 +299,7 @@ LRESULT CALLBACK SccviewerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			{
 			case ID_CUSTOM_FULLSCR:
 				//OutputDebugStringA("ID_CUSTOM_FULLSCR");
-				// TODO?
+				mydata->ChangeFullScrMode();
 				return 0;
 			case ID_CUSTOM_FILEINF:
 				//OutputDebugStringA("ID_CUSTOM_FILEINF");
@@ -423,6 +423,12 @@ clsVTWindowInstance::clsVTWindowInstance() : ToolTip(TOOLTIP_TIMER_MSG)
 
 	WindSearchStrW[0] = L'\0';
 	WindSearchStrA[0] = '\0';
+
+	isFullScreenMode = false;
+	hWndFSOrigParent = NULL;
+	lngFSOrigWindowStyle = NULL;
+	hFSOrigMenu = NULL;
+
 }
 
 
@@ -588,6 +594,10 @@ void clsVTWindowInstance::VTUnload()
 #if defined (__ULISTDEBUGMSG)
 	OutputDebugStringW(L"VTUnload");
 #endif
+
+	if (isFullScreenMode)
+		if (LoadedFileInfo.isQuickviewMode) ExitFromFullScrMode_QuickView();
+		else ExitFromFullScrMode_Orig();
 
 	// ListCloseWindow:
 
@@ -1180,7 +1190,7 @@ void clsVTWindowInstance::OEM_AddNewContextMenuItems()
 		if (retcode1 || retcode2 || retcode3) DeleteMenu(reinterpret_cast<HMENU>(locSccvwDisplayInfo40.hMenu), GetMenuItemCount(reinterpret_cast<HMENU>(locSccvwDisplayInfo40.hMenu)) - 1, MF_BYPOSITION); // MF_SEPARATOR
 
 		AppendMenuW(reinterpret_cast<HMENU>(locSccvwDisplayInfo40.hMenu), MF_SEPARATOR, 0, NULL);
-		//AppendMenuW(reinterpret_cast<HMENU>(locSccvwDisplayInfo40.hMenu), MF_STRING, ID_CUSTOM_FULLSCR, WFULLSCR); // TODO: FULL SCREEN?
+		AppendMenuW(reinterpret_cast<HMENU>(locSccvwDisplayInfo40.hMenu), MF_STRING | (isFullScreenMode ? MF_CHECKED : MF_UNCHECKED), ID_CUSTOM_FULLSCR, WFULLSCR);
 		AppendMenuW(reinterpret_cast<HMENU>(locSccvwDisplayInfo40.hMenu), MF_STRING, ID_CUSTOM_FINDTXT, WFIND);
 		AppendMenuW(reinterpret_cast<HMENU>(locSccvwDisplayInfo40.hMenu), MF_STRING, ID_CUSTOM_FILEINF, WFILEINF);
 	}
@@ -1191,7 +1201,7 @@ void clsVTWindowInstance::OEM_AddNewContextMenuItems()
 		int menuidx = static_cast<int>(reinterpret_cast<INT_PTR>(FindSubMenuByName(reinterpret_cast<HMENU>(hMenuOptions), WDRAGNDR, false))); // but get menu item index here!
 		//std::wstring msgW = L"menuidx=" + ToStrW(menuidx); OutputDebugStringW(msgW.c_str());
 		if (menuidx) DeleteMenu(hMenuOptions, menuidx - 1, MF_BYPOSITION);
-		AppendMenuW(hMenuOptions, MF_STRING | (isDragnDropEnabled() ? MF_CHECKED : MF_UNCHECKED) , ID_CUSTOM_DRGNDRP, WDRAGNDR);
+		AppendMenuW(hMenuOptions, MF_STRING | (isDragnDropEnabled() ? MF_CHECKED : MF_UNCHECKED), ID_CUSTOM_DRGNDRP, WDRAGNDR);
 	}
 
 
@@ -1261,6 +1271,120 @@ HMENU clsVTWindowInstance::FindSubMenuByName(const HMENU hMenu, const wchar_t* t
 	return NULL;
 }
 
+
+
+void clsVTWindowInstance::EnterToFullScreenMode()
+{
+	hWndFSOrigParent = GetParent(TListerWindow);
+	lngFSOrigWindowStyle = GetWindowLongPtr(TListerWindow, GWL_STYLE);
+	GetWindowRect(TListerWindow, &rectFSOrigPosition);
+
+	if (hWndFSOrigParent) MapWindowPoints(NULL, hWndFSOrigParent, (LPPOINT)&rectFSOrigPosition, 2);
+
+	HMONITOR hMonitor = MonitorFromWindow(TListerWindow, MONITOR_DEFAULTTONEAREST);
+	MONITORINFO monitorInfo;
+	ZeroMemory(&monitorInfo, sizeof(monitorInfo));
+	monitorInfo.cbSize = sizeof(MONITORINFO);
+	GetMonitorInfo(hMonitor, &monitorInfo);
+
+	int screenX = monitorInfo.rcMonitor.left;
+	int screenY = monitorInfo.rcMonitor.top;
+	int screenW = monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left;
+	int screenH = monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top;
+
+	//std::wstring msgW = L"x=" + ToStrW(screenX) + L" y=" + ToStrW(screenY) + L" w=" + ToStrW(screenW) + L" h=" + ToStrW(screenH); OutputDebugStringW(msgW.c_str());
+
+	SetParent(TListerWindow, NULL);
+	SetWindowLongPtr(TListerWindow, GWL_STYLE, WS_POPUP | WS_VISIBLE);
+
+	hFSOrigMenu = GetMenu(TListerWindow);
+	if (hFSOrigMenu) SetMenu(TListerWindow, NULL);
+
+	SetWindowPos(TListerWindow, HWND_TOPMOST, screenX, screenY, screenW, screenH, SWP_FRAMECHANGED);
+}
+
+
+
+void clsVTWindowInstance::ExitFromFullScrMode_QuickView()
+// its ugliest hack for total commander embedded quick view window.
+// use it to redraw main window when exit from full screen mode.
+{
+	SetWindowLongPtr(TListerWindow, GWL_STYLE, lngFSOrigWindowStyle);
+	SetParent(TListerWindow, hWndFSOrigParent);
+
+	// for normal view mode support:
+	if (hFSOrigMenu) { SetMenu(TListerWindow, hFSOrigMenu); hFSOrigMenu = NULL; }
+
+	HWND hWndRoot = GetAncestor(hWndFSOrigParent, GA_ROOT);
+	if (hWndRoot)
+	{
+		RECT rcRoot;
+		GetWindowRect(hWndRoot, &rcRoot);
+		int rootW = rcRoot.right - rcRoot.left;
+		int rootH = rcRoot.bottom - rcRoot.top;
+
+		if (IsZoomed(hWndRoot))
+		{
+			// TOTALCMD main window is Maximized (SetWindowPos for the root is blocked by the OS): Force Layout recalculation by sending messages WM_SIZE + WM_WINDOWPOSCHANGED directly
+			RECT rcParent;
+			GetClientRect(hWndFSOrigParent, &rcParent);
+			int parentW = rcParent.right - rcParent.left;
+			int parentH = rcParent.bottom - rcParent.top;
+
+			SendMessage(hWndFSOrigParent, WM_SIZE, SIZE_RESTORED, MAKELPARAM(parentW, parentH)); // почесать за ушком
+
+			// Create a dummy WindowPos structure to forcefully trigger the layout manager
+			WINDOWPOS wp;
+			ZeroMemory(&wp, sizeof(wp));
+			wp.hwnd = hWndRoot;
+			wp.cx = rootW;
+			wp.cy = rootH;
+			wp.flags = SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED;
+
+			SendMessage(hWndRoot, WM_WINDOWPOSCHANGED, 0, (LPARAM)&wp); // погладить пузико
+			SendMessage(hWndRoot, WM_SIZE, SIZE_RESTORED, MAKELPARAM(rootW, rootH));
+		}
+		else
+		{
+			// TOTALCMD main window is not Maximized: Perform a proven 1-pixel micro-shift back and forth
+			SetWindowPos(hWndRoot, NULL, 0, 0, rootW - 1, rootH, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+			SetWindowPos(hWndRoot, NULL, 0, 0, rootW, rootH, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+		}
+	} // hWndRoot
+
+} // clsVTWindowInstance::ExitFromFullScrMode_QuickView
+
+
+
+void clsVTWindowInstance::ExitFromFullScrMode_Orig()
+// without QuickView mode support
+{
+	SetWindowLongPtr(TListerWindow, GWL_STYLE, lngFSOrigWindowStyle);
+	SetParent(TListerWindow, hWndFSOrigParent);
+
+	if (hFSOrigMenu) { SetMenu(TListerWindow, hFSOrigMenu); hFSOrigMenu = NULL; }
+
+	int oldW = rectFSOrigPosition.right - rectFSOrigPosition.left;
+	int oldH = rectFSOrigPosition.bottom - rectFSOrigPosition.top;
+
+	//std::wstring msgW = L"ox=" + ToStrW(rectFSOrigPosition.left) + L" oy=" + ToStrW(rectFSOrigPosition.top) + L" ow=" + ToStrW(oldW) + L" oh=" + ToStrW(oldH); OutputDebugStringW(msgW.c_str());
+
+	SetWindowPos(TListerWindow, HWND_NOTOPMOST, rectFSOrigPosition.left, rectFSOrigPosition.top, oldW, oldH, SWP_FRAMECHANGED);
+}
+
+
+
+void clsVTWindowInstance::ChangeFullScrMode()
+{
+	if (isFullScreenMode)
+	{
+		if (LoadedFileInfo.isQuickviewMode) ExitFromFullScrMode_QuickView();
+		else ExitFromFullScrMode_Orig();
+	}
+	else  EnterToFullScreenMode();
+
+	isFullScreenMode = !isFullScreenMode;
+}
 
 
 
