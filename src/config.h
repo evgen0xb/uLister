@@ -132,12 +132,6 @@ public:
 
 	clsSSViewModeOption SPREADSHEETDISPLAYMODE;
 
-	clsVTDWORDOption ReadBufferSize;
-	clsVTDWORDOption MMapBufferSize;
-	clsVTDWORDOption TempBufferSize;
-
-	clsVTDWORDOption MemoryMode;
-
 	void LoadViewerOptions(wchar_t *inipath);
 
 private:
@@ -145,18 +139,35 @@ private:
 	VTDWORD ReadIniViewOptWebPrevFitMode(const wchar_t *optionname, wchar_t *inipath);
 	VTDWORD ReadIniViewOptGraphicFitMode(const wchar_t *optionname, wchar_t *inipath);
 	__int8 ReadIniViewOptSpreadsheetDisplayMode(const wchar_t *optionname, wchar_t *inipath);
+
+}; // clsVTOptionsViewer
+
+
+class clsVTOptionsMemoryManager
+{
+public:
+	clsVTDWORDOption ReadBufferSize;
+	clsVTDWORDOption MMapBufferSize;
+	clsVTDWORDOption TempBufferSize;
+
+	clsVTDWORDOption MemoryMode;
+
+	void LoadMemoryOptions(wchar_t *inipath);
+
+private:
 	VTDWORD ReadIniViewOptBufferSize(const wchar_t *optionname, wchar_t *inipath);
 	VTDWORD ReadIniViewOptMemoryMode(const wchar_t *optionname, wchar_t *inipath);
 
-}; // clsVTOptionsViewer
+}; // clsVTOptionsMemoryManager
 
 
 
 class clsVTOptions
 {
 public:
-	clsVTOptionsClipboard	VTClipboard;
-	clsVTOptionsViewer		VTViewer;
+	clsVTOptionsClipboard		VTClipboard;
+	clsVTOptionsViewer			VTViewer;
+	clsVTOptionsMemoryManager	VTMemoryManager;
 
 	void LoadVTOptions(wchar_t *inipath);
 };

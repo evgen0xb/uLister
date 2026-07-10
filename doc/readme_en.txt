@@ -574,7 +574,8 @@ Finally, the search procedure has been rewritten:
     - refactoring
 
 2026-07-07
-    added options readbuffersizekb, mmapbuffersizekb and tempbuffersizekb
+    - added options readbuffersizekb, mmapbuffersizekb and tempbuffersizekb
 
 2026-07-10
-    added option memorymode
+    - added option memorymode
+    - refactoring

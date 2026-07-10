@@ -33,6 +33,9 @@ The plugin is provided as-is and without any warranty under the GPLv3 license.
         |   |   +-------------------------+    |    |
         |   |   |  clsVTOptionsViewer     |    |    |
         |   |   +-------------------------+    |    |
+		|   |   +-------------------------+    |    |
+		|   |   |clsVTOptionsMemoryManager|    |    |
+		|   |   +-------------------------+    |    |
 		|   +----------------------------------+    |
 		+-------------------------------------------+
                                            ^    ^

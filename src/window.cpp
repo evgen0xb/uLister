@@ -795,56 +795,56 @@ void clsVTWindowInstance::SendVTOptions()
 	iobufsize.dwFlags = 0;
 	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)&locOptionSpec); // return: iobufsize.dwFlags:=7 (undocumented)!!!
 
-#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGBUFFCFG)
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGMEMCFG)
 	std::wstring msgW = L"(ReadBufferSize=" + ToStrW(iobufsize.dwReadBufferSize) + L", MMapBufferSize=" + ToStrW(iobufsize.dwMMapBufferSize) + L", TempBufferSize=" + ToStrW(iobufsize.dwTempBufferSize) + L", Flags=" + ToStrW(iobufsize.dwFlags) + L")";
 	OutputDebugStringW(msgW.c_str());
-	msgW = L"(INI_ReadBuffer=" + ToStrW(pSharedPluginInstance->VTOptions.VTViewer.ReadBufferSize.Option) + L", INI_MMapBuffer=" + ToStrW(pSharedPluginInstance->VTOptions.VTViewer.MMapBufferSize.Option) + L", INI_TempBuffer=" + ToStrW(pSharedPluginInstance->VTOptions.VTViewer.TempBufferSize.Option) + L")";
+	msgW = L"(INI_ReadBuffer=" + ToStrW(pSharedPluginInstance->VTOptions.VTMemoryManager.ReadBufferSize.Option) + L", INI_MMapBuffer=" + ToStrW(pSharedPluginInstance->VTOptions.VTMemoryManager.MMapBufferSize.Option) + L", INI_TempBuffer=" + ToStrW(pSharedPluginInstance->VTOptions.VTMemoryManager.TempBufferSize.Option) + L")";
 	OutputDebugStringW(msgW.c_str());
 #endif
 
 	iobufsize.dwFlags = 0; // !!!
 
-	if (pSharedPluginInstance->VTOptions.VTViewer.ReadBufferSize.Option != Opt::SKIP)
-		if (pSharedPluginInstance->VTOptions.VTViewer.ReadBufferSize.Option != iobufsize.dwReadBufferSize) // if possible, do not change the value
+	if (pSharedPluginInstance->VTOptions.VTMemoryManager.ReadBufferSize.Option != Opt::SKIP)
+		if (pSharedPluginInstance->VTOptions.VTMemoryManager.ReadBufferSize.Option != iobufsize.dwReadBufferSize) // if possible, do not change the value
 		{
 			//OutputDebugStringW(L"-1-");
 			iobufsize.dwFlags = iobufsize.dwFlags | SCCBUFOPT_SET_READBUFSIZE;
-			iobufsize.dwReadBufferSize = pSharedPluginInstance->VTOptions.VTViewer.ReadBufferSize.Option;
+			iobufsize.dwReadBufferSize = pSharedPluginInstance->VTOptions.VTMemoryManager.ReadBufferSize.Option;
 
 			if (iobufsize.dwReadBufferSize < SCCBUFOPT_MIN_READBUFSIZE) iobufsize.dwReadBufferSize = SCCBUFOPT_MIN_READBUFSIZE;
 			if (iobufsize.dwReadBufferSize > SCCBUFOPT_MAX_READBUFSIZE) iobufsize.dwReadBufferSize = SCCBUFOPT_MAX_READBUFSIZE;
 		}
 
-	if (pSharedPluginInstance->VTOptions.VTViewer.MMapBufferSize.Option != Opt::SKIP)
-		if (pSharedPluginInstance->VTOptions.VTViewer.MMapBufferSize.Option != iobufsize.dwMMapBufferSize) // if possible, do not change the value
+	if (pSharedPluginInstance->VTOptions.VTMemoryManager.MMapBufferSize.Option != Opt::SKIP)
+		if (pSharedPluginInstance->VTOptions.VTMemoryManager.MMapBufferSize.Option != iobufsize.dwMMapBufferSize) // if possible, do not change the value
 		{
 			//OutputDebugStringW(L"-2-");
 			iobufsize.dwFlags = iobufsize.dwFlags | SCCBUFOPT_SET_MMAPBUFSIZE;
-			iobufsize.dwMMapBufferSize = pSharedPluginInstance->VTOptions.VTViewer.MMapBufferSize.Option;
+			iobufsize.dwMMapBufferSize = pSharedPluginInstance->VTOptions.VTMemoryManager.MMapBufferSize.Option;
 
 			//if (iobufsize.dwMMapBufferSize < SCCBUFOPT_MIN_MMAPBUFSIZE) iobufsize.dwMMapBufferSize = SCCBUFOPT_MIN_MMAPBUFSIZE;
 			if (iobufsize.dwMMapBufferSize > SCCBUFOPT_MAX_MMAPBUFSIZE) iobufsize.dwMMapBufferSize = SCCBUFOPT_MAX_MMAPBUFSIZE;
 		}
 
-	if (pSharedPluginInstance->VTOptions.VTViewer.TempBufferSize.Option != Opt::SKIP)
-		if (pSharedPluginInstance->VTOptions.VTViewer.TempBufferSize.Option != iobufsize.dwTempBufferSize) // if possible, do not change the value
+	if (pSharedPluginInstance->VTOptions.VTMemoryManager.TempBufferSize.Option != Opt::SKIP)
+		if (pSharedPluginInstance->VTOptions.VTMemoryManager.TempBufferSize.Option != iobufsize.dwTempBufferSize) // if possible, do not change the value
 		{
 			//OutputDebugStringW(L"-3-");
 			iobufsize.dwFlags = iobufsize.dwFlags | SCCBUFOPT_SET_TEMPBUFSIZE;
-			iobufsize.dwTempBufferSize = pSharedPluginInstance->VTOptions.VTViewer.TempBufferSize.Option;
+			iobufsize.dwTempBufferSize = pSharedPluginInstance->VTOptions.VTMemoryManager.TempBufferSize.Option;
 
 			//if (iobufsize.dwTempBufferSize < SCCBUFOPT_MIN_TEMPBUFSIZE) iobufsize.dwTempBufferSize = SCCBUFOPT_MIN_TEMPBUFSIZE;
 			if (iobufsize.dwTempBufferSize > SCCBUFOPT_MAX_TEMPBUFSIZE) iobufsize.dwTempBufferSize = SCCBUFOPT_MAX_TEMPBUFSIZE;
 		}
 
-#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGBUFFCFG)
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGMEMCFG)
 	msgW = L"(dwReadBuffer=" + ToStrW(iobufsize.dwReadBufferSize) + L", dwMMapBuffer=" + ToStrW(iobufsize.dwMMapBufferSize) + L", dwTempBuffer=" + ToStrW(iobufsize.dwTempBufferSize) + L", flags=" + ToStrW(iobufsize.dwFlags) + L")";
 	OutputDebugStringW(msgW.c_str());
 #endif
 
 	if (iobufsize.dwFlags) SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec); // if possible, do not change the value
 
-#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGBUFFCFG)
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGMEMCFG)
 	iobufsize.dwFlags = 0;
 	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)&locOptionSpec);
 	msgW = L"(NEW_ReadBufferSize=" + ToStrW(iobufsize.dwReadBufferSize) + L", NEW_MMapBufferSize=" + ToStrW(iobufsize.dwMMapBufferSize) + L", NEW_TempBufferSize=" + ToStrW(iobufsize.dwTempBufferSize) + L")";
@@ -857,18 +857,19 @@ void clsVTWindowInstance::SendVTOptions()
 	locOptionSpec.dwId = SCCOPT_DOCUMENTMEMORYMODE;
 	//locOptionSpec.pData = &MemoryMode;
 	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
-#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGBUFFCFG)
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGMEMCFG)
 	msgW = L"MemoryMode=" + ToStrW(MemoryMode);
 	OutputDebugStringW(msgW.c_str());
 #endif
-	if (pSharedPluginInstance->VTOptions.VTViewer.MemoryMode.Option != Opt::SKIP)
-		if (pSharedPluginInstance->VTOptions.VTViewer.MemoryMode.Option != MemoryMode)
+	if (pSharedPluginInstance->VTOptions.VTMemoryManager.MemoryMode.Option != Opt::SKIP)
+		if (pSharedPluginInstance->VTOptions.VTMemoryManager.MemoryMode.Option != MemoryMode) // if possible, do not change the value
 		{
-			MemoryMode = pSharedPluginInstance->VTOptions.VTViewer.MemoryMode.Option;
+			OutputDebugStringW(L"* Change MemoryMode *");
+			MemoryMode = pSharedPluginInstance->VTOptions.VTMemoryManager.MemoryMode.Option;
 			SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 		}
 
-#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGBUFFCFG)
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGMEMCFG)
 	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
 	msgW = L"NEW_MemoryMode=" + ToStrW(MemoryMode);
 	OutputDebugStringW(msgW.c_str());

@@ -741,7 +741,8 @@ https://github.com/avogelba/uLister
     - рефакторинг
 
 2026-07-07
-    добавлены опции readbuffersizekb, mmapbuffersizekb and tempbuffersizekb
+    - добавлены опции readbuffersizekb, mmapbuffersizekb and tempbuffersizekb
 
 2026-07-10
-    добавлена опция memorymode
+    - добавлена опция memorymode
+    - рефакторинг
