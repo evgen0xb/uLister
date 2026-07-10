@@ -136,6 +136,8 @@ public:
 	clsVTDWORDOption MMapBufferSize;
 	clsVTDWORDOption TempBufferSize;
 
+	clsVTDWORDOption MemoryMode;
+
 	void LoadViewerOptions(wchar_t *inipath);
 
 private:
@@ -144,6 +146,7 @@ private:
 	VTDWORD ReadIniViewOptGraphicFitMode(const wchar_t *optionname, wchar_t *inipath);
 	__int8 ReadIniViewOptSpreadsheetDisplayMode(const wchar_t *optionname, wchar_t *inipath);
 	VTDWORD ReadIniViewOptBufferSize(const wchar_t *optionname, wchar_t *inipath);
+	VTDWORD ReadIniViewOptMemoryMode(const wchar_t *optionname, wchar_t *inipath);
 
 }; // clsVTOptionsViewer
 

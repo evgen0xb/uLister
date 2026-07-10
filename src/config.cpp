@@ -167,6 +167,28 @@ VTDWORD clsVTOptionsViewer::ReadIniViewOptBufferSize(const wchar_t *optionname, 
 
 
 
+VTDWORD clsVTOptionsViewer::ReadIniViewOptMemoryMode(const wchar_t *optionname, wchar_t *inipath)
+{
+	wchar_t buf[INT64STRMAXBUF];
+	VTDWORD result;
+
+	GetPrivateProfileStringW(MEMORYSECTION, optionname, ASKIP, buf, INT64STRMAXBUF, inipath);
+	if (_wcsicmp(buf, L"4m") == 0) result = SCCDOCUMENTMEMORYMODE_SMALLEST;
+	else if (_wcsicmp(buf, L"16m") == 0) result = SCCDOCUMENTMEMORYMODE_SMALL;
+	else if (_wcsicmp(buf, L"64m") == 0) result = SCCDOCUMENTMEMORYMODE_MEDIUM;
+	else if (_wcsicmp(buf, L"256m") == 0) result = SCCDOCUMENTMEMORYMODE_LARGE;
+	else if (_wcsicmp(buf, L"1024m") == 0) result = SCCDOCUMENTMEMORYMODE_LARGEST;
+	else result = Opt::SKIP;
+
+	return result;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 void clsVTOptionsViewer::LoadViewerOptions(wchar_t *inipath)
 {
 	WPDISPLAYMODE.Option = ReadIniViewOptDisplay(L"wpdisplaymode", inipath);
@@ -185,6 +207,8 @@ void clsVTOptionsViewer::LoadViewerOptions(wchar_t *inipath)
 	ReadBufferSize.Option = ReadIniViewOptBufferSize(L"readbuffersizekb", inipath);
 	MMapBufferSize.Option = ReadIniViewOptBufferSize(L"mmapbuffersizekb", inipath);
 	TempBufferSize.Option = ReadIniViewOptBufferSize(L"tempbuffersizekb", inipath);
+
+	MemoryMode.Option = ReadIniViewOptMemoryMode(L"memorymode", inipath);
 }
 
 

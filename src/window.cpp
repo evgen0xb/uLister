@@ -631,6 +631,8 @@ void clsVTWindowInstance::SendVTOptions()
 		VTBOOL SpreadsheetHiddenCells;
 
 		SCCBUFFEROPTIONS iobufsize;
+
+		VTDWORD MemoryMode;
 	};
 
 	// unicode clipboard:
@@ -846,6 +848,29 @@ void clsVTWindowInstance::SendVTOptions()
 	iobufsize.dwFlags = 0;
 	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)&locOptionSpec);
 	msgW = L"(NEW_ReadBufferSize=" + ToStrW(iobufsize.dwReadBufferSize) + L", NEW_MMapBufferSize=" + ToStrW(iobufsize.dwMMapBufferSize) + L", NEW_TempBufferSize=" + ToStrW(iobufsize.dwTempBufferSize) + L")";
+	OutputDebugStringW(msgW.c_str());
+#endif
+
+	/****************************************************/
+
+	// chunker memory:
+	locOptionSpec.dwId = SCCOPT_DOCUMENTMEMORYMODE;
+	//locOptionSpec.pData = &MemoryMode;
+	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGBUFFCFG)
+	msgW = L"MemoryMode=" + ToStrW(MemoryMode);
+	OutputDebugStringW(msgW.c_str());
+#endif
+	if (pSharedPluginInstance->VTOptions.VTViewer.MemoryMode.Option != Opt::SKIP)
+		if (pSharedPluginInstance->VTOptions.VTViewer.MemoryMode.Option != MemoryMode)
+		{
+			MemoryMode = pSharedPluginInstance->VTOptions.VTViewer.MemoryMode.Option;
+			SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+		}
+
+#if defined (__ULISTDEBUGMSG) && defined(__ULISTDEBUGBUFFCFG)
+	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+	msgW = L"NEW_MemoryMode=" + ToStrW(MemoryMode);
 	OutputDebugStringW(msgW.c_str());
 #endif
 

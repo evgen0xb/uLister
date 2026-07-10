@@ -166,6 +166,7 @@ In version 4.4.0.0 of the plugin, the following memory management settings are a
 readbuffersizekb=skip|Size_KB
 mmapbuffersizekb=skip|Size_KB
 tempbuffersizekb=skip|Size_KB
+memorymode=skip|4m|16m|64m|256m|1024m
 
 (A.12.1 SCCID_IO_BUFFERSIZE)
 
@@ -195,6 +196,11 @@ Storing temporary files in memory can boost performance on archives and files th
 The default is 2048 KB (temporary files in memory are limited to 2 MB).
 The minimum value is 0 KB (all temporary files are immediately written to disk). The maximum is 4194303 (4 GB minus 1 KB, or 0x003fffff).
 (Note from evgen_b - this likely refers to the total size for all required temporary files, not just one.)
+
+(A.12.3 SCCOPT_DOCUMENTMEMORYMODE)
+
+The MemoryMode option determines the maximum amount of memory that the chunker may use to store the document's data,
+from 4 MB to 1 GB. The more memory the chunker has available to it, the less often it needs to re-read data from the document.
 
 TODO: In the future, it would be useful to heuristically select a more optimal value for these parameters, AUTO, dynamically,
 depending on the amount of free RAM and the file size, before opening it (is this possible?).
@@ -566,3 +572,9 @@ Finally, the search procedure has been rewritten:
 2026-07-01 4.3.2.0
     - slightly more detailed error messages
     - refactoring
+
+2026-07-07
+    added options readbuffersizekb, mmapbuffersizekb and tempbuffersizekb
+
+2026-07-10
+    added option memorymode

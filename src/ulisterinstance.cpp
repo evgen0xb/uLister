@@ -293,6 +293,9 @@ void clsUlisterInstance::CreateDefaultUlisterIni(wchar_t *_inipath)
 "readbuffersizekb=skip\r\n"
 "mmapbuffersizekb=skip\r\n"
 "tempbuffersizekb=skip\r\n"
+"\r\n"
+"; chunker memory\r\n"
+"memorymode=skip\r\n"
 ;
 
 /*
