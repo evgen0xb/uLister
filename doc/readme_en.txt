@@ -587,3 +587,4 @@ Finally, the search procedure has been rewritten:
 
 2026-07-11
     - full-screen mode support has been implemented for all document types (via a context menu item)
+    - refactoring of the Full Screen mode

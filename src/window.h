@@ -23,6 +23,32 @@ The plugin is provided as-is and without any warranty under the GPLv3 license.
 
 
 
+class clsFullScreen
+{
+public:
+
+	clsFullScreen();
+	void Init(HWND _hWnd);
+	void EnterToFullScrMode();
+	void ExitFromFullScrMode();
+	void ChangeFullScrMode();
+	bool isFullScrEnabled();
+
+private:
+	void ExitFromFullScrMode_ChildWnd();
+	void ExitFromFullScrMode_NormalWnd();
+
+	RECT rectFSOrigPosition;
+	HWND hWndFSOrigParent;
+	LONG lngFSOrigWindowStyle;
+	HMENU hFSOrigMenu;
+
+	HWND hWnd;
+	bool isOrigStyleChild;
+};
+
+
+
 //#define VTMAXSEARCHBUF 80 // don't change!
 #define VTMAXSEARCHBUF (member_size(SCCVWSEARCHINFO80, siText) / member_size(SCCVWSEARCHINFO80, siText[0]))
 
@@ -43,6 +69,8 @@ public:
 	WNDPROC OriginalSccdisplayWindowProc;
 	HWND SccdisplayWindow;
 
+	clsFullScreen FullScreen;
+
 	clsToolTip ToolTip;
 
 	clsLoadedFileInfo LoadedFileInfo;
@@ -50,8 +78,6 @@ public:
 
 	// Common for all Viewer Technology windows:
 	clsSharedPluginInstance *pSharedPluginInstance;
-
-	bool isFullScreenMode;
 
 	clsVTWindowInstance();
 
@@ -73,8 +99,6 @@ public:
 	bool isDragnDropEnabled();
 	void SetDragnDrop(bool enable);
 
-	void ChangeFullScrMode();
-
 private:
 
 	bool CreateListerWindow(const HWND ParentWin, const HINSTANCE hInst);
@@ -87,18 +111,7 @@ private:
 	void SetVTSearchANSI();
 
 	static HWND FindButtonN(const HWND hParent, const int targetIndex);
-
-	HMENU FindSubMenuByName(const HMENU hMenu, const wchar_t* targetName, const bool isSubMenu);
-
-	// full screen:
-	void EnterToFullScreenMode();
-	void ExitFromFullScrMode_QuickView();
-	void ExitFromFullScrMode_Orig();
-
-	RECT rectFSOrigPosition;
-	HWND hWndFSOrigParent;
-	LONG lngFSOrigWindowStyle;
-	HMENU hFSOrigMenu;
+	static HMENU FindSubMenuByName(const HMENU hMenu, const wchar_t* targetName, const bool isSubMenu);
 };
 
 #endif
