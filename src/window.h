@@ -112,6 +112,10 @@ private:
 
 	static HWND FindButtonN(const HWND hParent, const int targetIndex);
 	static HMENU FindSubMenuByName(const HMENU hMenu, const wchar_t* targetName, const bool isSubMenu);
+
+public:
+
+	bool winkeyhack;
 };
 
 #endif

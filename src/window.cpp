@@ -304,6 +304,14 @@ LRESULT CALLBACK SccviewerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 				mydata->OriginalSccdisplayWindowProc = (WNDPROC)SetWindowLongPtrA(_SccdisplayWindow, GWLP_WNDPROC, (LONG_PTR)SccdisplayWindowProc);
 
 			}
+
+			if (mydata->winkeyhack)
+			{
+				mydata->winkeyhack = false;
+				mydata->FullScreen.EnterToFullScrMode();
+			}
+
+
 			break;
 		case WM_COMMAND:
 		{
@@ -450,6 +458,8 @@ clsVTWindowInstance::clsVTWindowInstance() : ToolTip(TOOLTIP_TIMER_MSG)
 
 	WindSearchStrW[0] = L'\0';
 	WindSearchStrA[0] = '\0';
+
+	winkeyhack = false;
 }
 
 
@@ -602,6 +612,13 @@ bool clsVTWindowInstance::VTLoad(const HWND ParentWin, const wchar_t *FileToLoad
 #endif
 
 	FullScreen.Init(ParentWin);
+
+	// Windows logo key:
+	if ((GetAsyncKeyState(VK_LWIN) < 0) || (GetAsyncKeyState(VK_RWIN) < 0))
+	{
+		//FullScreen.EnterToFullScrMode(); <-- too early!
+		winkeyhack = true;
+	}
 
 	return true;
 } // clsVTWindowInstance::VTLoad
