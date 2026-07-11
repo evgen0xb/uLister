@@ -240,6 +240,12 @@ LRESULT CALLBACK SccviewerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 				else mydata->InfoWindow.Show();
 				return 0;
 			}
+			if (lParam == VK_F11)
+			{
+				//OutputDebugStringA("F11 - Full Screen");
+				mydata->FullScreen.ChangeFullScrMode();
+				return 0;
+			}
 
 			PostMessage(mydata->TListerWindow, WM_KEYDOWN, lParam, 0); // TC Lister Handler: (Ctrl+F/F7, F3/Shift+F3, ESC)
 			break;
@@ -394,7 +400,26 @@ LRESULT CALLBACK SccdisplayWindowProc(HWND hWnd, UINT message, WPARAM wParam, LP
 			DisplayEngineType = mydata->GetDisplayEngineVT();
 			if (wParam & MK_CONTROL) { mydata->ZoomBitmapVecFont(UlisterZoom::ZRESET); return 0; }
 			break;
+		case WM_SYSKEYDOWN:
+		{
+			if ((wParam == VK_RETURN) && (GetKeyState(VK_MENU) < 0))
+			{
+				//OutputDebugStringA("Alt+Enter - Change Full Screen [English keyboard layout]");
+				mydata->FullScreen.ChangeFullScrMode();
+				return 0;
+			}
 		}
+		case WM_KEYDOWN: // 'WM_KEYDOWN' message <-- fix Right-Alt + Enter in international layout
+		{
+			bool isAltPressed = (GetKeyState(VK_MENU) < 0);
+			if ((wParam == VK_RETURN) && isAltPressed)
+			{
+				//OutputDebugStringA("Alt+Enter - Change Full Screen [Russian keyboard layout]");
+				mydata->FullScreen.ChangeFullScrMode();
+				return 0;
+			}
+		}
+		} // switch
 		return CallWindowProc(mydata->OriginalSccdisplayWindowProc, hWnd, message, wParam, lParam);
 	}
 	return DefWindowProc(hWnd, message, wParam, lParam);

@@ -270,6 +270,9 @@ Ctrl+I:
     in this window it is possible to export the actual version of formats.txt corresponding to the used Viewer Technology library.
     This action can also be launched from the context menu - "File info" (plugin version 4.3.2.0).
 
+In version 4.4.0.0, you can switch to and from full-screen mode (even from Quick View) in any document format.
+Use the F11 or Alt+Enter hotkeys, or use the mouse right-click context menu item.
+
 8. Compilation.
 Use the vs2015.sln file to edit the project's source code in modern versions of Visual Studio.
 Use the vs2005.sln file to compile the project into compact code with Windows XP 32/64 support using
@@ -588,3 +591,4 @@ Finally, the search procedure has been rewritten:
 2026-07-11
     - full-screen mode support has been implemented for all document types (via a context menu item)
     - refactoring of the Full Screen mode
+    - added hotkeys Alt+Enter and F11 to switch to full-screen mode
