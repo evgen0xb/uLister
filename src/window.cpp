@@ -551,7 +551,7 @@ bool clsVTWindowInstance::VTLoad(const HWND ParentWin, const wchar_t *FileToLoad
 // false - fail
 {
 #if defined (__ULISTDEBUGMSG)
-	std::wstring msgW = L"VTLoad (" + std::wstring(FileToLoad) + L", ParentWin=" + ToHexW(ParentWin) + L")";
+	std::wstring msgW = L"VTLoad (" + std::wstring(FileToLoad) + L", ParentWin=" + ToHexW(ParentWin) + L"); ParentWin=" + ToStrW(ParentWin) + L" (decimal)";
 	OutputDebugStringW(msgW.c_str());
 #endif
 

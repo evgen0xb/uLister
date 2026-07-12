@@ -278,11 +278,39 @@ The plugin also supports a smart hack:
 Windows logo key + F3 - starts viewing immediately in full-screen mode.
 Similarly, in Quick View mode, press the Windows logo key + left-click on the file in the panel.
 
+++7-- Viewing Modes in Total Commander.
+
+This section was added to remind you of all possible file display modes available for any plugin.
+This information is essential for both regular users to take full advantage of Total Commander's viewing capabilities,
+and for developers to test the plugin in all modes.
+
+Total Commander supports several document viewing modes.
+
+* 1. The simplest mode, where you open a single document under the cursor using the F3 key.
+
+* 2. Multiple viewing mode. You select multiple files in the panel (usually using the INSERT key),
+and then launch their viewing using the Shift+F3 shortcut. Viewing begins with the first file in the list,
+and to switch to the next or previous file in the viewing window, use the "N" (Next) or "P" (Previous) keys.
+
+* 3. Quick View mode. The standard Ctrl+Q shortcut in the active file panel toggles quick view mode,
+which displays a preview of the file under the current panel's cursor instead of a file list in the opposite panel.
+You can switch between panels as usual using the TAB key. If you make the preview panel active this way,
+you can use the "N" or "P" keys to navigate to the next or previous file, as in the previous mode.
+When you return to the file list panel, the cursor will be positioned on the file whose contents were currently displayed.
+
+* 4. Thumbnail mode. Toggled on/off for the current file panel using the Ctrl+Shift+F1 shortcut.
+This displays files as a table of shortcuts, the images of which are also generated using viewer plugins,
+usually based on the first page of the document (if the plugin supports this mode).
+
 8. Compilation.
 Use the vs2015.sln file to edit the project's source code in modern versions of Visual Studio.
 Use the vs2005.sln file to compile the project into compact code with Windows XP 32/64 support using
 Visual Studio 2005 (for x64 compilation, you will need the Pro version).
 Then use MAKECAB.CMD script to create an automatic installation file plugin wlx-ulister.cab for Total Commander.
+
+In the ulister.h file, the macro __ULISTDEBUGMSG is commented out, which makes it easier (VS2005) to display variables in messages for Sysinternals DebugView, for example:
+std::wstring msgW = L"VTLoad (" + std::wstring(FileToLoad) + L", ParentWin=" + ToHexW(ParentWin) + L"); ParentWin=" + ToStrW(ParentWin) + L" (decimal)";
+OutputDebugStringW(msgW.c_str());
 
 9. History
 Ancient version history
@@ -601,3 +629,4 @@ Finally, the search procedure has been rewritten:
 2026-07-12
     - added the ESC key to exit full-screen mode (in normal mode it closes the viewing window as usual)
     - smart hack: Windows logo key + F3 - starts viewing immediately in full-screen mode; similar to Quick View: Windows logo key + left-click on the file
+    - documentation update
