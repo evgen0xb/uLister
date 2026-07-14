@@ -630,3 +630,6 @@ Finally, the search procedure has been rewritten:
     - added the ESC key to exit full-screen mode (in normal mode it closes the viewing window as usual)
     - smart hack: Windows logo key + F3 - starts viewing immediately in full-screen mode; similar to Quick View: Windows logo key + left-click on the file
     - documentation update
+
+2026-07-14 4.4.0.0
+    - change version number
