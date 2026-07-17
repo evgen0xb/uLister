@@ -58,6 +58,9 @@ void clsUlisterOptions::LoadUlisterOptions(wchar_t *inipath, const unsigned long
 	GetPrivateProfileStringW(ULISTERSECTION, L"tooltipstransparency", L"244", buf, INT64STRMAXBUF, inipath);
 	ToolTipTransparency = (WORD)wcstol(buf, NULL, 10);
 	if (ToolTipTransparency > 255 || WindowsBuildNumber < WINDOWS8BUILDNUMBER) ToolTipTransparency = -1;
+
+	GetPrivateProfileStringW(ULISTERSECTION, L"smartscrollbar", AON, buf, INT64STRMAXBUF, inipath);
+	if (_wcsicmp(buf, AON) == 0) smartscrollbar = true; else smartscrollbar = false;
 }
 
 
@@ -324,12 +327,6 @@ void clsVTOptionsViewer::SendVTViewOptions(const HWND SccviewerWindow)
 	locOptionSpec.dwId = SCCID_ARCSORTORDER;
 	//locOptionSpec.pData = &ArcSortOrder;
 	ArcSortOrder = SCCVW_SORT_NAME;
-	SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
-
-	// force enable scroll bars
-	locOptionSpec.dwId = SCCID_SCROLLFLAGS;
-	//locOptionSpec.pData = &ScrollFlags;
-	ScrollFlags = SCCVW_HSCROLL_ALWAYS | SCCVW_VSCROLL_ALWAYS;
 	SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 }
 

@@ -55,6 +55,7 @@ public:
 	wchar_t	inionlypreviewtypes[ULISTMAXBUF];
 	bool	keepinmemory;
 	bool	mwhscrollinvert;
+	bool	smartscrollbar;
 
 	UINT ToolTipTimer;
 	WORD ToolTipTransparency;

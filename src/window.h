@@ -119,6 +119,10 @@ private:
 public:
 
 	bool winkeyhack;
+
+	// if multiple files loaded or quick view mode; until VTUnload():
+	// VTLoad -> VTLoad -> VTLoad -> ... -> VTLoad -> {VTUnload}
+	bool isfirstvtload;
 };
 
 #endif

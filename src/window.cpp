@@ -246,6 +246,7 @@ LRESULT CALLBACK SccviewerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			{
 				//OutputDebugStringA("F11 - Full Screen");
 				mydata->FullScreen.ChangeFullScrMode();
+				if (mydata->pSharedPluginInstance->UlisterOptions.smartscrollbar) mydata->EnableScrollBar(!mydata->FullScreen.isFullScrEnabled());
 				return 0;
 			}
 			if (lParam == VK_ESCAPE)
@@ -253,6 +254,7 @@ LRESULT CALLBACK SccviewerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 				{
 					//OutputDebugStringA("Exit Full Screen");
 					mydata->FullScreen.ExitFromFullScrMode();
+					if (mydata->pSharedPluginInstance->UlisterOptions.smartscrollbar) mydata->EnableScrollBar(!mydata->FullScreen.isFullScrEnabled());
 					return 0;
 				}
 
@@ -311,6 +313,7 @@ LRESULT CALLBACK SccviewerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			{
 				mydata->winkeyhack = false;
 				mydata->FullScreen.EnterToFullScrMode();
+				if (mydata->pSharedPluginInstance->UlisterOptions.smartscrollbar) mydata->EnableScrollBar(!mydata->FullScreen.isFullScrEnabled());
 			}
 
 
@@ -323,6 +326,7 @@ LRESULT CALLBACK SccviewerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			case ID_CUSTOM_FULLSCR:
 				//OutputDebugStringA("ID_CUSTOM_FULLSCR");
 				mydata->FullScreen.ChangeFullScrMode();
+				if (mydata->pSharedPluginInstance->UlisterOptions.smartscrollbar) mydata->EnableScrollBar(!mydata->FullScreen.isFullScrEnabled());
 				return 0;
 			case ID_CUSTOM_FILEINF:
 				//OutputDebugStringA("ID_CUSTOM_FILEINF");
@@ -426,6 +430,7 @@ LRESULT CALLBACK SccdisplayWindowProc(HWND hWnd, UINT message, WPARAM wParam, LP
 			{
 				//OutputDebugStringA("Alt+Enter - Change Full Screen [English keyboard layout]");
 				mydata->FullScreen.ChangeFullScrMode();
+				if (mydata->pSharedPluginInstance->UlisterOptions.smartscrollbar) mydata->EnableScrollBar(!mydata->FullScreen.isFullScrEnabled());
 				return 0;
 			}
 		case WM_KEYDOWN: // 'WM_KEYDOWN' message <-- fix Right-Alt + Enter in international layout
@@ -433,6 +438,7 @@ LRESULT CALLBACK SccdisplayWindowProc(HWND hWnd, UINT message, WPARAM wParam, LP
 			{
 				//OutputDebugStringA("Alt+Enter - Change Full Screen [Russian keyboard layout]");
 				mydata->FullScreen.ChangeFullScrMode();
+				if (mydata->pSharedPluginInstance->UlisterOptions.smartscrollbar) mydata->EnableScrollBar(!mydata->FullScreen.isFullScrEnabled());
 				return 0;
 			}
 		} // switch
@@ -466,6 +472,7 @@ clsVTWindowInstance::clsVTWindowInstance() : ToolTip(TOOLTIP_TIMER_MSG)
 	WindSearchStrA[0] = '\0';
 
 	winkeyhack = false;
+	isfirstvtload = true;
 }
 
 
@@ -619,10 +626,13 @@ bool clsVTWindowInstance::VTLoad(const HWND ParentWin, const wchar_t *FileToLoad
 
 	FullScreen.Init(ParentWin);
 
-	// Windows logo key:
+	if (isfirstvtload) EnableScrollBar(true);
+	isfirstvtload = false;
+
+	// Windows logo key is pressed while open file with uLister:
 	if ((GetAsyncKeyState(VK_LWIN) < 0) || (GetAsyncKeyState(VK_RWIN) < 0))
 	{
-		//FullScreen.EnterToFullScrMode(); <-- too early!
+		//FullScreen.EnterToFullScrMode(); <-- too early!        ;;; if (pSharedPluginInstance->UlisterOptions.smartscrollbar) EnableScrollBar(!FullScreen.isFullScrEnabled());
 		winkeyhack = true;
 	}
 
@@ -642,6 +652,7 @@ void clsVTWindowInstance::VTUnload()
 #endif
 
 	FullScreen.ExitFromFullScrMode();
+	//if (pSharedPluginInstance->UlisterOptions.smartscrollbar) EnableScrollBar(!FullScreen.isFullScrEnabled());
 
 	// ListCloseWindow:
 
@@ -663,6 +674,7 @@ void clsVTWindowInstance::VTUnload()
 	waWindow = NULL;
 	OriginalTListerWindowProc = NULL;
 
+	isfirstvtload = true;
 } // clsVTWindowInstance::VTUnload
 
 
