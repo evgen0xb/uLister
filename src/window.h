@@ -99,6 +99,9 @@ public:
 	bool isDragnDropEnabled();
 	void SetDragnDrop(bool enable);
 
+	void EnableScrollBar(bool enable);
+	bool isScrollBarEnabled();
+
 private:
 
 	bool CreateListerWindow(const HWND ParentWin, const HINSTANCE hInst);

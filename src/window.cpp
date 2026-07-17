@@ -34,12 +34,14 @@ const char *WNDCLASSNAME_SCCDISPLAY		= "SCCDISPLAY";
 #define ID_CUSTOM_FILEINF	102
 #define ID_CUSTOM_DRGNDRP	103
 #define ID_CUSTOM_FINDTXT	104
+#define ID_CUSTOM_SCRLBAR	105
 
 const wchar_t *WFULLSCR = L"Full Screen";
 const wchar_t *WFILEINF = L"File Info";
 const wchar_t *WOPTIONS = L"Options";
 const wchar_t *WDRAGNDR = L"Drag'n'Drop";
 const wchar_t *WFIND	= L"Find";
+const wchar_t *WSCRLBAR = L"Scroll Bars";
 
 const char *ANOTFOUND = "Not found:";
 const wchar_t *WNOTFOUND = L"Not found:";
@@ -336,6 +338,10 @@ LRESULT CALLBACK SccviewerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 				SetFocus(mydata->TListerWindow);
 				PostMessage(mydata->TListerWindow, WM_KEYDOWN, VK_F7, 0);
 				PostMessage(mydata->TListerWindow, WM_KEYUP, VK_F7, 0);
+				return 0;
+			case ID_CUSTOM_SCRLBAR:
+				//OutputDebugStringA("ID_CUSTOM_SCRLBAR");
+				mydata->EnableScrollBar(!mydata->isScrollBarEnabled());
 				return 0;
 			}
 			break;
@@ -1240,6 +1246,10 @@ void clsVTWindowInstance::OEM_AddNewContextMenuItems()
 		//std::wstring msgW = L"menuidx=" + ToStrW(menuidx); OutputDebugStringW(msgW.c_str());
 		if (menuidx) DeleteMenu(hMenuOptions, menuidx - 1, MF_BYPOSITION);
 		AppendMenuW(hMenuOptions, MF_STRING | (isDragnDropEnabled() ? MF_CHECKED : MF_UNCHECKED), ID_CUSTOM_DRGNDRP, WDRAGNDR);
+
+		menuidx = static_cast<int>(reinterpret_cast<INT_PTR>(FindSubMenuByName(reinterpret_cast<HMENU>(hMenuOptions), WSCRLBAR, false)));
+		if (menuidx) DeleteMenu(hMenuOptions, menuidx - 1, MF_BYPOSITION);
+		AppendMenuW(hMenuOptions, MF_STRING | (isScrollBarEnabled() ? MF_CHECKED : MF_UNCHECKED), ID_CUSTOM_SCRLBAR, WSCRLBAR);
 	}
 
 
@@ -1307,6 +1317,37 @@ HMENU clsVTWindowInstance::FindSubMenuByName(const HMENU hMenu, const wchar_t* t
 				}
 	}
 	return NULL;
+}
+
+
+
+void clsVTWindowInstance::EnableScrollBar(bool enable)
+{
+	SCCVWOPTIONSPEC40 locOptionSpec;
+	VTDWORD ScrollFlags;
+	locOptionSpec.dwSize = sizeof(SCCVWOPTIONSPEC40);
+	locOptionSpec.dwFlags = SCCVWOPTION_CURRENT;
+	locOptionSpec.dwId = SCCID_SCROLLFLAGS;
+	locOptionSpec.pData = &ScrollFlags;
+
+	ScrollFlags = enable ? (SCCVW_HSCROLL_ALWAYS | SCCVW_VSCROLL_ALWAYS) : (SCCVW_HSCROLL_NEVER | SCCVW_VSCROLL_NEVER);
+	SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+}
+
+
+
+bool clsVTWindowInstance::isScrollBarEnabled()
+{
+	SCCVWOPTIONSPEC40 locOptionSpec;
+	VTDWORD ScrollFlags;
+	locOptionSpec.dwSize = sizeof(SCCVWOPTIONSPEC40);
+	locOptionSpec.dwFlags = SCCVWOPTION_CURRENT;
+	locOptionSpec.dwId = SCCID_SCROLLFLAGS;
+
+	locOptionSpec.pData = &ScrollFlags;
+	SendMessage(SccviewerWindow, SCCVW_GETOPTION, 0, (LPARAM)(PSCCVWOPTIONSPEC40)&locOptionSpec);
+
+	return (ScrollFlags == (SCCVW_HSCROLL_NEVER | SCCVW_VSCROLL_NEVER)) ? false : true;
 }
 
 

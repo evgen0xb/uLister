@@ -633,3 +633,6 @@ Finally, the search procedure has been rewritten:
 
 2026-07-14 4.4.0.0
     - change version number
+
+2026-07-17
+    - added the ability to enable/disable scroll bars to the Options context menu (this is useful for full-screen mode)

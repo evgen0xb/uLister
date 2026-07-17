@@ -199,6 +199,8 @@ void clsVTOptionsViewer::SendVTViewOptions(const HWND SccviewerWindow)
 
 		VTBOOL SpreadsheetDraftMode;
 		VTBOOL SpreadsheetHiddenCells;
+
+		VTDWORD ScrollFlags;
 	};
 
 	// word processor display engine:
@@ -322,6 +324,12 @@ void clsVTOptionsViewer::SendVTViewOptions(const HWND SccviewerWindow)
 	locOptionSpec.dwId = SCCID_ARCSORTORDER;
 	//locOptionSpec.pData = &ArcSortOrder;
 	ArcSortOrder = SCCVW_SORT_NAME;
+	SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
+
+	// force enable scroll bars
+	locOptionSpec.dwId = SCCID_SCROLLFLAGS;
+	//locOptionSpec.pData = &ScrollFlags;
+	ScrollFlags = SCCVW_HSCROLL_ALWAYS | SCCVW_VSCROLL_ALWAYS;
 	SendMessage(SccviewerWindow, SCCVW_SETOPTION, 0, (LPARAM)&locOptionSpec);
 }
 
