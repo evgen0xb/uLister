@@ -18,6 +18,7 @@ const char *AFIGETFIRSTID = "FIGetFirstId";
 const char *AFIGETNEXTID = "FIGetNextId";
 const char *AFIIDFILEEX = "FIIdFileEx";
 
+const char *AFAMAPIDTOFILTERINFO = "FAMapIdToFilterInfo";
 
 
 extern const char *WNDCLASSNAME_SCCVIEWER;
@@ -210,21 +211,58 @@ void clsSharedPluginInstance::CreatFormatsTxt(const wchar_t* path)
 	typedef VTWORD(*FIGetFirstIdFUNC)(PFIGET pFiGet, VTWORD * pType, VTLPTSTR pTypeName, VTWORD wNameCount);
 	typedef VTWORD(*FIGetNextIdFUNC)(PFIGET pFiGet, VTWORD * pType, VTLPTSTR pTypeName, VTWORD wNameCount);
 
+	// ************************************************************************************* //
+	// Undocumented:                                                                         //
+	// To use FAMapIdToFilterInfo you don't need to explicitly call FAInit() and FADeInit()  //
+	//                                                                                       //
+
+#define SCCFILTERINFO8SIZE 272
+#define SCCFILTERINFODLLNAMELEN 60
+#define SCCFILTERINFOMAXDLLTYPES 102
+
+	typedef union _SCCFILTERINFO
+	{
+		struct
+		{
+			__int16 reserved0;
+			__int16 reserved1;
+			__int16 DLLTypesCount;
+			__int16 reserved2;
+			__int16 DLLTypes[SCCFILTERINFOMAXDLLTYPES];
+			char DLLName[SCCFILTERINFODLLNAMELEN];
+		};
+		char BUF[SCCFILTERINFO8SIZE];
+	} SCCFILTERINFO, *PSCCFILTERINFO;
+
+	typedef VTDWORD(*FAMapIdToFilterInfoFUNC)(VTWORD Type, PSCCFILTERINFO PSCCFAINFO);
+
+	// return:                                                                               //
+	// 4 == FAIL (Type not found); 0 == OK                                                   //
+	// Reverse engineering sccfa.dll                                                         //
+	// ************************************************************************************* //
+
 	FIInitFUNC FIInit;
 	FIDeInitFUNC FIDeInit;
 	FIGetFirstIdFUNC FIGetFirstId;
 	FIGetNextIdFUNC FIGetNextId;
 
-	HINSTANCE hInstFileIdentDLL = UlisterInstance.FileIdentInstanceInc();
+	FAMapIdToFilterInfoFUNC FAMapIdToFilterInfo;
 
-	if (hInstFileIdentDLL)
+	HINSTANCE hInstFileIdentDLL = UlisterInstance.FileIdentInstanceInc();
+	HINSTANCE hInstFilterAccessDLL = UlisterInstance.FilterAccessInstanceInc();
+
+	SCCFILTERINFO filterinfo;
+
+	if (hInstFileIdentDLL && hInstFilterAccessDLL)
 	{
 		FIInit = (FIInitFUNC)GetProcAddress(hInstFileIdentDLL, AFIINIT);
 		FIDeInit = (FIDeInitFUNC)GetProcAddress(hInstFileIdentDLL, AFIDEINIT);
 		FIGetFirstId = (FIGetFirstIdFUNC)GetProcAddress(hInstFileIdentDLL, AFIGETFIRSTID);
 		FIGetNextId = (FIGetFirstIdFUNC)GetProcAddress(hInstFileIdentDLL, AFIGETNEXTID);
 
-		if (FIInit && FIDeInit && FIGetFirstId && FIGetNextId)
+		FAMapIdToFilterInfo = (FAMapIdToFilterInfoFUNC)GetProcAddress(hInstFilterAccessDLL, AFAMAPIDTOFILTERINFO);
+
+		if (FIInit && FIDeInit && FIGetFirstId && FIGetNextId && FAMapIdToFilterInfo)
 		{
 			HANDLE hFile = CreateFileW(path, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 			if (hFile != INVALID_HANDLE_VALUE)
@@ -235,6 +273,7 @@ void clsSharedPluginInstance::CreatFormatsTxt(const wchar_t* path)
 				DWORD bytesWritten;
 
 				VTWORD TotalIDs = 0;
+				VTWORD TotalSupported = 0;
 				VTWORD TypeNumber;
 				char TypeName[VTMAXTYPENAMEBUF];
 
@@ -243,13 +282,23 @@ void clsSharedPluginInstance::CreatFormatsTxt(const wchar_t* path)
 				while (MoreIDs)
 				{
 					TotalIDs++;
-					_snprintf_s(buf, ULISTMAXBUF, _TRUNCATE, "%u  -  %s\r\n", TypeNumber, TypeName);
+
+					bool err = FAMapIdToFilterInfo(TypeNumber, &filterinfo);
+					if (!err) TotalSupported++;
+
+					//_snprintf_s(buf, ULISTMAXBUF, _TRUNCATE, "%u  -  %s\r\n", TypeNumber, TypeName);
+					_snprintf_s(buf, ULISTMAXBUF, _TRUNCATE, "%u   %-12s  -  %s\r\n", TypeNumber, (err ? "*" : filterinfo.DLLName), TypeName);
+
 					//OutputDebugStringA(buf);
 					WriteFile(hFile, buf, (DWORD)strlen(buf), &bytesWritten, NULL);
 					MoreIDs = FIGetNextId(&figetTag, &TypeNumber, TypeName, VTMAXTYPENAMEBUF);
 				}
 				FIDeInit();
-				_snprintf_s(buf, ULISTMAXBUF, _TRUNCATE, "\r\nTotal format types: %u\r\n", TotalIDs);
+				_snprintf_s(buf, ULISTMAXBUF, _TRUNCATE, "\r\nTotal known format IDs: %u\r\n", TotalIDs);
+				//OutputDebugStringA(buf);
+				WriteFile(hFile, buf, (DWORD)strlen(buf), &bytesWritten, NULL);
+
+				_snprintf_s(buf, ULISTMAXBUF, _TRUNCATE, "Total supported format IDs: %u\r\n", TotalSupported);
 				//OutputDebugStringA(buf);
 				WriteFile(hFile, buf, (DWORD)strlen(buf), &bytesWritten, NULL);
 
@@ -259,5 +308,6 @@ void clsSharedPluginInstance::CreatFormatsTxt(const wchar_t* path)
 	}
 
 	UlisterInstance.FileIdentInstanceDec(UlisterOptions.keepinmemory);
+	UlisterInstance.FilterAccessInstanceDec(UlisterOptions.keepinmemory);
 }
 

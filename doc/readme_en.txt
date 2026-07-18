@@ -641,3 +641,6 @@ Finally, the search procedure has been rewritten:
 2026-07-17
     - added the ability to enable/disable scroll bars to the Options context menu (this is useful for full-screen mode)
     - added option smartscrollbar
+
+2026-07-18
+    - when exporting format types, information about the corresponding DLL is added to formats.txt (reverse engineering sccfa.dll)

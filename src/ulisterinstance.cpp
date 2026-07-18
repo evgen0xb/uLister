@@ -45,6 +45,9 @@ void clsUlisterInstance::InitUlister(const HINSTANCE _hInst)
 	hFileIdentLibrary = NULL;
 	NumInstancesFileIdentLib = 0;
 
+	hFilterAccessLibrary = NULL;
+	NumInstancesFilterAccessLib = 0;
+
 	GetRegCurrentBuildNumber();
 	GetIniPath();
 }
@@ -139,6 +142,34 @@ HINSTANCE clsUlisterInstance::FileIdentInstanceInc()
 	OutputDebugStringW(msgW.c_str());
 #endif
 	return hFileIdentLibrary;
+}
+
+
+
+void clsUlisterInstance::FilterAccessInstanceDec(bool _keepinmemory)
+{
+	// unload the "SCCFA.DLL" if needed
+
+	if (NumInstancesFilterAccessLib > 0) NumInstancesFilterAccessLib--; else return;
+
+	if ((hFilterAccessLibrary != NULL) && !_keepinmemory && (NumInstancesFilterAccessLib == 0))
+	{
+		FreeLibrary(hFilterAccessLibrary);
+		hFilterAccessLibrary = NULL;
+	}
+}
+
+
+
+HINSTANCE clsUlisterInstance::FilterAccessInstanceInc()
+{
+	// load the "SCCFA.DLL" if needed
+
+	if (!hFilterAccessLibrary) hFilterAccessLibrary = LoadLibVT(L"SCCFA.DLL");
+	if (!hFilterAccessLibrary) return NULL;
+
+	NumInstancesFilterAccessLib++;
+	return hFilterAccessLibrary;
 }
 
 

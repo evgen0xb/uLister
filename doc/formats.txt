@@ -1,968 +1,969 @@
-1000  -  Word for DOS 4.x
-1001  -  Word for DOS 5.x
-1002  -  Wordstar 5.0
-1003  -  Wordstar 4.0
-1004  -  Wordstar 2000
-1005  -  WordPerfect 5.0
-1006  -  MultiMate 3.6
-1007  -  MultiMate Advantage 2
-1008  -  IBM DCA/RFT
-1009  -  IBM DisplayWrite 2 or 3
-1010  -  SmartWare II
-1011  -  Samna
-1012  -  PFS: Write A
-1013  -  PFS: Write B
-1014  -  Professional Write 1
-1015  -  Professional Write 2
-1016  -  IBM Writing Assistant
-1017  -  First Choice WP
-1018  -  WordMarc
-1019  -  Navy DIF
-1020  -  Volkswriter
-1021  -  DEC DX 3.0 and below
-1022  -  Sprint
-1023  -  WordPerfect 4.2
-1024  -  Total Word
-1025  -  Wang IWP
-1026  -  Wordstar 5.5
-1028  -  Rich Text Format
-1029  -  Mac Word 3.0
-1030  -  Mac Word 4.0
-1031  -  Mass 11
-1032  -  MacWrite II
-1033  -  XyWrite / Nota Bene
-1034  -  IBM DCA/FFT
-1035  -  Mac WordPerfect 1.x
-1036  -  IBM DisplayWrite 4
-1037  -  Mass 11
-1038  -  WordPerfect 5.1/5.2
-1039  -  MultiMate 4.0
-1040  -  Q&A Write
-1041  -  MultiMate Note
-1043  -  PC File 5.0 Doc
-1044  -  Lotus Manuscript 1.0
-1045  -  Lotus Manuscript 2.0
-1046  -  Enable WP 3.0
-1047  -  Windows Write
-1048  -  Microsoft Works 1.0
-1049  -  Microsoft Works 2.0
-1050  -  Wordstar 6.0
-1051  -  OfficeWriter
-1053  -  IBM DisplayWrite 5
-1054  -  Word for Windows 1.x
-1055  -  Word for Windows 1.x
-1056  -  Ami
-1057  -  Ami Pro
-1058  -  First Choice 3 WP
-1059  -  Mac WordPerfect 2.0
-1060  -  Mac Works 2.0 WP
-1061  -  Professional Write Plus
-1062  -  Legacy
-1063  -  Signature
-1064  -  Wordstar for Windows
-1065  -  Word for Windows 2.0
-1066  -  JustWrite 1.0
-1067  -  Wordstar 7.0
-1068  -  Windows Works WP
-1069  -  JustWrite 2.0
-1070  -  Ami [Clip]
-1071  -  Legacy [Clip]
-1072  -  Pro Write Plus [Clip]
-1073  -  Mac Word 5.x
-1074  -  Enable WP 4.x
-1075  -  WordPerfect 6.0
-1076  -  Word for DOS 6.x
-1077  -  DEC DX 3.1
-1078  -  WordPerfect Encrypted
-1079  -  Q&A Write 3
-1080  -  Mac WordPerfect 3.0
-1081  -  CEO Word
-1082  -  Word 6.0 or 7.0
-1083  -  WordPerfect 5.1 Far East
-1084  -  Ichitaro 3.x
-1085  -  Ichitaro 4.x/5.x/6.x
-1086  -  Word for Windows 1.2 J
-1087  -  Word for Windows 5.0 J
-1088  -  Matsu 4
-1089  -  Matsu 5
-1090  -  P1 Japan
-1091  -  Rich Text Format Japan
-1092  -  CEO Write
-1093  -  Windows Works 3.0 WP
-1094  -  Microsoft WordPad
-1095  -  WP/Novell Unknown Format
-1096  -  Word for Windows 2.0 Object
-1097  -  WordPerfect 6.1 - 12.0 / X3-7
-1098  -  Fulcrum Document Format
-1099  -  Europa Fulcrum
-1100  -  Europa Fulcrum
-1101  -  Internet HTML
-1102  -  Word 7.0
-1103  -  Arehangeul
-1104  -  Hana
-1105  -  Windows Works 4.0 WP
-1106  -  PerfectWorks for Windows
-1107  -  WordPerfect 7.0/8.0/10.0/X3/X4
-1108  -  WordPro 96
-1109  -  HTML - Central European
-1110  -  HTML - Japanese (ShiftJIS)
-1111  -  HTML - Japanese (EUC)
-1112  -  HTML - Chinese (Big5)
-1113  -  HTML - Chinese (EUC)
-1114  -  HTML - Chinese (GB)
-1115  -  HTML - Korean (Hangul)
-1116  -  HTML - Cyrillic (ANSI 1251)
-1117  -  HTML - Cyrillic (KOI8-R)
-1118  -  Text - Cyrillic (ANSI 1251)
-1119  -  Text - Cyrillic (KOI8-R)
-1124  -  Digital WPS Plus
-1125  -  Mac Word 6
-1126  -  Microsoft Word 97/98
-1127  -  Rainbow
-1128  -  Interleaf 6
-1129  -  MIFF 3.0
-1130  -  MIFF 4.0
-1131  -  MIFF 5.0
-1132  -  Text Mail
-1133  -  Mac Word 97
-1134  -  Interleaf Japan
-1135  -  MIFF 3.0 Japan
-1136  -  MIFF 4.0 Japan
-1137  -  MIFF 5.0 Japan
-1138  -  MIFF 5.5
-1139  -  WordPerfect 8.0/10.0
-1140  -  Ichitaro 8.x-13.x/2004-2014
-1141  -  vCard
-1142  -  HTML - Cascading Style Sheets
-1143  -  Outlook Email
-1144  -  Pocket Word
-1145  -  WordPro 97/Millennium
-1146  -  Microsoft Word 2000
-1147  -  Word 2000 HTML
-1148  -  Excel 2000 HTML
-1149  -  PowerPoint 2000 HTML
-1150  -  Extensible Markup Language (XML)
-1151  -  Wireless Markup Language (WML)
-1153  -  HTML - Japanese (JIS)
-1154  -  WML - Chinese (Big5)
-1155  -  WML - Chinese (EUC)
-1156  -  WML - Chinese (GB)
-1157  -  WML - Cyrillic (ANSI 1251)
-1158  -  WML - Cyrillic (KOI8-R)
-1159  -  WML - Japanese (JIS)
-1160  -  WML - Japanese (ShiftJIS)
-1161  -  WML - Japanese (EUC)
-1162  -  WML - Korean (Hangul)
-1163  -  WML - Central European
-1165  -  StarOffice 5.2 Writer
-1166  -  MIFF 6.0
-1167  -  MIFF 6.0 Japan
-1168  -  MIFF
-1170  -  ASCII Text/Log/XML/CSV
-1171  -  Handheld Device Markup Language (HDML)
-1172  -  Compact HTML (CHTML)
-1173  -  XHTML Basic
-1174  -  AvantGo HTML
-1175  -  Web Clipping Application (WCA) HTML
-1176  -  XML Forms Data Format (XFDF)
-1177  -  Pocket Word - Pocket PC
-1178  -  Wireless HTML
-1179  -  Hangul 97 Word Processor
-1180  -  Hangul 2002 - 2010 Word Processor
-1181  -  Internet HTML - Unicode
-1182  -  XML With Doctype HTML
-1184  -  EBCDIC encoded Text
-1185  -  Microsoft Word 2002
-1186  -  Microsoft Word 2003/2004
-1187  -  Internet Message
-1188  -  StarOffice 6 & 7 Writer
-1189  -  Microsoft Outlook PST/OST 97/2000/XP
-1191  -  Microsoft Works 2000
-1192  -  Internet Mail Message
-1193  -  Internet News Message
-1194  -  Outlook Express News Message
-1195  -  Outlook Express Mail Message
-1196  -  vCalendar
-1197  -  Transport-Neutral Encapsulation Format(TNEF)
-1198  -  MHTML(Web Archive)
-1200  -  Smart DataBase
-1201  -  DBase III
-1202  -  DBase IV or V
-1203  -  Framework III
-1204  -  Microsoft Works DB
-1205  -  DataEase 4.x
-1206  -  Paradox 2 or 3
-1207  -  Paradox 3.5
-1208  -  Q&A Database
-1209  -  Reflex
-1210  -  R:Base System V
-1211  -  R:Base 5000
-1212  -  R:Base File 1
-1213  -  R:Base File 3
-1214  -  First Choice DB
-1215  -  Mac Works 2.0 DB
-1216  -  Windows Works DB
-1217  -  Paradox
-1218  -  Microsoft Access
-1219  -  CEO Decision Base
-1220  -  Windows Works 3.0 DB
-1221  -  Windows Works 4.0 DB
-1222  -  Microsoft Access 95/97
-1223  -  Microsoft Project 98
-1224  -  Microsoft Project 2000/2002/2003
-1225  -  Microsoft Project 2002
-1226  -  Microsoft Project 2007
-1227  -  Lotus Notes Database (NSF) or Template (NTF) File
-1228  -  Microsoft Project 2010
-1229  -  Microsoft Access 2000/2002/2003/2016/2019
-1230  -  Microsoft Access 2007/2010/2013/2016/2019
-1231  -  Microsoft Access Web Database
-1232  -  Microsoft Access 2007/2010/2013 Template File
-1233  -  Microsoft Project 2013
-1234  -  XML Localization Interchange File Format (XLIFF)
-1235  -  SAV data file
-1236  -  TRC data file
-1237  -  Master Database File(MDF) / Log database file(LDF)
-1238  -  SQL/SQLITE database file format
-1239  -  4D Database (4DB & 4DD)
-1240  -  CAN Database DBC File
-1241  -  Microsoft Universal Data Link file
-1242  -  MySQL MyISAM Index file (MYI)
-1243  -  SQLite data file (DB3)
-1244  -  Microsoft Word Recovery file (ASD)
-1245  -  Microsoft Project 2016/2019/2021
-1260  -  ZST file
-1261  -  XZ file
-1262  -  LZO file
-1263  -  WUX file (Compressed of Wii U Disk Image WUD file)
-1264  -  DMG file (Mac OS X Disk Image file)
-1265  -  MPQ file
-1266  -  Amiga LZX Compressed File
-1267  -  PEA PeaZip file format
-1268  -  LZMA compressed archive
-1269  -  ALZ file (ALZip archive)
-1270  -  Bzip2 compressed data (.tbz/.bz2)
-1271  -  XAR Archive Compressed
-1272  -  Zlip compressed data
-1273  -  ARJ Archive Compressed
-1274  -  PowerISO Direct-Access-Archive (DAA)
-1275  -  ISO 9660 Disc Image File
-1276  -  ACE Archive Compressed
-1277  -  ZIM Wiki archive
-1278  -  RPM Package
-1279  -  LZ4 compressed data
-1282  -  DEB Debian Linux Package File
-1283  -  DAR Disk Archiver File
-1284  -  DZ Dzip Compressed Archive
-1285  -  MPX Microsoft Project Export File
-1290  -  LBR file
-1291  -  LZ file (Lzip compressed archive file)
-1292  -  KGB  archive
-1301  -  PST Fields File
-1302  -  Microsoft Outlook PST/OST 2003/2007/2010/2013/2016/2019
-1303  -  Microsoft Outlook PAB
-1306  -  Yahoo! Messenger Archive
-1307  -  Microsoft Word XML 2003
-1308  -  Microsoft Word XML 2007-2016/2019
-1309  -  StarOffice 8 Writer (ODF 1.1)
-1311  -  Outlook Email Form Template
-1312  -  Microsoft Word 2007/2008
-1313  -  Password Protected Microsoft Word 2007/2008
-1314  -  Microsoft Word 2007/2008 Template
-1316  -  DRM protected Unknown
-1317  -  DRM protected Microsoft Word
-1318  -  DRM protected Microsoft Word 2007/2008
-1319  -  File sealed by Oracle IRM
-1320  -  Extensible Metadata Platform
-1323  -  Open Office 1.x Writer
-1324  -  Open Office 2.x Writer (ODF 1.1)
-1325  -  IBM/Lotus Symphony Document (ODF 1.1)
-1327  -  Microsoft Word 2007/2008 Macro Enabled Document
-1328  -  Microsoft Word 2007/2008 Macro Enabled Template
-1329  -  Microsoft Word Picture
-1331  -  Open Office 3.x Writer (ODF 1.2)
-1332  -  StarOffice 9 Writer (ODF 1.2)
-1333  -  Oracle Open Office 3.x Writer (ODF 1.2)
-1334  -  Samsung Jungum File
-1335  -  Kingsoft Office Writer File
-1336  -  Microsoft Word 2010/2011
-1337  -  Microsoft Word 2010/2011 Template
-1338  -  Microsoft Word 2010/2011 Macro Enabled Document
-1339  -  Microsoft Word 2010/2011 Macro Enabled Template
-1341  -  Trillian Text Log File
-1342  -  Trillian XML Log File
-1343  -  Microsoft Live Messenger Log File
-1344  -  AOL Messenger Log File
-1345  -  Outlook Appointment
-1346  -  Outlook Appointment Form Template
-1347  -  Outlook Journal
-1348  -  Outlook Journal Form Template
-1349  -  Outlook Contact
-1350  -  Outlook Contact Form Template
-1351  -  Outlook Sticky Note
-1352  -  Outlook Sticky Note Form Template
-1353  -  Outlook Task
-1354  -  Outlook Task Form Template
-1355  -  Password Protected Microsoft Word 2010-2016/2019
-1356  -  Apple Mail 2.0 Message (EMLX)
-1357  -  Outlook Non Delivery Report
-1358  -  Outlook Non Delivery Report Form Template
-1359  -  Outlook Post
-1360  -  Outlook Post Form Template
-1361  -  Outlook Distribution List
-1362  -  Outlook Distribution List Form Template
-1363  -  Outlook Clear Signed Email
-1364  -  Outlook Clear Signed Email Form Template
-1365  -  Outlook Opaque Signed Email
-1366  -  Outlook Opaque Signed Email Form Template
-1367  -  Apple iWork Pages File
-1368  -  Apple iWork Pages File Preview
-1370  -  S/MIME (Secure/MIME)
-1371  -  Clear Signed S/MIME (Secure/MIME)
-1372  -  Microsoft Word 2013
-1373  -  Microsoft Word 2013 Template
-1374  -  Microsoft Word 2013 Macro Enabled Document
-1375  -  Microsoft Word 2013 Macro Enabled Template
-1379  -  Libre Office 3.x Writer (ODF 1.2)
-1380  -  Libre Office 4.x Writer (ODF 1.2)
-1381  -  Microsoft Outlook for Mac 2011
-1382  -  Apache Office 3.x Writer (ODF 1.2)
-1383  -  Apache Office 4.x Writer (ODF 1.2)
-1384  -  Microsoft Word 2016/2019/2021/M365
-1385  -  Microsoft Word 2016/2019/2021/M365 Template
-1386  -  Microsoft Word 2016/2019/2021/M365 Macro Enabled Document
-1387  -  Microsoft Word 2016/2019/2021/M365 Macro Enabled Template
-1388  -  Strict Open XML 2013 Document
-1389  -  Strict Open XML 2016/2019/2021 Document
-1390  -  Apple iWork 2013/2014 Pages File
-1391  -  Apple iWork 2020/2021 Pages File
-1392  -  Microsoft Compound Document File
-1400  -  Symphony
-1401  -  Lotus 1-2-3 1.0
-1402  -  Lotus 1-2-3 2.0
-1403  -  Lotus 1-2-3 3.x
-1404  -  Smart Spreadsheet
-1405  -  Microsoft Excel 2.x
-1406  -  Enable Spreadsheet
-1407  -  Microsoft Works SS
-1408  -  VP-Planner
-1409  -  Mosaic Twin
-1410  -  SuperCalc 5
-1411  -  Quattro Pro
-1412  -  Quattro
-1413  -  PFS: Plan
-1414  -  First Choice SS
-1415  -  Microsoft Excel 3.0
-1416  -  Generic WKS
-1417  -  Mac Works 2.0 SS
-1418  -  Windows Works SS
-1419  -  Microsoft Excel 4.0
-1420  -  Quattro Pro for Windows
-1421  -  Lotus 1-2-3 4.x / 5.x
-1422  -  Quattro Pro Windows Japan
-1423  -  CEO Spreadsheet
-1424  -  Microsoft Excel 5.0/7.0
-1425  -  Multiplan 4.0
-1426  -  Windows Works 3.0 SS
-1427  -  Quattro Pro 4.0
-1428  -  Quattro Pro 5.0
-1429  -  Quattro Pro Win 6.0
-1430  -  Lotus 123 Release 2 for OS/2
-1431  -  Lotus 123 for OS/2 Chart
-1432  -  Windows Works 4.0 SS
-1433  -  Quattro Pro Win 7.0/8.0
-1434  -  Quattro Pro Win 7.0/8.0 Graph
-1435  -  Lotus 1-2-3 97 Edition
-1436  -  Microsoft Mac Excel 4.0
-1437  -  Microsoft Mac Excel 5.0
-1438  -  Microsoft Excel 97/98/2004
-1439  -  MS Excel 3.0 Workbook
-1440  -  MS Excel 4.0 Workbook
-1441  -  MS Excel Mac 4.0 Workbook
-1442  -  MS Excel Mac 4.0 Workbook
-1443  -  Lotus 1-2-3 98/Millennium Edition
-1444  -  Quattro Pro 8.0
-1445  -  Password Protected Quattro Pro Win 9.0 / X3 - X5
-1446  -  Microsoft Excel 2000
-1447  -  Quattro Pro Win 10.0
-1448  -  Microsoft Excel 2002
-1449  -  StarOffice 5.2 Calc
-1450  -  Quattro Pro Win 11.0
-1451  -  Microsoft Excel 2003
-1452  -  StarOffice 6 & 7 Calc
-1453  -  Quattro Pro Win 12.0
-1454  -  StarOffice 8 Calc (ODF 1.1)
-1455  -  Microsoft Excel 2007/2008
-1456  -  Password Protected Microsoft Excel 2007/2008
-1457  -  Microsoft Excel 2007/2008 Binary
-1458  -  DRM protected Microsoft Excel
-1459  -  DRM protected Microsoft Excel 2007/2008
-1460  -  Microsoft Works SS 6.0/7.0/8.0
-1461  -  Open Office 1.x Calc
-1462  -  Open Office 2.x Calc (ODF 1.1)
-1463  -  IBM/Lotus Symphony Spreadsheet (ODF 1.1)
-1464  -  Microsoft Excel 2007/2008 Template
-1465  -  Microsoft Excel 2007/2008 Macro Enabled / CELL Workbook
-1466  -  Microsoft Excel 2007/2008 Macro Enabled Template
-1467  -  Microsoft Excel XML 2003
-1468  -  Open Office 3.x Calc (ODF 1.2)
-1469  -  Quattro Pro Win X4
-1470  -  Password Protected Microsoft Excel 2007/2008 Binary
-1471  -  Microsoft Excel 2007 Excel Add-in Macro File
-1472  -  Lotus Data Interchange Format
-1473  -  StarOffice 9 Calc (ODF 1.2)
-1474  -  Oracle Open Office 3.x Calc (ODF 1.2)
-1475  -  Kingsoft Office Spreadsheet File
-1476  -  Microsoft Excel 2010/2011 Workbook
-1477  -  Microsoft Excel 2010/2011 Macro Enabled Workbook
-1478  -  Microsoft Excel 2010/2011 Template
-1479  -  Microsoft Excel 2010/2011 Macro Enabled Template
-1480  -  Microsoft Excel 2010/2011 Excel Add-in Macro File
-1481  -  Microsoft Excel 2010/2011 Binary
-1482  -  Password Protected Microsoft Excel 2010-2016/2019
-1483  -  Password Protected Microsoft Excel 2010-2016/2019 Binary
-1484  -  Quattro Pro Win X5
-1485  -  Apple iWork Numbers File
-1486  -  Apple iWork Numbers File Preview
-1487  -  Microsoft Excel XML 2007-2016/2019
-1488  -  Microsoft Excel 2013 Workbook
-1489  -  Microsoft Excel 2013 Macro Enabled Workbook
-1490  -  Microsoft Excel 2013 Template
-1491  -  Microsoft Excel 2013 Macro Enabled Template
-1492  -  Microsoft Excel 2013 Excel Add-in Macro File
-1493  -  Microsoft Excel 2013 Binary
-1495  -  Quattro Pro Win X6
-1496  -  Libre Office 3.x Calc (ODF 1.2)
-1497  -  Libre Office 4.x Calc (ODF 1.2)
-1498  -  Apache Office 3.x Calc (ODF 1.2)
-1499  -  Apache Office 4.x Calc (ODF 1.2)
-1500  -  Windows Bitmap
-1501  -  Tagged Image File Format
-1502  -  Paintbrush
-1503  -  Compuserve GIF
-1504  -  EPS (TIFF Header)
-1505  -  CCITT Group 3 Fax
-1506  -  Mac PICT2
-1507  -  WordPerfect Graphic
-1508  -  Windows Metafile
-1509  -  Lotus PIC
-1510  -  Mac PICT
-1511  -  Ami Draw
-1512  -  Targa Graphic Image File
-1513  -  GEM Image
-1514  -  OS/2 Bitmap
-1515  -  Windows Icon
-1516  -  Windows Cursor
-1517  -  Micrografx product
-1518  -  MacPaint
-1520  -  Corel Draw 2.0
-1521  -  Corel Draw 3.0
-1522  -  HP Graphics Language
-1523  -  Harvard 3.0 Chart
-1524  -  Harvard 2.0 Chart
-1525  -  Harvard 3.0 Presentation
-1526  -  Freelance
-1527  -  WordPerfect Graphic 2
-1528  -  CGM Graphic Metafile
-1529  -  Excel 2.x Chart
-1530  -  Excel 3.0 Chart
-1531  -  Excel 4.0 Chart
-1532  -  Candy 4
-1533  -  Hanako 1.x
-1534  -  Hanako 2.x
-1535  -  JPEG File Interchange
-1536  -  Excel 5.0/7.0 Chart
-1537  -  Corel Draw 4.0
-1538  -  PowerPoint 4.0
-1539  -  Multipage PCX
-1540  -  PowerPoint 3.0
-1541  -  Corel Draw 5.0
-1542  -  OS/2 Metafile
-1543  -  PowerPoint 7.0
-1544  -  AutoCAD DXF (ASCII)
-1545  -  AutoCAD DXF (Binary)
-1546  -  AutoCAD DXB
-1547  -  Freelance 96/97/Millennium Edition
-1548  -  Mac PowerPoint 3.0
-1549  -  Mac PowerPoint 4.0
-1550  -  WordPerfect Presentations
-1551  -  OS/2 Warp Bitmap
-1552  -  AutoCAD Drawing 12
-1553  -  AutoCAD Drawing 13
-1554  -  Adobe Illustrator
-1555  -  Corel Presentations 7.0 - 12.0 / X3-5
-1556  -  WordPerfect Graphic 7.0 - 12.0 / X3-5
-1557  -  Adobe Acrobat (PDF)
-1558  -  Framemaker
-1559  -  RAS - Sun Raster
-1560  -  AutoShade Rendering
-1561  -  Kodak Photo CD
-1562  -  PowerPoint 4.0 (extracted from docfile)
-1563  -  Mac PowerPoint 4.0 (extracted from docfile)
-1564  -  Enhanced Windows Metafile
-1565  -  GEM
-1566  -  Mac PowerPoint 3.0
-1567  -  Mac PowerPoint 4.0
-1568  -  Harvard Graphics for Windows
-1569  -  IGES Drawing File Format
-1570  -  IBM Picture Interchange Format
-1571  -  X-Windows Bitmap
-1572  -  X-Windows Pixmap
-1573  -  CALS Raster File Format
-1574  -  Portable Network Graphics Format
-1575  -  X-Windows Dump
-1576  -  CorelDraw ClipArt
-1577  -  HP Gallery
-1578  -  Graphics Data Format
-1579  -  Micrografx Designer
-1580  -  Post Script
-1581  -  Microsoft PowerPoint 97-2004
-1582  -  Corel Draw 6.0
-1583  -  Corel Draw 7.0
-1584  -  PDF MacBinary Header
-1585  -  AutoCAD Drawing - Unknown Version
-1586  -  Visio 4.x
-1587  -  AutoCAD Drawing 14
-1588  -  PBM (Portable Bitmap)
-1589  -  PGM (Portable Graymap)
-1590  -  PPM (Portable Pixmap)
-1591  -  Adobe Photoshop
-1592  -  Microsoft PowerPoint Dual 95/97
-1593  -  Paint Shop Pro
-1594  -  Kodak FlashPix
-1595  -  Visio 5.x
-1596  -  Corel Draw 8.0
-1597  -  Visio 6.x
-1598  -  Corel Draw 9.0
-1599  -  Progressive JPEG
-1600  -  Microsoft PowerPoint 2000/2002
-1601  -  Bentley Microstation DGN
-1602  -  Windows 98/2000 Bitmap
-1603  -  Wireless Bitmap
-1604  -  MIFF Graphic
-1605  -  Microsoft PowerPoint 2
-1606  -  WordPerfect Graphic 10.0
-1607  -  Visio 3.x
-1608  -  Micrografx Designer
-1609  -  PDF Image
-1610  -  StarOffice 5.2 Impress
-1611  -  Adobe Illustrator 9
-1612  -  AutoCAD 2000/2002 Drawing
-1613  -  AutoCAD 2.5 Drawing
-1614  -  AutoCAD 2.6 Drawing
-1615  -  AutoCAD 9 Drawing
-1616  -  AutoCAD 10 Drawing
-1617  -  QuarkXPress 3.0 For Macintosh
-1618  -  QuarkXPress 3.1 For Macintosh
-1619  -  QuarkXPress 3.2 For Macintosh
-1620  -  QuarkXPress 3.3 For Macintosh
-1621  -  QuarkXPress 4.0 For Macintosh
-1622  -  QuarkXPress 3.3 For Windows
-1623  -  QuarkXPress 4.0 For Windows
-1624  -  QuarkXPress 5.0 For Windows
-1625  -  Export Image
-1626  -  StarOffice 6 & 7 Draw
-1627  -  StarOffice 6 & 7 Impress
-1628  -  JBIG2 Bitmap
-1629  -  Corel Draw 10.0
-1630  -  Corel Draw 11.0
-1631  -  Microsoft Visio 2003/2007/2010
-1632  -  StarOffice 8 Draw (ODF 1.1)
-1633  -  StarOffice 8 Impress (ODF 1.1)
-1634  -  AutoCAD 2004/2005/2006 Drawing
-1635  -  Microsoft PowerPoint 2007/2008
-1636  -  Microsoft XML Paper Specification
-1637  -  Password Protected Microsoft PowerPoint 2007/2008
-1638  -  AutoCAD 2007/2008/2009 Drawing
-1639  -  OS/2 v.2 Bitmap
-1640  -  StarView Metafile
-1641  -  eFax Document
-1642  -  DRM protected Microsoft PowerPoint
-1643  -  DRM protected Microsoft PowerPoint 2007/2008
-1644  -  AutoDesk DWF
-1645  -  Corel Draw 12.0
-1646  -  JPEG 2000
-1647  -  Adobe Indesign
-1648  -  JPEG 2000 jpf Extension
-1649  -  JPEG 2000 mj2 Extension
-1650  -  WordPerfect Informs 1.0
-1651  -  Lotus Screen SnapShot
-1652  -  Lotus Screen Snapshot
-1653  -  Interchange Format
-1654  -  Microsoft Escher Graphics
-1657  -  PAM (Portable Arbitrary Map)
-1658  -  Apple Icon Image
-1659  -  JPEG 2000 jpx Extension
-1660  -  JPEG Extended Range File
-1661  -  JPEG 2000 Compound File (JPM)
-1662  -  JPEG 2000 j2c/j2k/jpc Extension
-1663  -  JPEG 2000 jp2 Extension
-1664  -  Multiple-image Network Graphics Format
-1665  -  SketchUp File Format
-1666  -  Enhanced Compression Wavelet Image File
-1667  -  CIT Intergraph Raster bitmap
-1668  -  Printer Command Language
-1700  -  Windows Sound
-1701  -  Windows Video
-1702  -  MIDI File
-1703  -  Macromedia Director
-1704  -  Macromedia Flash 4-8
-1705  -  Quicktime Movie
-1706  -  MPEG Layer3 ID3 Ver 1.x
-1707  -  MPEG Layer3 ID3 Ver 2.x
-1708  -  ID3 Ver 1.x
-1709  -  ID3 Ver 2.x
-1710  -  MPEG-1 audio - Layer 3
-1711  -  MPEG-1 audio - Layer 1
-1712  -  MPEG-1 audio - Layer 2
-1713  -  MPEG-2 audio - Layer 1
-1714  -  MPEG-2 audio - Layer 2
-1715  -  MPEG-2 audio - Layer 3
-1716  -  Advanced System Format
-1717  -  Windows Media Video
-1718  -  Windows Media Audio
-1719  -  Microsoft Digital Video Recording
-1720  -  Real Audio / Real Video
-1721  -  MPEG-1 video
-1722  -  MPEG-2 video
-1723  -  ISO Base Media File
-1724  -  MPEG-4 file
-1725  -  MPEG-7 file
-1726  -  Resource Interchange File Format
-1727  -  Macromedia Flash 9
-1728  -  Macromedia Flash 10
-1729  -  High Efficiency Image File - (Brand: mif1, Type: image, Subtype: heif)
-1730  -  High Efficiency Image File - (Brand: msf1, Type: sequence, Subtype: heif-sequence)
-1731  -  High Efficiency Image File - (Brand: heic, Type: image, Subtype: heic)
-1732  -  High Efficiency Image File - (Brand: heix, Type: image, Subtype: heic)
-1733  -  High Efficiency Image File - (Brand: hevc, Type: sequence, Subtype: heic-sequence)
-1734  -  High Efficiency Image File - (Brand: hevx, Type: sequence, Subtype: heic-sequence)
-1735  -  WEBM Video File Format
-1736  -  JT Image File Format Version 8
-1737  -  JT Image File Format Version 9
-1738  -  JT Image File Format Version 10
-1739  -  Better Portable Graphics File
-1740  -  AV1 Image File Format
-1741  -  Cartesian Perceptual Compression File
-1742  -  Free Lossless Image Format
-1743  -  Gerber Image File Format
-1744  -  Gerber Image File (PCB) Format
-1745  -  OGG open container format for audio,video
-1746  -  OGPUS open container format for audio,video
-1800  -  EXE / DLL File
-1801  -  .COM File
-1802  -  .ZIP/JAR File
-1803  -  Self UnZIPping .EXE
-1804  -  .ARC File
-1805  -  MS Office Binder
-1806  -  UNIX Compress
-1807  -  UNIX Tar
-1808  -  Envoy
-1809  -  QuickFinder
-1810  -  Windows Clipboard File
-1811  -  Envoy 7
-1812  -  StuffIt
-1813  -  LZH Compress
-1814  -  Self-Extracting LZH
-1815  -  UNIX GZip
-1816  -  Java Class File
-1817  -  mbox(RFC-822 mailbox)
-1818  -  Lotus Notes Database R6.x
-1819  -  Generic Password Protected Microsoft Office 2007 Document
-1820  -  Microsoft Cabinet File
-1821  -  .RAR Archive File Version Type 1.x/2.x/3.x/4.x
-1822  -  Self extracting RAR File
-1823  -  Microsoft InfoPath File
-1824  -  Microsoft OneNote Package
-1825  -  Windows Media Player Playlist
-1826  -  7z Archive File
-1827  -  Self extracting 7z Archive File
-1828  -  Microsoft OneNote Table of Contents File
-1829  -  Microsoft OneNote File
-1830  -  JavaScript Object Notation(JSON)-Text format for structured data
-1831  -  Microsoft Outlook OST 2013/2016/2019
-1832  -  Microsoft OneNote SOAP/HTTP File
-1833  -  .RAR Archive File Version Type 5.x/6.x
-1834  -  EPUB e-book File
-1835  -  MOBI e-book File
-1836  -  Advanced Function Presentation File
-1837  -  DJVU Compressed Image File
-1998  -  File Identification: None
-1999  -  Unknown format
-2004  -  Flexiondoc v4.0 (XML)
-2005  -  Flexiondoc v5.0 (XML)
-2006  -  Flexiondoc v5.1 (XML)
-2007  -  Domino XML Document
-2008  -  Flexiondoc v5.2 (XML)
-2010  -  Adobe Indesign Interchange
-2012  -  Microsoft Visio XML
-2015  -  Mail Archive DXL
-2016  -  Mail Message DXL
-2017  -  Generic DXL
-2018  -  Mail Rule DXL
-2030  -  Flexiondoc v5.3 (XML)
-2031  -  OASIS OpenDocument v1.0 (XML)
-2032  -  Flexiondoc v5.4 (XML)
-2033  -  Flexiondoc, Latest version (XML)
-2034  -  Flexiondoc v5.5 (XML)
-2035  -  Flexiondoc v5.6 (XML)
-2036  -  Flexiondoc v5.7 (XML)
-2200  -  AutoCAD 2008 Drawing
-2201  -  Microsoft Publisher 2000/2003
-2202  -  Microsoft Publisher 2007
-2203  -  Open Office 1.x Impress
-2204  -  Open Office 2.x Impress (ODF 1.1)
-2205  -  IBM/Lotus Symphony Presentation (ODF 1.1)
-2206  -  Open Office 1.x Draw
-2207  -  Open Office 2.x Draw (ODF 1.1)
-2208  -  Microsoft PowerPoint 2007/2008 Template
-2209  -  Microsoft PowerPoint 2007/2008 Macro Enabled Presentation
-2210  -  Microsoft PowerPoint 2007/2008 Macro Enabled Template
-2211  -  Microsoft PowerPoint 2007/2008 Slideshow
-2212  -  Microsoft PowerPoint 2007/2008 Macro Enabled Slideshow
-2213  -  Oracle Multimedia Internal Raster Format
-2214  -  Open Office 3.x Impress (ODF 1.2)
-2215  -  Open Office 3.x Draw (ODF 1.2)
-2216  -  Corel Presentations X4
-2217  -  Microsoft Access Snapshot File
-2218  -  StarOffice 9 Impress (ODF 1.2)
-2219  -  StarOffice 9 Draw (ODF 1.2)
-2220  -  Oracle Open Office 3.x Impress (ODF 1.2)
-2221  -  Oracle Open Office 3.x Draw (ODF 1.2)
-2222  -  Microsoft PowerPoint 2010/2011
-2223  -  Microsoft PowerPoint 2010/2011 Template
-2224  -  Microsoft PowerPoint 2010/2011 Macro Enabled Template
-2225  -  Microsoft PowerPoint 2010/2011 Slideshow
-2226  -  Microsoft PowerPoint 2010/2011 Macro Enabled Presentation
-2227  -  Microsoft PowerPoint 2010/2011 Macro Enabled Slideshow
-2228  -  Password Protected Microsoft PowerPoint 2010-2016/2019
-2229  -  AutoCAD 2010/2011/2012 Drawing
-2230  -  Corel Presentations X5
-2231  -  Apple iWork Keynote File
-2232  -  Apple iWork Keynote File Preview
-2233  -  Scalable Vector Graphics File
-2234  -  AutoDesk DWF Archive File
-2235  -  Microsoft PowerPoint 2013
-2236  -  Microsoft PowerPoint 2013 Template
-2237  -  Microsoft PowerPoint 2013 Macro Enabled Template
-2238  -  Microsoft PowerPoint 2013 Slideshow
-2239  -  Microsoft PowerPoint 2013 Macro Enabled Presentation
-2240  -  Microsoft PowerPoint 2013 Macro Enabled Slideshow
-2241  -  Microsoft Office Theme File
-2242  -  Adobe Photoshop Large Document Format
-2243  -  Digital Imaging and Communications in Medicine (DICOM) File
-2244  -  Corel Presentations X6
-2245  -  AutoCAD 2013/2014/2015/2016/2017 Drawing
-2246  -  Harvard Graphics 98
-2247  -  Microsoft Visio 2013
-2248  -  Microsoft Visio 2013 Template
-2249  -  Microsoft Visio 2013 Stencil
-2250  -  Microsoft Visio 2013 Macro Enabled Drawing
-2251  -  Microsoft Visio 2013 Macro Enabled Template
-2252  -  Microsoft Visio 2013 Macro Enabled Stencil
-2253  -  Libre Office 3.x Impress (ODF 1.2)
-2254  -  Libre Office 3.x Draw (ODF 1.2)
-2255  -  Libre Office 4.x Impress (ODF 1.2)
-2256  -  Libre Office 4.x Draw (ODF 1.2)
-2257  -  Apache Office 3.x Impress (ODF 1.2)
-2258  -  Apache Office 3.x Draw (ODF 1.2)
-2259  -  Apache Office 4.x Impress (ODF 1.2)
-2260  -  Apache Office 4.x Draw (ODF 1.2)
-2262  -  Microsoft PowerPoint 2016/2019/2021/M365
-2263  -  Microsoft PowerPoint 2016/2019/2021/M365 Template
-2264  -  Microsoft PowerPoint 2016/2019/2021/M365 Macro Enabled Template
-2265  -  Microsoft PowerPoint 2016/2019/2021/M365 Slideshow
-2266  -  Microsoft PowerPoint 2016/2019/2021/M365 Macro Enabled Presentation
-2267  -  Microsoft PowerPoint 2016/2019/2021/M365 Macro Enabled Slideshow
-2268  -  Corel Presentations X7
-2269  -  Strict Open XML 2013 Presentation
-2270  -  Strict Open XML 2016/2019 Presentation
-2271  -  Corel Draw X4 - X7
-2272  -  WebP Image
-2273  -  Apple iWork 2013/2014 Keynote File
-2274  -  Corel Draw X4 - X7 Template
-2276  -  AutoCAD 2018/2019/2020/2021 Drawing
-2277  -  Apple iWork 2020/2021 keynote File
-2278  -  Microsoft Publisher 2016/2019
-2279  -  Standard Generalized Markup Language File
-2300  -  Performance Filter
-2400  -  Microsoft Windows Explorer Command File
-2401  -  Windows shortcut
-2402  -  Windows Help File
-2403  -  Windows Compiled Help File
-2404  -  TrueType Font File
-2405  -  TrueType Font Collection File
-2406  -  TrueType (MAC) Font File
-2407  -  WOFF Font File
-2408  -  WOFF2 Font File
-2500  -  Microsoft Excel 2016/2019/2021/M365 Workbook
-2501  -  Microsoft Excel 2016/2019/2021/M365 Macro Enabled Workbook
-2502  -  Microsoft Excel 2016/2019/2021/M365 Template
-2503  -  Microsoft Excel 2016/2019/2021/M365 Macro Enabled Template
-2504  -  Microsoft Excel 2016/2019/2021/M365 Excel Add-in Macro File
-2505  -  Microsoft Excel 2016/2019/2021/M365 Binary
-2506  -  Quattro Pro Win X7
-2507  -  Strict Open XML 2013 Spreadsheet
-2508  -  Strict Open XML 2016/2019 Spreadsheet
-2509  -  Apple iWork 2013/2014 Numbers File
-2510  -  Apple iWork 2020/2021 Numbers File
-2511  -  Everything File List (EFU) Spreadsheet File
-2512  -  Ability Spreadsheet  (AST/AWS) File
-2513  -  Plan Maker(PMD) Spreadsheet File
-2515  -  GNUMERIC Spreadsheet File
-2516  -  FileMakerPro (FMP12) Spreadsheet file
-2517  -  CELL 2010 Workbook file
-2519  -  Wolfram notebook (nb) file format
-2520  -  IMP (Lotus Improv) Spreadsheet file
-2521  -  PMDX (PlanMaker) Spreadsheet file
-2522  -  TimeMap timeline (TMVT/TMV) Spreadsheet file
-2523  -  File Maker (FP7) Spredsheet file
-4000  -  Unknown (ASCII)
-4001  -  Unknown (Hex)
-4002  -  Unknown (ANSI)
-4003  -  Unknown (Unicode)
-4004  -  Unknown (ASCII 8)
-4005  -  Unknown (ANSI 8)
-4006  -  Unknown format
-4007  -  Unknown (Mac)
-4008  -  Unknown (Mac 8)
-4009  -  Text - Japanese (ShiftJIS)
-4010  -  Text - Chinese (GB)
-4011  -  Text - Korean (Hangul)
-4012  -  Text - Chinese (Big 5)
-4013  -  Text - Unknown (DOS Latin 2)
-4014  -  Text - Japanese (EUC)
-4015  -  Text - Hebrew (7-bit)
-4016  -  Text - Hebrew (IBM PC8)
-4017  -  Text - Hebrew (VAX E0)
-4018  -  Text - Hebrew (Windows ANSI 1255)
-4021  -  Text - Arabic (Windows ANSI 1256)
-4022  -  7-Bit Text/CSV Spreadsheet File
-4023  -  Text - Japanese (JIS)
-4024  -  Text - Central European
-4025  -  UTF-8 encoded Text/CSV Spreadsheet file
-4026  -  Text - U.S. English/Portuguese (EBCDIC 37)
-4027  -  Text - Austrian/German (EBCDIC 273)
-4028  -  Text - Danish/Norwegian (EBCDIC 277)
-4029  -  Text - Finnish/Swedish (EBCDIC 278)
-4030  -  Text - Italian (EBCDIC 280)
-4031  -  Text - Spanish (EBCDIC 284)
-4032  -  Text - U.K. English (EBCDIC 285)
-4033  -  Text - French (EBCDIC 297)
-4034  -  Text - Belgian/International (EBCDIC 500)
-4035  -  Text - Eastern European (EBCDIC 870)
-4036  -  Text - Icelandic (EBCDIC 871)
-4037  -  Text - Turkish (EBCDIC 1026)
-4038  -  HTML - U.S. English/Portuguese (EBCDIC 37)
-4039  -  HTML - Austrian/German  (EBCDIC 273)
-4040  -  HTML - Danish/Norwegian (EBCDIC 277)
-4041  -  HTML - Finnish/Swedish (EBCDIC 278)
-4042  -  HTML - Italian (EBCDIC 280)
-4043  -  HTML - Spanish (EBCDIC 284)
-4044  -  HTML - U.K. English (EBCDIC 285)
-4045  -  HTML - French (EBCDIC 297)
-4046  -  HTML - Belgian/International (EBCDIC 500)
-4047  -  HTML - Eastern European (EBCDIC 870)
-4048  -  HTML - Icelandic (EBCDIC 871)
-4049  -  HTML - Turkish (EBCDIC 1026)
-4050  -  UUE Encoded Text
-4051  -  UUE Encoded Continued Part
-4052  -  XXE Encoded Text
-4053  -  XXE Encoded Continued Part
-4054  -  YEnc Encoded Text
-4055  -  YEnc Encoded Continued Part
-4056  -  BinHex Encoded Text
-4057  -  BinHex Encoded Continued Part
-4058  -  Text - Arabic (ASMO-708)
-4059  -  Text - Arabic (DOS OEM 720 TRANSPARENT ASMO)
-4060  -  Text - Arabic (ISO 8859-6)
-4061  -  Text - Arabic (Mac)
-4062  -  Text - Baltic (ISO 8859-4)
-4063  -  Text - Baltic (Windows ANSI 1257)
-4064  -  Text - Central European (DOS OEM 852 Latin II)
-4065  -  Text - Central European (ISO 8859-2)
-4066  -  Text - Central European (Mac)
-4067  -  Text - Central European (Windows ANSI 1250)
-4068  -  Text - Chinese Simplified (Windows ANSI 936 [GB2312])
-4069  -  Text - Chinese Traditional (Windows ANSI 950 [BIG5])
-4070  -  Text - Cyrillic (DOS OEM 855)
-4071  -  Text - Cyrillic (ISO 8859-5)
-4072  -  Text - Cyrillic (KOI8-R)
-4073  -  Text - Cyrillic (Mac)
-4074  -  Text - Cyrillic (Windows ANSI 1251)
-4075  -  Text - Greek (ISO 8859-7)
-4076  -  Text - Greek (Mac)
-4077  -  Text - Greek (Windows ANSI 1253)
-4078  -  Text - Hebrew (DOS OEM 862)
-4079  -  Text - Hebrew (ISO 8859-8)
-4080  -  Text - Japanese (Mac)
-4082  -  Text - Korean (Windows ANSI 1361 [Johab])
-4083  -  Text - Korean (Windows ANSI 949)
-4084  -  Text - Russian (DOS OEM 866)
-4085  -  Text - Thai (Windows ANSI 874)
-4086  -  Text - Turkish (DOS OEM 857)
-4087  -  Text - Turkish (ISO 8859-9)
-4088  -  Text - Turkish (Mac)
-4089  -  Text - Turkish (Windows ANSI 1254)
-4090  -  Text - Vietnamese (Windows ANSI 1258)
-4091  -  Text - Western European (ISO 8859-1)
-4092  -  Text - Western European (Mac)
-4093  -  Text - Western European (Windows ANSI 1252)
-4094  -  HTML - Arabic (ASMO-708)
-4095  -  HTML - Arabic (DOS OEM 720 TRANSPARENT ASMO)
-4096  -  HTML - Arabic (ISO 8859-6)
-4097  -  HTML - Arabic (Mac)
-4098  -  HTML - Arabic (Windows ANSI 1256)
-4100  -  HTML - Baltic (Windows ANSI 1257)
-4101  -  HTML - Central European (DOS OEM 852 Latin II)
-4102  -  HTML - Central European (ISO 8859-2)
-4103  -  HTML - Central European (Mac)
-4104  -  HTML - Central European (Windows ANSI 1250)
-4105  -  HTML - Chinese Simplified (EUC)
-4106  -  HTML - Chinese Simplified (Windows ANSI 936 [GB2312])
-4107  -  HTML - Chinese Traditional (Windows ANSI 950 [BIG5])
-4108  -  HTML - Cyrillic (DOS OEM 855)
-4109  -  HTML - Cyrillic (ISO 8859-5)
-4110  -  HTML - Cyrillic (KOI8-R)
-4111  -  HTML - Cyrillic (Mac)
-4112  -  HTML - Cyrillic (Windows ANSI 1251)
-4113  -  HTML - Greek (ISO 8859-7)
-4114  -  HTML - Greek (Mac)
-4115  -  HTML - Greek (Windows ANSI 1253)
-4116  -  HTML - Hebrew (DOS OEM 862)
-4117  -  HTML - Hebrew (ISO 8859-8)
-4118  -  HTML - Hebrew (Windows ANSI 1255)
-4119  -  HTML - Japanese (Mac)
-4120  -  HTML - Japanese (Windows Shift-JIS ANSI 932)
-4121  -  HTML - Korean (Windows ANSI 1361 [Johab])
-4122  -  HTML - Korean (Windows ANSI 949)
-4123  -  HTML - Russian (DOS OEM 866)
-4124  -  HTML - Thai (Windows ANSI 874)
-4125  -  HTML - Turkish (DOS OEM 857)
-4126  -  HTML - Turkish (ISO 8859-9)
-4127  -  HTML - Turkish (Mac)
-4128  -  HTML - Turkish (Windows ANSI 1254)
-4129  -  HTML - Vietnamese (Windows ANSI 1258)
-4130  -  HTML - Western European (ISO 8859-1)
-4131  -  HTML - Western European (Mac)
-4132  -  HTML - Western European (Windows ANSI 1252)
-5000  -  Windows Metafile [5000]
-5001  -  WordPerfect Graphic [B]
-5002  -  Ami (internal bitmap)
-5003  -  Word (internal bitmap)
-5004  -  Mac PICT2 Binary
-5005  -  Windows Metafile [5005]
-5006  -  Windows Metafile [5006]
-5007  -  PerfectWorks Picture
-5008  -  WPG2 (internal bitmap)
-5009  -  Windows DIB
-5010  -  WPG1 (internal bitmap)
-5011  -  Embedded Bitmap
-5012  -  Embedded Bitmap
-5013  -  IAF (internal bitmap)
-5014  -  IAF (internal bitmap)
-5015  -  PICT (internal bitmap)
-5016  -  Device Independent Bitmap File
-7001  -  Intermediate Format File
+1000   vsmsw.dll     -  Word for DOS 4.x
+1001   vsmsw.dll     -  Word for DOS 5.x
+1002   vsws.dll      -  Wordstar 5.0
+1003   vsws.dll      -  Wordstar 4.0
+1004   vsws2.dll     -  Wordstar 2000
+1005   vswp5.dll     -  WordPerfect 5.0
+1006   vsmm.dll      -  MultiMate 3.6
+1007   vsmm.dll      -  MultiMate Advantage 2
+1008   vsrft.dll     -  IBM DCA/RFT
+1009   vstxt.dll     -  IBM DisplayWrite 2 or 3
+1010   vssmt.dll     -  SmartWare II
+1011   vssam.dll     -  Samna
+1012   vspfs.dll     -  PFS: Write A
+1013   vspfs.dll     -  PFS: Write B
+1014   vspfs.dll     -  Professional Write 1
+1015   vspfs.dll     -  Professional Write 2
+1016   vspfs.dll     -  IBM Writing Assistant
+1017   vspfs.dll     -  First Choice WP
+1018   vswm.dll      -  WordMarc
+1019   vsdif.dll     -  Navy DIF
+1020   vsvw3.dll     -  Volkswriter
+1021   vsdx.dll      -  DEC DX 3.0 and below
+1022   vsspt.dll     -  Sprint
+1023   vswpf.dll     -  WordPerfect 4.2
+1024   vstw.dll      -  Total Word
+1025   vsiwp.dll     -  Wang IWP
+1026   *             -  Wordstar 5.5
+1028   vsrtf.dll     -  Rich Text Format
+1029   *             -  Mac Word 3.0
+1030   vsword.dll    -  Mac Word 4.0
+1031   vsm11.dll     -  Mass 11
+1032   vsmcw.dll     -  MacWrite II
+1033   vsxy.dll      -  XyWrite / Nota Bene
+1034   vsfft.dll     -  IBM DCA/FFT
+1035   vsmwpf.dll    -  Mac WordPerfect 1.x
+1036   vstxt.dll     -  IBM DisplayWrite 4
+1037   *             -  Mass 11
+1038   vswp5.dll     -  WordPerfect 5.1/5.2
+1039   vsmm4.dll     -  MultiMate 4.0
+1040   vsqa.dll      -  Q&A Write
+1041   vsmmfn.dll    -  MultiMate Note
+1043   vspcl.dll     -  PC File 5.0 Doc
+1044   vsmanu.dll    -  Lotus Manuscript 1.0
+1045   vsmanu.dll    -  Lotus Manuscript 2.0
+1046   vsenw.dll     -  Enable WP 3.0
+1047   vsmsw.dll     -  Windows Write
+1048   vswork.dll    -  Microsoft Works 1.0
+1049   vswork.dll    -  Microsoft Works 2.0
+1050   vsws.dll      -  Wordstar 6.0
+1051   vsow.dll      -  OfficeWriter
+1053   vstxt.dll     -  IBM DisplayWrite 5
+1054   vsword.dll    -  Word for Windows 1.x
+1055   *             -  Word for Windows 1.x
+1056   vsami.dll     -  Ami
+1057   vsami.dll     -  Ami Pro
+1058   vspfs.dll     -  First Choice 3 WP
+1059   vsmwp2.dll    -  Mac WordPerfect 2.0
+1060   vsmwrk.dll    -  Mac Works 2.0 WP
+1061   vsami.dll     -  Professional Write Plus
+1062   vsleg.dll     -  Legacy
+1063   vsxy.dll      -  Signature
+1064   vsleg.dll     -  Wordstar for Windows
+1065   vsword.dll    -  Word for Windows 2.0
+1066   vsjw.dll      -  JustWrite 1.0
+1067   vsws.dll      -  Wordstar 7.0
+1068   vswork.dll    -  Windows Works WP
+1069   vsjw.dll      -  JustWrite 2.0
+1070   *             -  Ami [Clip]
+1071   *             -  Legacy [Clip]
+1072   *             -  Pro Write Plus [Clip]
+1073   vsword.dll    -  Mac Word 5.x
+1074   vsen4.dll     -  Enable WP 4.x
+1075   vswp6.dll     -  WordPerfect 6.0
+1076   vsmsw.dll     -  Word for DOS 6.x
+1077   vsdx.dll      -  DEC DX 3.1
+1078   vswp5.dll     -  WordPerfect Encrypted
+1079   vsjw.dll      -  Q&A Write 3
+1080   vsmwp2.dll    -  Mac WordPerfect 3.0
+1081   *             -  CEO Word
+1082   vsw6.dll      -  Word 6.0 or 7.0
+1083   vswp5.dll     -  WordPerfect 5.1 Far East
+1084   *             -  Ichitaro 3.x
+1085   vsich6.dll    -  Ichitaro 4.x/5.x/6.x
+1086   *             -  Word for Windows 1.2 J
+1087   *             -  Word for Windows 5.0 J
+1088   *             -  Matsu 4
+1089   *             -  Matsu 5
+1090   *             -  P1 Japan
+1091   *             -  Rich Text Format Japan
+1092   *             -  CEO Write
+1093   vswork.dll    -  Windows Works 3.0 WP
+1094   vsw6.dll      -  Microsoft WordPad
+1095   *             -  WP/Novell Unknown Format
+1096   vsword.dll    -  Word for Windows 2.0 Object
+1097   vswp6.dll     -  WordPerfect 6.1 - 12.0 / X3-7
+1098   vsftd.dll     -  Fulcrum Document Format
+1099   vswp5.dll     -  Europa Fulcrum
+1100   *             -  Europa Fulcrum
+1101   vshtml.dll    -  Internet HTML
+1102   vsw6.dll      -  Word 7.0
+1103   *             -  Arehangeul
+1104   *             -  Hana
+1105   vswork.dll    -  Windows Works 4.0 WP
+1106   vswpw.dll     -  PerfectWorks for Windows
+1107   vswp6.dll     -  WordPerfect 7.0/8.0/10.0/X3/X4
+1108   *             -  WordPro 96
+1109   vshtml.dll    -  HTML - Central European
+1110   vshtml.dll    -  HTML - Japanese (ShiftJIS)
+1111   vshtml.dll    -  HTML - Japanese (EUC)
+1112   vshtml.dll    -  HTML - Chinese (Big5)
+1113   vshtml.dll    -  HTML - Chinese (EUC)
+1114   vshtml.dll    -  HTML - Chinese (GB)
+1115   vshtml.dll    -  HTML - Korean (Hangul)
+1116   vshtml.dll    -  HTML - Cyrillic (ANSI 1251)
+1117   vshtml.dll    -  HTML - Cyrillic (KOI8-R)
+1118   vstext.dll    -  Text - Cyrillic (ANSI 1251)
+1119   vstext.dll    -  Text - Cyrillic (KOI8-R)
+1124   vswpl.dll     -  Digital WPS Plus
+1125   vsw6.dll      -  Mac Word 6
+1126   vsw97.dll     -  Microsoft Word 97/98
+1127   *             -  Rainbow
+1128   *             -  Interleaf 6
+1129   vsmif.dll     -  MIFF 3.0
+1130   vsmif.dll     -  MIFF 4.0
+1131   vsmif.dll     -  MIFF 5.0
+1132   vsmime.dll    -  Text Mail
+1133   *             -  Mac Word 97
+1134   *             -  Interleaf Japan
+1135   vsmif.dll     -  MIFF 3.0 Japan
+1136   vsmif.dll     -  MIFF 4.0 Japan
+1137   vsmif.dll     -  MIFF 5.0 Japan
+1138   vsmif.dll     -  MIFF 5.5
+1139   vswp6.dll     -  WordPerfect 8.0/10.0
+1140   vsich.dll     -  Ichitaro 8.x-13.x/2004-2014
+1141   vsvcrd.dll    -  vCard
+1142   *             -  HTML - Cascading Style Sheets
+1143   vsmsg.dll     -  Outlook Email
+1144   vsrtf.dll     -  Pocket Word
+1145   vslwp7.dll    -  WordPro 97/Millennium
+1146   vsw97.dll     -  Microsoft Word 2000
+1147   vshtml.dll    -  Word 2000 HTML
+1148   vshtml.dll    -  Excel 2000 HTML
+1149   vshtml.dll    -  PowerPoint 2000 HTML
+1150   vsxml.dll     -  Extensible Markup Language (XML)
+1151   vswml.dll     -  Wireless Markup Language (WML)
+1153   vshtml.dll    -  HTML - Japanese (JIS)
+1154   vswml.dll     -  WML - Chinese (Big5)
+1155   vswml.dll     -  WML - Chinese (EUC)
+1156   vswml.dll     -  WML - Chinese (GB)
+1157   vswml.dll     -  WML - Cyrillic (ANSI 1251)
+1158   vswml.dll     -  WML - Cyrillic (KOI8-R)
+1159   vswml.dll     -  WML - Japanese (JIS)
+1160   vswml.dll     -  WML - Japanese (ShiftJIS)
+1161   vswml.dll     -  WML - Japanese (EUC)
+1162   vswml.dll     -  WML - Korean (Hangul)
+1163   vswml.dll     -  WML - Central European
+1165   vssow.dll     -  StarOffice 5.2 Writer
+1166   vsmif.dll     -  MIFF 6.0
+1167   vsmif.dll     -  MIFF 6.0 Japan
+1168   vsmif.dll     -  MIFF
+1170   vstext.dll    -  ASCII Text/Log/XML/CSV
+1171   *             -  Handheld Device Markup Language (HDML)
+1172   *             -  Compact HTML (CHTML)
+1173   *             -  XHTML Basic
+1174   *             -  AvantGo HTML
+1175   *             -  Web Clipping Application (WCA) HTML
+1176   *             -  XML Forms Data Format (XFDF)
+1177   *             -  Pocket Word - Pocket PC
+1178   *             -  Wireless HTML
+1179   vshwp.dll     -  Hangul 97 Word Processor
+1180   vshwp2.dll    -  Hangul 2002 - 2010 Word Processor
+1181   vshtml.dll    -  Internet HTML - Unicode
+1182   vshtml.dll    -  XML With Doctype HTML
+1184   vstext.dll    -  EBCDIC encoded Text
+1185   vsw97.dll     -  Microsoft Word 2002
+1186   vsw97.dll     -  Microsoft Word 2003/2004
+1187   vsmime.dll    -  Internet Message
+1188   vsso6.dll     -  StarOffice 6 & 7 Writer
+1189   vspst.dll     -  Microsoft Outlook PST/OST 97/2000/XP
+1191   vswrk9.dll    -  Microsoft Works 2000
+1192   vsmime.dll    -  Internet Mail Message
+1193   vsmime.dll    -  Internet News Message
+1194   vsmime.dll    -  Outlook Express News Message
+1195   vsmime.dll    -  Outlook Express Mail Message
+1196   vsvcrd.dll    -  vCalendar
+1197   vsmime.dll    -  Transport-Neutral Encapsulation Format(TNEF)
+1198   vsmime.dll    -  MHTML(Web Archive)
+1200   vssmd.dll     -  Smart DataBase
+1201   vsdbs.dll     -  DBase III
+1202   vsdbs.dll     -  DBase IV or V
+1203   vsfwk.dll     -  Framework III
+1204   vswks.dll     -  Microsoft Works DB
+1205   vsdez.dll     -  DataEase 4.x
+1206   vspdx.dll     -  Paradox 2 or 3
+1207   vspdx.dll     -  Paradox 3.5
+1208   vsqad.dll     -  Q&A Database
+1209   vsrfx.dll     -  Reflex
+1210   vsrbs.dll     -  R:Base System V
+1211   vsrbs.dll     -  R:Base 5000
+1212   *             -  R:Base File 1
+1213   *             -  R:Base File 3
+1214   vsfcd.dll     -  First Choice DB
+1215   vsmwkd.dll    -  Mac Works 2.0 DB
+1216   vswks.dll     -  Windows Works DB
+1217   vspdx.dll     -  Paradox
+1218   vsacs.dll     -  Microsoft Access
+1219   *             -  CEO Decision Base
+1220   vswks.dll     -  Windows Works 3.0 DB
+1221   vswks.dll     -  Windows Works 4.0 DB
+1222   vsmdb.dll     -  Microsoft Access 95/97
+1223   vsmpp.dll     -  Microsoft Project 98
+1224   vsmpp.dll     -  Microsoft Project 2000/2002/2003
+1225   *             -  Microsoft Project 2002
+1226   vsmpp.dll     -  Microsoft Project 2007
+1227   vsnsf.dll     -  Lotus Notes Database (NSF) or Template (NTF) File
+1228   vsmpp.dll     -  Microsoft Project 2010
+1229   vsmdb.dll     -  Microsoft Access 2000/2002/2003/2016/2019
+1230   vsmdb.dll     -  Microsoft Access 2007/2010/2013/2016/2019
+1231   vsmdb.dll     -  Microsoft Access Web Database
+1232   vszip.dll     -  Microsoft Access 2007/2010/2013 Template File
+1233   vsmpp.dll     -  Microsoft Project 2013
+1234   *             -  XML Localization Interchange File Format (XLIFF)
+1235   *             -  SAV data file
+1236   *             -  TRC data file
+1237   *             -  Master Database File(MDF) / Log database file(LDF)
+1238   vstext.dll    -  SQL/SQLITE database file format
+1239   *             -  4D Database (4DB & 4DD)
+1240   *             -  CAN Database DBC File
+1241   *             -  Microsoft Universal Data Link file
+1242   *             -  MySQL MyISAM Index file (MYI)
+1243   *             -  SQLite data file (DB3)
+1244   *             -  Microsoft Word Recovery file (ASD)
+1245   *             -  Microsoft Project 2016/2019/2021
+1260   *             -  ZST file
+1261   *             -  XZ file
+1262   *             -  LZO file
+1263   *             -  WUX file (Compressed of Wii U Disk Image WUD file)
+1264   *             -  DMG file (Mac OS X Disk Image file)
+1265   *             -  MPQ file
+1266   *             -  Amiga LZX Compressed File
+1267   *             -  PEA PeaZip file format
+1268   *             -  LZMA compressed archive
+1269   *             -  ALZ file (ALZip archive)
+1270   *             -  Bzip2 compressed data (.tbz/.bz2)
+1271   *             -  XAR Archive Compressed
+1272   *             -  Zlip compressed data
+1273   *             -  ARJ Archive Compressed
+1274   *             -  PowerISO Direct-Access-Archive (DAA)
+1275   *             -  ISO 9660 Disc Image File
+1276   *             -  ACE Archive Compressed
+1277   *             -  ZIM Wiki archive
+1278   *             -  RPM Package
+1279   *             -  LZ4 compressed data
+1282   *             -  DEB Debian Linux Package File
+1283   *             -  DAR Disk Archiver File
+1284   *             -  DZ Dzip Compressed Archive
+1285   *             -  MPX Microsoft Project Export File
+1290   *             -  LBR file
+1291   *             -  LZ file (Lzip compressed archive file)
+1292   *             -  KGB  archive
+1301   vspstf.dll    -  PST Fields File
+1302   vspst.dll     -  Microsoft Outlook PST/OST 2003/2007/2010/2013/2016/2019
+1303   *             -  Microsoft Outlook PAB
+1306   vsyim.dll     -  Yahoo! Messenger Archive
+1307   vswpml.dll    -  Microsoft Word XML 2003
+1308   vsxml.dll     -  Microsoft Word XML 2007-2016/2019
+1309   vsso6.dll     -  StarOffice 8 Writer (ODF 1.1)
+1311   vsmsg.dll     -  Outlook Email Form Template
+1312   vsw12.dll     -  Microsoft Word 2007/2008
+1313   vsw12.dll     -  Password Protected Microsoft Word 2007/2008
+1314   vsw12.dll     -  Microsoft Word 2007/2008 Template
+1316   vsw97.dll     -  DRM protected Unknown
+1317   vsw97.dll     -  DRM protected Microsoft Word
+1318   vsw12.dll     -  DRM protected Microsoft Word 2007/2008
+1319   *             -  File sealed by Oracle IRM
+1320   vsxmp.dll     -  Extensible Metadata Platform
+1323   vsso6.dll     -  Open Office 1.x Writer
+1324   vsso6.dll     -  Open Office 2.x Writer (ODF 1.1)
+1325   vsso6.dll     -  IBM/Lotus Symphony Document (ODF 1.1)
+1327   vsw12.dll     -  Microsoft Word 2007/2008 Macro Enabled Document
+1328   vsw12.dll     -  Microsoft Word 2007/2008 Macro Enabled Template
+1329   vsw97.dll     -  Microsoft Word Picture
+1331   vsso6.dll     -  Open Office 3.x Writer (ODF 1.2)
+1332   vsso6.dll     -  StarOffice 9 Writer (ODF 1.2)
+1333   vsso6.dll     -  Oracle Open Office 3.x Writer (ODF 1.2)
+1334   *             -  Samsung Jungum File
+1335   vsw97.dll     -  Kingsoft Office Writer File
+1336   vsw12.dll     -  Microsoft Word 2010/2011
+1337   vsw12.dll     -  Microsoft Word 2010/2011 Template
+1338   vsw12.dll     -  Microsoft Word 2010/2011 Macro Enabled Document
+1339   vsw12.dll     -  Microsoft Word 2010/2011 Macro Enabled Template
+1341   vstext.dll    -  Trillian Text Log File
+1342   *             -  Trillian XML Log File
+1343   vsxml.dll     -  Microsoft Live Messenger Log File
+1344   *             -  AOL Messenger Log File
+1345   vsmsg.dll     -  Outlook Appointment
+1346   vsmsg.dll     -  Outlook Appointment Form Template
+1347   vsmsg.dll     -  Outlook Journal
+1348   vsmsg.dll     -  Outlook Journal Form Template
+1349   vsmsg.dll     -  Outlook Contact
+1350   vsmsg.dll     -  Outlook Contact Form Template
+1351   vsmsg.dll     -  Outlook Sticky Note
+1352   vsmsg.dll     -  Outlook Sticky Note Form Template
+1353   vsmsg.dll     -  Outlook Task
+1354   vsmsg.dll     -  Outlook Task Form Template
+1355   vsw12.dll     -  Password Protected Microsoft Word 2010-2016/2019
+1356   vsmime.dll    -  Apple Mail 2.0 Message (EMLX)
+1357   vsmsg.dll     -  Outlook Non Delivery Report
+1358   vsmsg.dll     -  Outlook Non Delivery Report Form Template
+1359   vsmsg.dll     -  Outlook Post
+1360   vsmsg.dll     -  Outlook Post Form Template
+1361   vsmsg.dll     -  Outlook Distribution List
+1362   vsmsg.dll     -  Outlook Distribution List Form Template
+1363   vsmsg.dll     -  Outlook Clear Signed Email
+1364   vsmsg.dll     -  Outlook Clear Signed Email Form Template
+1365   vsmsg.dll     -  Outlook Opaque Signed Email
+1366   vsmsg.dll     -  Outlook Opaque Signed Email Form Template
+1367   vsiwop.dll    -  Apple iWork Pages File
+1368   vspdf.dll     -  Apple iWork Pages File Preview
+1370   vsmime.dll    -  S/MIME (Secure/MIME)
+1371   vsmime.dll    -  Clear Signed S/MIME (Secure/MIME)
+1372   vsw12.dll     -  Microsoft Word 2013
+1373   vsw12.dll     -  Microsoft Word 2013 Template
+1374   vsw12.dll     -  Microsoft Word 2013 Macro Enabled Document
+1375   vsw12.dll     -  Microsoft Word 2013 Macro Enabled Template
+1379   vsso6.dll     -  Libre Office 3.x Writer (ODF 1.2)
+1380   vsso6.dll     -  Libre Office 4.x Writer (ODF 1.2)
+1381   vsolm.dll     -  Microsoft Outlook for Mac 2011
+1382   vsso6.dll     -  Apache Office 3.x Writer (ODF 1.2)
+1383   vsso6.dll     -  Apache Office 4.x Writer (ODF 1.2)
+1384   vsw12.dll     -  Microsoft Word 2016/2019/2021/M365
+1385   vsw12.dll     -  Microsoft Word 2016/2019/2021/M365 Template
+1386   vsw12.dll     -  Microsoft Word 2016/2019/2021/M365 Macro Enabled Document
+1387   vsw12.dll     -  Microsoft Word 2016/2019/2021/M365 Macro Enabled Template
+1388   *             -  Strict Open XML 2013 Document
+1389   *             -  Strict Open XML 2016/2019/2021 Document
+1390   vsiwop13.dll  -  Apple iWork 2013/2014 Pages File
+1391   vsiwop13.dll  -  Apple iWork 2020/2021 Pages File
+1392   *             -  Microsoft Compound Document File
+1400   vswks.dll     -  Symphony
+1401   vswks.dll     -  Lotus 1-2-3 1.0
+1402   vswks.dll     -  Lotus 1-2-3 2.0
+1403   vswk4.dll     -  Lotus 1-2-3 3.x
+1404   vssms.dll     -  Smart Spreadsheet
+1405   vsxl5.dll     -  Microsoft Excel 2.x
+1406   vsens.dll     -  Enable Spreadsheet
+1407   vswks.dll     -  Microsoft Works SS
+1408   vswks.dll     -  VP-Planner
+1409   vswks.dll     -  Mosaic Twin
+1410   vssc5.dll     -  SuperCalc 5
+1411   vswks.dll     -  Quattro Pro
+1412   vswks.dll     -  Quattro
+1413   vsppl.dll     -  PFS: Plan
+1414   vsfcs.dll     -  First Choice SS
+1415   vsxl5.dll     -  Microsoft Excel 3.0
+1416   vswks.dll     -  Generic WKS
+1417   vsmwks.dll    -  Mac Works 2.0 SS
+1418   vswks.dll     -  Windows Works SS
+1419   vsxl5.dll     -  Microsoft Excel 4.0
+1420   vsqp6.dll     -  Quattro Pro for Windows
+1421   vswk4.dll     -  Lotus 1-2-3 4.x / 5.x
+1422   *             -  Quattro Pro Windows Japan
+1423   *             -  CEO Spreadsheet
+1424   vsxl5.dll     -  Microsoft Excel 5.0/7.0
+1425   vsmp.dll      -  Multiplan 4.0
+1426   vswks.dll     -  Windows Works 3.0 SS
+1427   *             -  Quattro Pro 4.0
+1428   vswks.dll     -  Quattro Pro 5.0
+1429   vsqp6.dll     -  Quattro Pro Win 6.0
+1430   vswg2.dll     -  Lotus 123 Release 2 for OS/2
+1431   vswg2.dll     -  Lotus 123 for OS/2 Chart
+1432   vswks.dll     -  Windows Works 4.0 SS
+1433   vsqp6.dll     -  Quattro Pro Win 7.0/8.0
+1434   vsqp6.dll     -  Quattro Pro Win 7.0/8.0 Graph
+1435   vswk6.dll     -  Lotus 1-2-3 97 Edition
+1436   vsxl5.dll     -  Microsoft Mac Excel 4.0
+1437   vsxl5.dll     -  Microsoft Mac Excel 5.0
+1438   vsxl5.dll     -  Microsoft Excel 97/98/2004
+1439   *             -  MS Excel 3.0 Workbook
+1440   *             -  MS Excel 4.0 Workbook
+1441   *             -  MS Excel Mac 4.0 Workbook
+1442   vsxl5.dll     -  MS Excel Mac 4.0 Workbook
+1443   vswk6.dll     -  Lotus 1-2-3 98/Millennium Edition
+1444   vsqp6.dll     -  Quattro Pro 8.0
+1445   vsqp9.dll     -  Password Protected Quattro Pro Win 9.0 / X3 - X5
+1446   vsxl5.dll     -  Microsoft Excel 2000
+1447   vsqp9.dll     -  Quattro Pro Win 10.0
+1448   vsxl5.dll     -  Microsoft Excel 2002
+1449   vssoc.dll     -  StarOffice 5.2 Calc
+1450   vsqp9.dll     -  Quattro Pro Win 11.0
+1451   vsxl5.dll     -  Microsoft Excel 2003
+1452   vssoc6.dll    -  StarOffice 6 & 7 Calc
+1453   vsqp9.dll     -  Quattro Pro Win 12.0
+1454   vssoc6.dll    -  StarOffice 8 Calc (ODF 1.1)
+1455   vsxl12.dll    -  Microsoft Excel 2007/2008
+1456   vsxl12.dll    -  Password Protected Microsoft Excel 2007/2008
+1457   vsxlsb.dll    -  Microsoft Excel 2007/2008 Binary
+1458   vsxl5.dll     -  DRM protected Microsoft Excel
+1459   vsxl12.dll    -  DRM protected Microsoft Excel 2007/2008
+1460   vsxl5.dll     -  Microsoft Works SS 6.0/7.0/8.0
+1461   vssoc6.dll    -  Open Office 1.x Calc
+1462   vssoc6.dll    -  Open Office 2.x Calc (ODF 1.1)
+1463   vssoc6.dll    -  IBM/Lotus Symphony Spreadsheet (ODF 1.1)
+1464   vsxl12.dll    -  Microsoft Excel 2007/2008 Template
+1465   vsxl12.dll    -  Microsoft Excel 2007/2008 Macro Enabled / CELL Workbook
+1466   vsxl12.dll    -  Microsoft Excel 2007/2008 Macro Enabled Template
+1467   vsssml.dll    -  Microsoft Excel XML 2003
+1468   vssoc6.dll    -  Open Office 3.x Calc (ODF 1.2)
+1469   vsqp9.dll     -  Quattro Pro Win X4
+1470   vsxlsb.dll    -  Password Protected Microsoft Excel 2007/2008 Binary
+1471   vsxl12.dll    -  Microsoft Excel 2007 Excel Add-in Macro File
+1472   vstext.dll    -  Lotus Data Interchange Format
+1473   vssoc6.dll    -  StarOffice 9 Calc (ODF 1.2)
+1474   vssoc6.dll    -  Oracle Open Office 3.x Calc (ODF 1.2)
+1475   vsxl5.dll     -  Kingsoft Office Spreadsheet File
+1476   vsxl12.dll    -  Microsoft Excel 2010/2011 Workbook
+1477   vsxl12.dll    -  Microsoft Excel 2010/2011 Macro Enabled Workbook
+1478   vsxl12.dll    -  Microsoft Excel 2010/2011 Template
+1479   vsxl12.dll    -  Microsoft Excel 2010/2011 Macro Enabled Template
+1480   vsxl12.dll    -  Microsoft Excel 2010/2011 Excel Add-in Macro File
+1481   vsxlsb.dll    -  Microsoft Excel 2010/2011 Binary
+1482   vsxl12.dll    -  Password Protected Microsoft Excel 2010-2016/2019
+1483   vsxlsb.dll    -  Password Protected Microsoft Excel 2010-2016/2019 Binary
+1484   vsqp9.dll     -  Quattro Pro Win X5
+1485   vsiwon.dll    -  Apple iWork Numbers File
+1486   vspdf.dll     -  Apple iWork Numbers File Preview
+1487   vsxml.dll     -  Microsoft Excel XML 2007-2016/2019
+1488   vsxl12.dll    -  Microsoft Excel 2013 Workbook
+1489   vsxl12.dll    -  Microsoft Excel 2013 Macro Enabled Workbook
+1490   vsxl12.dll    -  Microsoft Excel 2013 Template
+1491   vsxl12.dll    -  Microsoft Excel 2013 Macro Enabled Template
+1492   vsxl12.dll    -  Microsoft Excel 2013 Excel Add-in Macro File
+1493   vsxlsb.dll    -  Microsoft Excel 2013 Binary
+1495   vsqp9.dll     -  Quattro Pro Win X6
+1496   vssoc6.dll    -  Libre Office 3.x Calc (ODF 1.2)
+1497   vssoc6.dll    -  Libre Office 4.x Calc (ODF 1.2)
+1498   vssoc6.dll    -  Apache Office 3.x Calc (ODF 1.2)
+1499   vssoc6.dll    -  Apache Office 4.x Calc (ODF 1.2)
+1500   vsbmp.dll     -  Windows Bitmap
+1501   vstif6.dll    -  Tagged Image File Format
+1502   vspcx.dll     -  Paintbrush
+1503   vsgif.dll     -  Compuserve GIF
+1504   vseps.dll     -  EPS (TIFF Header)
+1505   vsfax.dll     -  CCITT Group 3 Fax
+1506   vspict.dll    -  Mac PICT2
+1507   vswpg.dll     -  WordPerfect Graphic
+1508   vswmf.dll     -  Windows Metafile
+1509   vspic.dll     -  Lotus PIC
+1510   vspict.dll    -  Mac PICT
+1511   vssdw.dll     -  Ami Draw
+1512   vstga.dll     -  Targa Graphic Image File
+1513   vsimg.dll     -  GEM Image
+1514   vsbmp.dll     -  OS/2 Bitmap
+1515   vsbmp.dll     -  Windows Icon
+1516   vsbmp.dll     -  Windows Cursor
+1517   vsdrw.dll     -  Micrografx product
+1518   vspntg.dll    -  MacPaint
+1520   vsbmp.dll     -  Corel Draw 2.0
+1521   vsbmp.dll     -  Corel Draw 3.0
+1522   vspgl.dll     -  HP Graphics Language
+1523   vshgs.dll     -  Harvard 3.0 Chart
+1524   vshgs.dll     -  Harvard 2.0 Chart
+1525   vshgs.dll     -  Harvard 3.0 Presentation
+1526   vsflw.dll     -  Freelance
+1527   vswpg2.dll    -  WordPerfect Graphic 2
+1528   vscgm.dll     -  CGM Graphic Metafile
+1529   vsxl5.dll     -  Excel 2.x Chart
+1530   vsxl5.dll     -  Excel 3.0 Chart
+1531   vsxl5.dll     -  Excel 4.0 Chart
+1532   *             -  Candy 4
+1533   *             -  Hanako 1.x
+1534   *             -  Hanako 2.x
+1535   vstif6.dll    -  JPEG File Interchange
+1536   vsxl5.dll     -  Excel 5.0/7.0 Chart
+1537   vsbmp.dll     -  Corel Draw 4.0
+1538   vspp2.dll     -  PowerPoint 4.0
+1539   vspcx.dll     -  Multipage PCX
+1540   vspp2.dll     -  PowerPoint 3.0
+1541   vsbmp.dll     -  Corel Draw 5.0
+1542   vsgdsf.dll    -  OS/2 Metafile
+1543   vspp7.dll     -  PowerPoint 7.0
+1544   vsacad.dll    -  AutoCAD DXF (ASCII)
+1545   vsacad.dll    -  AutoCAD DXF (Binary)
+1546   *             -  AutoCAD DXB
+1547   vsflw.dll     -  Freelance 96/97/Millennium Edition
+1548   vspp2.dll     -  Mac PowerPoint 3.0
+1549   vspp2.dll     -  Mac PowerPoint 4.0
+1550   vsshw3.dll    -  WordPerfect Presentations
+1551   vsbmp.dll     -  OS/2 Warp Bitmap
+1552   vsacad.dll    -  AutoCAD Drawing 12
+1553   vsacad.dll    -  AutoCAD Drawing 13
+1554   vsgdsf.dll    -  Adobe Illustrator
+1555   vsshw3.dll    -  Corel Presentations 7.0 - 12.0 / X3-5
+1556   vswpg2.dll    -  WordPerfect Graphic 7.0 - 12.0 / X3-5
+1557   vspdf.dll     -  Adobe Acrobat (PDF)
+1558   vsgdsf.dll    -  Framemaker
+1559   vsras.dll     -  RAS - Sun Raster
+1560   vsgdsf.dll    -  AutoShade Rendering
+1561   vsgdsf.dll    -  Kodak Photo CD
+1562   vspp2.dll     -  PowerPoint 4.0 (extracted from docfile)
+1563   vspp2.dll     -  Mac PowerPoint 4.0 (extracted from docfile)
+1564   vsemf.dll     -  Enhanced Windows Metafile
+1565   vsgdsf.dll    -  GEM
+1566   vspp2.dll     -  Mac PowerPoint 3.0
+1567   vspp2.dll     -  Mac PowerPoint 4.0
+1568   vsgdsf.dll    -  Harvard Graphics for Windows
+1569   vsgdsf.dll    -  IGES Drawing File Format
+1570   vsgdsf.dll    -  IBM Picture Interchange Format
+1571   vsgdsf.dll    -  X-Windows Bitmap
+1572   vsgdsf.dll    -  X-Windows Pixmap
+1573   vsgdsf.dll    -  CALS Raster File Format
+1574   vspng.dll     -  Portable Network Graphics Format
+1575   vsgdsf.dll    -  X-Windows Dump
+1576   vsgdsf.dll    -  CorelDraw ClipArt
+1577   *             -  HP Gallery
+1578   vsgdsf.dll    -  Graphics Data Format
+1579   vsgdsf.dll    -  Micrografx Designer
+1580   vseps.dll     -  Post Script
+1581   vspp97.dll    -  Microsoft PowerPoint 97-2004
+1582   vsbmp.dll     -  Corel Draw 6.0
+1583   vsbmp.dll     -  Corel Draw 7.0
+1584   *             -  PDF MacBinary Header
+1585   *             -  AutoCAD Drawing - Unknown Version
+1586   vsviso.dll    -  Visio 4.x
+1587   vsacad.dll    -  AutoCAD Drawing 14
+1588   vspbm.dll     -  PBM (Portable Bitmap)
+1589   vspbm.dll     -  PGM (Portable Graymap)
+1590   vspbm.dll     -  PPM (Portable Pixmap)
+1591   vsgdsf.dll    -  Adobe Photoshop
+1592   vspp97.dll    -  Microsoft PowerPoint Dual 95/97
+1593   vspsp6.dll    -  Paint Shop Pro
+1594   vsgdsf.dll    -  Kodak FlashPix
+1595   vsviso.dll    -  Visio 5.x
+1596   vsbmp.dll     -  Corel Draw 8.0
+1597   vsviso.dll    -  Visio 6.x
+1598   vsbmp.dll     -  Corel Draw 9.0
+1599   vsgdsf.dll    -  Progressive JPEG
+1600   vspp97.dll    -  Microsoft PowerPoint 2000/2002
+1601   *             -  Bentley Microstation DGN
+1602   vsbmp.dll     -  Windows 98/2000 Bitmap
+1603   vswbmp.dll    -  Wireless Bitmap
+1604   vsmif.dll     -  MIFF Graphic
+1605   *             -  Microsoft PowerPoint 2
+1606   vswpg2.dll    -  WordPerfect Graphic 10.0
+1607   *             -  Visio 3.x
+1608   *             -  Micrografx Designer
+1609   vspdfi.dll    -  PDF Image
+1610   vssoi.dll     -  StarOffice 5.2 Impress
+1611   vspdf.dll     -  Adobe Illustrator 9
+1612   vsacad.dll    -  AutoCAD 2000/2002 Drawing
+1613   vsacad.dll    -  AutoCAD 2.5 Drawing
+1614   vsacad.dll    -  AutoCAD 2.6 Drawing
+1615   vsacad.dll    -  AutoCAD 9 Drawing
+1616   vsacad.dll    -  AutoCAD 10 Drawing
+1617   *             -  QuarkXPress 3.0 For Macintosh
+1618   *             -  QuarkXPress 3.1 For Macintosh
+1619   *             -  QuarkXPress 3.2 For Macintosh
+1620   *             -  QuarkXPress 3.3 For Macintosh
+1621   *             -  QuarkXPress 4.0 For Macintosh
+1622   *             -  QuarkXPress 3.3 For Windows
+1623   *             -  QuarkXPress 4.0 For Windows
+1624   *             -  QuarkXPress 5.0 For Windows
+1625   *             -  Export Image
+1626   vssoi6.dll    -  StarOffice 6 & 7 Draw
+1627   vssoi6.dll    -  StarOffice 6 & 7 Impress
+1628   vsjbg2.dll    -  JBIG2 Bitmap
+1629   *             -  Corel Draw 10.0
+1630   *             -  Corel Draw 11.0
+1631   vsviso.dll    -  Microsoft Visio 2003/2007/2010
+1632   vssoi6.dll    -  StarOffice 8 Draw (ODF 1.1)
+1633   vssoi6.dll    -  StarOffice 8 Impress (ODF 1.1)
+1634   vsacad.dll    -  AutoCAD 2004/2005/2006 Drawing
+1635   vspp12.dll    -  Microsoft PowerPoint 2007/2008
+1636   vsxps.dll     -  Microsoft XML Paper Specification
+1637   vspp12.dll    -  Password Protected Microsoft PowerPoint 2007/2008
+1638   vsacad.dll    -  AutoCAD 2007/2008/2009 Drawing
+1639   vsbmp.dll     -  OS/2 v.2 Bitmap
+1640   *             -  StarView Metafile
+1641   *             -  eFax Document
+1642   vspp97.dll    -  DRM protected Microsoft PowerPoint
+1643   vspp12.dll    -  DRM protected Microsoft PowerPoint 2007/2008
+1644   *             -  AutoDesk DWF
+1645   *             -  Corel Draw 12.0
+1646   vsjp2.dll     -  JPEG 2000
+1647   vsindd.dll    -  Adobe Indesign
+1648   vsjp2.dll     -  JPEG 2000 jpf Extension
+1649   *             -  JPEG 2000 mj2 Extension
+1650   *             -  WordPerfect Informs 1.0
+1651   vssnap.dll    -  Lotus Screen SnapShot
+1652   vssnap.dll    -  Lotus Screen Snapshot
+1653   *             -  Interchange Format
+1654   vseshr.dll    -  Microsoft Escher Graphics
+1657   *             -  PAM (Portable Arbitrary Map)
+1658   *             -  Apple Icon Image
+1659   vsjp2.dll     -  JPEG 2000 jpx Extension
+1660   *             -  JPEG Extended Range File
+1661   *             -  JPEG 2000 Compound File (JPM)
+1662   vsjp2.dll     -  JPEG 2000 j2c/j2k/jpc Extension
+1663   vsjp2.dll     -  JPEG 2000 jp2 Extension
+1664   *             -  Multiple-image Network Graphics Format
+1665   *             -  SketchUp File Format
+1666   *             -  Enhanced Compression Wavelet Image File
+1667   *             -  CIT Intergraph Raster bitmap
+1668   *             -  Printer Command Language
+1700   vsriff.dll    -  Windows Sound
+1701   vsriff.dll    -  Windows Video
+1702   *             -  MIDI File
+1703   *             -  Macromedia Director
+1704   vsswf.dll     -  Macromedia Flash 4-8
+1705   vsqt.dll      -  Quicktime Movie
+1706   vsid3.dll     -  MPEG Layer3 ID3 Ver 1.x
+1707   vsid3.dll     -  MPEG Layer3 ID3 Ver 2.x
+1708   vsid3.dll     -  ID3 Ver 1.x
+1709   vsid3.dll     -  ID3 Ver 2.x
+1710   vsid3.dll     -  MPEG-1 audio - Layer 3
+1711   vsid3.dll     -  MPEG-1 audio - Layer 1
+1712   vsid3.dll     -  MPEG-1 audio - Layer 2
+1713   vsid3.dll     -  MPEG-2 audio - Layer 1
+1714   vsid3.dll     -  MPEG-2 audio - Layer 2
+1715   vsid3.dll     -  MPEG-2 audio - Layer 3
+1716   vsasf.dll     -  Advanced System Format
+1717   vsasf.dll     -  Windows Media Video
+1718   vsasf.dll     -  Windows Media Audio
+1719   vsasf.dll     -  Microsoft Digital Video Recording
+1720   *             -  Real Audio / Real Video
+1721   *             -  MPEG-1 video
+1722   *             -  MPEG-2 video
+1723   *             -  ISO Base Media File
+1724   vsqt.dll      -  MPEG-4 file
+1725   vsqt.dll      -  MPEG-7 file
+1726   *             -  Resource Interchange File Format
+1727   *             -  Macromedia Flash 9
+1728   *             -  Macromedia Flash 10
+1729   vsheif.dll    -  High Efficiency Image File - (Brand: mif1, Type: image, Subtype: heif)
+1730   vsheif.dll    -  High Efficiency Image File - (Brand: msf1, Type: sequence, Subtype: heif-sequence)
+1731   vsheif.dll    -  High Efficiency Image File - (Brand: heic, Type: image, Subtype: heic)
+1732   vsheif.dll    -  High Efficiency Image File - (Brand: heix, Type: image, Subtype: heic)
+1733   vsheif.dll    -  High Efficiency Image File - (Brand: hevc, Type: sequence, Subtype: heic-sequence)
+1734   vsheif.dll    -  High Efficiency Image File - (Brand: hevx, Type: sequence, Subtype: heic-sequence)
+1735   *             -  WEBM Video File Format
+1736   *             -  JT Image File Format Version 8
+1737   *             -  JT Image File Format Version 9
+1738   *             -  JT Image File Format Version 10
+1739   *             -  Better Portable Graphics File
+1740   *             -  AV1 Image File Format
+1741   *             -  Cartesian Perceptual Compression File
+1742   *             -  Free Lossless Image Format
+1743   *             -  Gerber Image File Format
+1744   *             -  Gerber Image File (PCB) Format
+1745   *             -  OGG open container format for audio,video
+1746   *             -  OGPUS open container format for audio,video
+1800   vsexe2.dll    -  EXE / DLL File
+1801   *             -  .COM File
+1802   vszip.dll     -  .ZIP/JAR File
+1803   vszip.dll     -  Self UnZIPping .EXE
+1804   *             -  .ARC File
+1805   vsbdr.dll     -  MS Office Binder
+1806   vstaz.dll     -  UNIX Compress
+1807   vstaz.dll     -  UNIX Tar
+1808   *             -  Envoy
+1809   *             -  QuickFinder
+1810   *             -  Windows Clipboard File
+1811   *             -  Envoy 7
+1812   *             -  StuffIt
+1813   vslzh.dll     -  LZH Compress
+1814   vslzh.dll     -  Self-Extracting LZH
+1815   vsgzip.dll    -  UNIX GZip
+1816   *             -  Java Class File
+1817   vsmbox.dll    -  mbox(RFC-822 mailbox)
+1818   *             -  Lotus Notes Database R6.x
+1819   *             -  Generic Password Protected Microsoft Office 2007 Document
+1820   vsarc.dll     -  Microsoft Cabinet File
+1821   vsrar.dll     -  .RAR Archive File Version Type 1.x/2.x/3.x/4.x
+1822   vsrar.dll     -  Self extracting RAR File
+1823   *             -  Microsoft InfoPath File
+1824   vsone.dll     -  Microsoft OneNote Package
+1825   *             -  Windows Media Player Playlist
+1826   vsarc.dll     -  7z Archive File
+1827   vsarc.dll     -  Self extracting 7z Archive File
+1828   vsone.dll     -  Microsoft OneNote Table of Contents File
+1829   vsone.dll     -  Microsoft OneNote File
+1830   vstext.dll    -  JavaScript Object Notation(JSON)-Text format for structured data
+1831   vspst.dll     -  Microsoft Outlook OST 2013/2016/2019
+1832   *             -  Microsoft OneNote SOAP/HTTP File
+1833   vsrar.dll     -  .RAR Archive File Version Type 5.x/6.x
+1834   *             -  EPUB e-book File
+1835   *             -  MOBI e-book File
+1836   *             -  Advanced Function Presentation File
+1837   *             -  DJVU Compressed Image File
+1998   *             -  File Identification: None
+1999   *             -  Unknown format
+2004   vsxml.dll     -  Flexiondoc v4.0 (XML)
+2005   vsxml.dll     -  Flexiondoc v5.0 (XML)
+2006   vsxml.dll     -  Flexiondoc v5.1 (XML)
+2007   vsxml.dll     -  Domino XML Document
+2008   vsxml.dll     -  Flexiondoc v5.2 (XML)
+2010   vsinx.dll     -  Adobe Indesign Interchange
+2012   *             -  Microsoft Visio XML
+2015   vsdxla.dll    -  Mail Archive DXL
+2016   vsdxlm.dll    -  Mail Message DXL
+2017   vsdxlm.dll    -  Generic DXL
+2018   *             -  Mail Rule DXL
+2030   vsxml.dll     -  Flexiondoc v5.3 (XML)
+2031   *             -  OASIS OpenDocument v1.0 (XML)
+2032   vsxml.dll     -  Flexiondoc v5.4 (XML)
+2033   *             -  Flexiondoc, Latest version (XML)
+2034   vsxml.dll     -  Flexiondoc v5.5 (XML)
+2035   vsxml.dll     -  Flexiondoc v5.6 (XML)
+2036   vsxml.dll     -  Flexiondoc v5.7 (XML)
+2200   *             -  AutoCAD 2008 Drawing
+2201   *             -  Microsoft Publisher 2000/2003
+2202   *             -  Microsoft Publisher 2007
+2203   vssoi6.dll    -  Open Office 1.x Impress
+2204   vssoi6.dll    -  Open Office 2.x Impress (ODF 1.1)
+2205   vssoi6.dll    -  IBM/Lotus Symphony Presentation (ODF 1.1)
+2206   vssoi6.dll    -  Open Office 1.x Draw
+2207   vssoi6.dll    -  Open Office 2.x Draw (ODF 1.1)
+2208   vspp12.dll    -  Microsoft PowerPoint 2007/2008 Template
+2209   vspp12.dll    -  Microsoft PowerPoint 2007/2008 Macro Enabled Presentation
+2210   vspp12.dll    -  Microsoft PowerPoint 2007/2008 Macro Enabled Template
+2211   vspp12.dll    -  Microsoft PowerPoint 2007/2008 Slideshow
+2212   vspp12.dll    -  Microsoft PowerPoint 2007/2008 Macro Enabled Slideshow
+2213   *             -  Oracle Multimedia Internal Raster Format
+2214   vssoi6.dll    -  Open Office 3.x Impress (ODF 1.2)
+2215   vssoi6.dll    -  Open Office 3.x Draw (ODF 1.2)
+2216   vsshw3.dll    -  Corel Presentations X4
+2217   *             -  Microsoft Access Snapshot File
+2218   vssoi6.dll    -  StarOffice 9 Impress (ODF 1.2)
+2219   vssoi6.dll    -  StarOffice 9 Draw (ODF 1.2)
+2220   vssoi6.dll    -  Oracle Open Office 3.x Impress (ODF 1.2)
+2221   vssoi6.dll    -  Oracle Open Office 3.x Draw (ODF 1.2)
+2222   vspp12.dll    -  Microsoft PowerPoint 2010/2011
+2223   vspp12.dll    -  Microsoft PowerPoint 2010/2011 Template
+2224   vspp12.dll    -  Microsoft PowerPoint 2010/2011 Macro Enabled Template
+2225   vspp12.dll    -  Microsoft PowerPoint 2010/2011 Slideshow
+2226   vspp12.dll    -  Microsoft PowerPoint 2010/2011 Macro Enabled Presentation
+2227   vspp12.dll    -  Microsoft PowerPoint 2010/2011 Macro Enabled Slideshow
+2228   vspp12.dll    -  Password Protected Microsoft PowerPoint 2010-2016/2019
+2229   vsacad.dll    -  AutoCAD 2010/2011/2012 Drawing
+2230   vsshw3.dll    -  Corel Presentations X5
+2231   vsiwok.dll    -  Apple iWork Keynote File
+2232   vspdf.dll     -  Apple iWork Keynote File Preview
+2233   vsxml.dll     -  Scalable Vector Graphics File
+2234   vszip.dll     -  AutoDesk DWF Archive File
+2235   vspp12.dll    -  Microsoft PowerPoint 2013
+2236   vspp12.dll    -  Microsoft PowerPoint 2013 Template
+2237   vspp12.dll    -  Microsoft PowerPoint 2013 Macro Enabled Template
+2238   vspp12.dll    -  Microsoft PowerPoint 2013 Slideshow
+2239   vspp12.dll    -  Microsoft PowerPoint 2013 Macro Enabled Presentation
+2240   vspp12.dll    -  Microsoft PowerPoint 2013 Macro Enabled Slideshow
+2241   vszip.dll     -  Microsoft Office Theme File
+2242   vsgdsf.dll    -  Adobe Photoshop Large Document Format
+2243   *             -  Digital Imaging and Communications in Medicine (DICOM) File
+2244   vsshw3.dll    -  Corel Presentations X6
+2245   vsacad.dll    -  AutoCAD 2013/2014/2015/2016/2017 Drawing
+2246   *             -  Harvard Graphics 98
+2247   vsvsdx.dll    -  Microsoft Visio 2013
+2248   vsvsdx.dll    -  Microsoft Visio 2013 Template
+2249   vsvsdx.dll    -  Microsoft Visio 2013 Stencil
+2250   vsvsdx.dll    -  Microsoft Visio 2013 Macro Enabled Drawing
+2251   vsvsdx.dll    -  Microsoft Visio 2013 Macro Enabled Template
+2252   vsvsdx.dll    -  Microsoft Visio 2013 Macro Enabled Stencil
+2253   vssoi6.dll    -  Libre Office 3.x Impress (ODF 1.2)
+2254   vssoi6.dll    -  Libre Office 3.x Draw (ODF 1.2)
+2255   vssoi6.dll    -  Libre Office 4.x Impress (ODF 1.2)
+2256   vssoi6.dll    -  Libre Office 4.x Draw (ODF 1.2)
+2257   vssoi6.dll    -  Apache Office 3.x Impress (ODF 1.2)
+2258   vssoi6.dll    -  Apache Office 3.x Draw (ODF 1.2)
+2259   vssoi6.dll    -  Apache Office 4.x Impress (ODF 1.2)
+2260   vssoi6.dll    -  Apache Office 4.x Draw (ODF 1.2)
+2262   vspp12.dll    -  Microsoft PowerPoint 2016/2019/2021/M365
+2263   vspp12.dll    -  Microsoft PowerPoint 2016/2019/2021/M365 Template
+2264   vspp12.dll    -  Microsoft PowerPoint 2016/2019/2021/M365 Macro Enabled Template
+2265   vspp12.dll    -  Microsoft PowerPoint 2016/2019/2021/M365 Slideshow
+2266   vspp12.dll    -  Microsoft PowerPoint 2016/2019/2021/M365 Macro Enabled Presentation
+2267   vspp12.dll    -  Microsoft PowerPoint 2016/2019/2021/M365 Macro Enabled Slideshow
+2268   vsshw3.dll    -  Corel Presentations X7
+2269   *             -  Strict Open XML 2013 Presentation
+2270   *             -  Strict Open XML 2016/2019 Presentation
+2271   vscdrx.dll    -  Corel Draw X4 - X7
+2272   vswebp.dll    -  WebP Image
+2273   vsiwok13.dll  -  Apple iWork 2013/2014 Keynote File
+2274   vscdrx.dll    -  Corel Draw X4 - X7 Template
+2276   vsacad.dll    -  AutoCAD 2018/2019/2020/2021 Drawing
+2277   vsiwok13.dll  -  Apple iWork 2020/2021 keynote File
+2278   *             -  Microsoft Publisher 2016/2019
+2279   vstext.dll    -  Standard Generalized Markup Language File
+2300   *             -  Performance Filter
+2400   *             -  Microsoft Windows Explorer Command File
+2401   *             -  Windows shortcut
+2402   *             -  Windows Help File
+2403   *             -  Windows Compiled Help File
+2404   *             -  TrueType Font File
+2405   *             -  TrueType Font Collection File
+2406   *             -  TrueType (MAC) Font File
+2407   *             -  WOFF Font File
+2408   *             -  WOFF2 Font File
+2500   vsxl12.dll    -  Microsoft Excel 2016/2019/2021/M365 Workbook
+2501   vsxl12.dll    -  Microsoft Excel 2016/2019/2021/M365 Macro Enabled Workbook
+2502   vsxl12.dll    -  Microsoft Excel 2016/2019/2021/M365 Template
+2503   vsxl12.dll    -  Microsoft Excel 2016/2019/2021/M365 Macro Enabled Template
+2504   vsxl12.dll    -  Microsoft Excel 2016/2019/2021/M365 Excel Add-in Macro File
+2505   vsxlsb.dll    -  Microsoft Excel 2016/2019/2021/M365 Binary
+2506   vsqp9.dll     -  Quattro Pro Win X7
+2507   *             -  Strict Open XML 2013 Spreadsheet
+2508   *             -  Strict Open XML 2016/2019 Spreadsheet
+2509   vsiwon13.dll  -  Apple iWork 2013/2014 Numbers File
+2510   vsiwon13.dll  -  Apple iWork 2020/2021 Numbers File
+2511   *             -  Everything File List (EFU) Spreadsheet File
+2512   *             -  Ability Spreadsheet  (AST/AWS) File
+2513   *             -  Plan Maker(PMD) Spreadsheet File
+2515   vsgzip.dll    -  GNUMERIC Spreadsheet File
+2516   *             -  FileMakerPro (FMP12) Spreadsheet file
+2517   *             -  CELL 2010 Workbook file
+2519   *             -  Wolfram notebook (nb) file format
+2520   *             -  IMP (Lotus Improv) Spreadsheet file
+2521   *             -  PMDX (PlanMaker) Spreadsheet file
+2522   *             -  TimeMap timeline (TMVT/TMV) Spreadsheet file
+2523   *             -  File Maker (FP7) Spredsheet file
+4000   vstext.dll    -  Unknown (ASCII)
+4001   *             -  Unknown (Hex)
+4002   vstext.dll    -  Unknown (ANSI)
+4003   vstext.dll    -  Unknown (Unicode)
+4004   vstext.dll    -  Unknown (ASCII 8)
+4005   vstext.dll    -  Unknown (ANSI 8)
+4006   *             -  Unknown format
+4007   vstext.dll    -  Unknown (Mac)
+4008   vstext.dll    -  Unknown (Mac 8)
+4009   vstext.dll    -  Text - Japanese (ShiftJIS)
+4010   vstext.dll    -  Text - Chinese (GB)
+4011   vstext.dll    -  Text - Korean (Hangul)
+4012   vstext.dll    -  Text - Chinese (Big 5)
+4013   vstext.dll    -  Text - Unknown (DOS Latin 2)
+4014   vstext.dll    -  Text - Japanese (EUC)
+4015   vstext.dll    -  Text - Hebrew (7-bit)
+4016   vstext.dll    -  Text - Hebrew (IBM PC8)
+4017   vstext.dll    -  Text - Hebrew (VAX E0)
+4018   vstext.dll    -  Text - Hebrew (Windows ANSI 1255)
+4021   vstext.dll    -  Text - Arabic (Windows ANSI 1256)
+4022   vstext.dll    -  7-Bit Text/CSV Spreadsheet File
+4023   vstext.dll    -  Text - Japanese (JIS)
+4024   vstext.dll    -  Text - Central European
+4025   vstext.dll    -  UTF-8 encoded Text/CSV Spreadsheet file
+4026   vstext.dll    -  Text - U.S. English/Portuguese (EBCDIC 37)
+4027   vstext.dll    -  Text - Austrian/German (EBCDIC 273)
+4028   vstext.dll    -  Text - Danish/Norwegian (EBCDIC 277)
+4029   vstext.dll    -  Text - Finnish/Swedish (EBCDIC 278)
+4030   vstext.dll    -  Text - Italian (EBCDIC 280)
+4031   vstext.dll    -  Text - Spanish (EBCDIC 284)
+4032   vstext.dll    -  Text - U.K. English (EBCDIC 285)
+4033   vstext.dll    -  Text - French (EBCDIC 297)
+4034   vstext.dll    -  Text - Belgian/International (EBCDIC 500)
+4035   vstext.dll    -  Text - Eastern European (EBCDIC 870)
+4036   vstext.dll    -  Text - Icelandic (EBCDIC 871)
+4037   vstext.dll    -  Text - Turkish (EBCDIC 1026)
+4038   *             -  HTML - U.S. English/Portuguese (EBCDIC 37)
+4039   *             -  HTML - Austrian/German  (EBCDIC 273)
+4040   *             -  HTML - Danish/Norwegian (EBCDIC 277)
+4041   *             -  HTML - Finnish/Swedish (EBCDIC 278)
+4042   *             -  HTML - Italian (EBCDIC 280)
+4043   *             -  HTML - Spanish (EBCDIC 284)
+4044   *             -  HTML - U.K. English (EBCDIC 285)
+4045   *             -  HTML - French (EBCDIC 297)
+4046   *             -  HTML - Belgian/International (EBCDIC 500)
+4047   *             -  HTML - Eastern European (EBCDIC 870)
+4048   *             -  HTML - Icelandic (EBCDIC 871)
+4049   *             -  HTML - Turkish (EBCDIC 1026)
+4050   vsmime.dll    -  UUE Encoded Text
+4051   vsmime.dll    -  UUE Encoded Continued Part
+4052   vsmime.dll    -  XXE Encoded Text
+4053   vsmime.dll    -  XXE Encoded Continued Part
+4054   vsmime.dll    -  YEnc Encoded Text
+4055   vsmime.dll    -  YEnc Encoded Continued Part
+4056   vsmime.dll    -  BinHex Encoded Text
+4057   vsmime.dll    -  BinHex Encoded Continued Part
+4058   vstext.dll    -  Text - Arabic (ASMO-708)
+4059   vstext.dll    -  Text - Arabic (DOS OEM 720 TRANSPARENT ASMO)
+4060   vstext.dll    -  Text - Arabic (ISO 8859-6)
+4061   vstext.dll    -  Text - Arabic (Mac)
+4062   vstext.dll    -  Text - Baltic (ISO 8859-4)
+4063   vstext.dll    -  Text - Baltic (Windows ANSI 1257)
+4064   vstext.dll    -  Text - Central European (DOS OEM 852 Latin II)
+4065   vstext.dll    -  Text - Central European (ISO 8859-2)
+4066   vstext.dll    -  Text - Central European (Mac)
+4067   vstext.dll    -  Text - Central European (Windows ANSI 1250)
+4068   vstext.dll    -  Text - Chinese Simplified (Windows ANSI 936 [GB2312])
+4069   vstext.dll    -  Text - Chinese Traditional (Windows ANSI 950 [BIG5])
+4070   vstext.dll    -  Text - Cyrillic (DOS OEM 855)
+4071   vstext.dll    -  Text - Cyrillic (ISO 8859-5)
+4072   vstext.dll    -  Text - Cyrillic (KOI8-R)
+4073   vstext.dll    -  Text - Cyrillic (Mac)
+4074   vstext.dll    -  Text - Cyrillic (Windows ANSI 1251)
+4075   vstext.dll    -  Text - Greek (ISO 8859-7)
+4076   vstext.dll    -  Text - Greek (Mac)
+4077   vstext.dll    -  Text - Greek (Windows ANSI 1253)
+4078   vstext.dll    -  Text - Hebrew (DOS OEM 862)
+4079   vstext.dll    -  Text - Hebrew (ISO 8859-8)
+4080   vstext.dll    -  Text - Japanese (Mac)
+4082   vstext.dll    -  Text - Korean (Windows ANSI 1361 [Johab])
+4083   vstext.dll    -  Text - Korean (Windows ANSI 949)
+4084   vstext.dll    -  Text - Russian (DOS OEM 866)
+4085   vstext.dll    -  Text - Thai (Windows ANSI 874)
+4086   vstext.dll    -  Text - Turkish (DOS OEM 857)
+4087   vstext.dll    -  Text - Turkish (ISO 8859-9)
+4088   vstext.dll    -  Text - Turkish (Mac)
+4089   vstext.dll    -  Text - Turkish (Windows ANSI 1254)
+4090   vstext.dll    -  Text - Vietnamese (Windows ANSI 1258)
+4091   vstext.dll    -  Text - Western European (ISO 8859-1)
+4092   vstext.dll    -  Text - Western European (Mac)
+4093   vstext.dll    -  Text - Western European (Windows ANSI 1252)
+4094   *             -  HTML - Arabic (ASMO-708)
+4095   *             -  HTML - Arabic (DOS OEM 720 TRANSPARENT ASMO)
+4096   *             -  HTML - Arabic (ISO 8859-6)
+4097   *             -  HTML - Arabic (Mac)
+4098   *             -  HTML - Arabic (Windows ANSI 1256)
+4100   *             -  HTML - Baltic (Windows ANSI 1257)
+4101   *             -  HTML - Central European (DOS OEM 852 Latin II)
+4102   *             -  HTML - Central European (ISO 8859-2)
+4103   *             -  HTML - Central European (Mac)
+4104   *             -  HTML - Central European (Windows ANSI 1250)
+4105   *             -  HTML - Chinese Simplified (EUC)
+4106   *             -  HTML - Chinese Simplified (Windows ANSI 936 [GB2312])
+4107   *             -  HTML - Chinese Traditional (Windows ANSI 950 [BIG5])
+4108   *             -  HTML - Cyrillic (DOS OEM 855)
+4109   *             -  HTML - Cyrillic (ISO 8859-5)
+4110   *             -  HTML - Cyrillic (KOI8-R)
+4111   *             -  HTML - Cyrillic (Mac)
+4112   *             -  HTML - Cyrillic (Windows ANSI 1251)
+4113   *             -  HTML - Greek (ISO 8859-7)
+4114   *             -  HTML - Greek (Mac)
+4115   *             -  HTML - Greek (Windows ANSI 1253)
+4116   *             -  HTML - Hebrew (DOS OEM 862)
+4117   *             -  HTML - Hebrew (ISO 8859-8)
+4118   *             -  HTML - Hebrew (Windows ANSI 1255)
+4119   *             -  HTML - Japanese (Mac)
+4120   *             -  HTML - Japanese (Windows Shift-JIS ANSI 932)
+4121   *             -  HTML - Korean (Windows ANSI 1361 [Johab])
+4122   *             -  HTML - Korean (Windows ANSI 949)
+4123   *             -  HTML - Russian (DOS OEM 866)
+4124   *             -  HTML - Thai (Windows ANSI 874)
+4125   *             -  HTML - Turkish (DOS OEM 857)
+4126   *             -  HTML - Turkish (ISO 8859-9)
+4127   *             -  HTML - Turkish (Mac)
+4128   *             -  HTML - Turkish (Windows ANSI 1254)
+4129   *             -  HTML - Vietnamese (Windows ANSI 1258)
+4130   *             -  HTML - Western European (ISO 8859-1)
+4131   *             -  HTML - Western European (Mac)
+4132   *             -  HTML - Western European (Windows ANSI 1252)
+5000   vswmf.dll     -  Windows Metafile [5000]
+5001   vswpg.dll     -  WordPerfect Graphic [B]
+5002   vspcx.dll     -  Ami (internal bitmap)
+5003   vsbmp.dll     -  Word (internal bitmap)
+5004   vspict.dll    -  Mac PICT2 Binary
+5005   vsbmp.dll     -  Windows Metafile [5005]
+5006   vswmf.dll     -  Windows Metafile [5006]
+5007   vswpw.dll     -  PerfectWorks Picture
+5008   vswpg2.dll    -  WPG2 (internal bitmap)
+5009   vsbmp.dll     -  Windows DIB
+5010   vswpg.dll     -  WPG1 (internal bitmap)
+5011   vsgdsf.dll    -  Embedded Bitmap
+5012   vsbmp.dll     -  Embedded Bitmap
+5013   *             -  IAF (internal bitmap)
+5014   *             -  IAF (internal bitmap)
+5015   vspict.dll    -  PICT (internal bitmap)
+5016   *             -  Device Independent Bitmap File
+7001   vsintf.dll    -  Intermediate Format File
 
-Total format types: 966
+Total known format IDs: 966
+Total supported format IDs: 707

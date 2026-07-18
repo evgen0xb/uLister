@@ -31,6 +31,9 @@ public:
 	HINSTANCE FileIdentInstanceInc();
 	void FileIdentInstanceDec(bool _keepinmemory);
 
+	HINSTANCE FilterAccessInstanceInc();
+	void FilterAccessInstanceDec(bool _keepinmemory);
+
 #ifdef SMARTINIPATH
 	static void CreateDefaultUlisterIni(wchar_t *_inipath);
 #endif
@@ -43,6 +46,9 @@ private:
 
 	HINSTANCE	hFileIdentLibrary;
 	int			NumInstancesFileIdentLib;
+
+	HINSTANCE	hFilterAccessLibrary;
+	int			NumInstancesFilterAccessLib;
 
 	void GetIniPathWLX(wchar_t *_inipath);
 	static void GetIniPathCOMMANDER(wchar_t *_inipath);
