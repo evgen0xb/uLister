@@ -69,6 +69,8 @@ public:
 	WNDPROC OriginalSccdisplayWindowProc;
 	HWND SccdisplayWindow;
 
+	HWND SccscrollHorizWindow;
+
 	clsFullScreen FullScreen;
 
 	clsToolTip ToolTip;
@@ -101,6 +103,9 @@ public:
 
 	void EnableScrollBar(bool enable);
 	bool isScrollBarEnabled();
+
+	HWND FindHorizontalVTScrollbar(HWND hParentWnd);
+	bool IsCursorOverHorizVTScrollbar();
 
 private:
 

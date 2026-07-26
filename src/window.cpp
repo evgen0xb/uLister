@@ -24,6 +24,7 @@ The plugin is provided as-is and without any warranty under the GPLv3 license.
 const char *WNDCLASSNAME_WAWC			= "WAwc";
 const char *WNDCLASSNAME_SCCVIEWER		= "SCCVIEWER";
 const char *WNDCLASSNAME_SCCDISPLAY		= "SCCDISPLAY";
+const char *WNDCLASSNAME_SCCSCROLL		= "SCCSCROLL";
 
 
 
@@ -307,6 +308,10 @@ LRESULT CALLBACK SccviewerWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 				mydata->SccdisplayWindow = _SccdisplayWindow;
 				mydata->OriginalSccdisplayWindowProc = (WNDPROC)SetWindowLongPtrA(_SccdisplayWindow, GWLP_WNDPROC, (LONG_PTR)SccdisplayWindowProc);
 
+				mydata->SccscrollHorizWindow = mydata->FindHorizontalVTScrollbar(mydata->SccviewerWindow);
+
+				//std::wstring msgW = L"SccscrollHorizWindow=" + ToHexW(mydata->SccscrollHorizWindow);
+				//OutputDebugStringW(msgW.c_str());
 			}
 
 			if (mydata->winkeyhack)
@@ -418,6 +423,16 @@ LRESULT CALLBACK SccdisplayWindowProc(HWND hWnd, UINT message, WPARAM wParam, LP
 					PostMessage(mydata->SccviewerWindow, SCCVW_HSCROLL, (GET_WHEEL_DELTA_WPARAM(wParam) > 0) ? SCCSB_LINERIGHT : SCCSB_LINELEFT, 0);
 				return 0;
 			}
+			else if (mydata->IsCursorOverHorizVTScrollbar())
+			{
+				// MOUSEHWHEEL over horizontal scroll bar: horizontal scroll
+				// OutputDebugStringA("IsCursorOverHorizVTScrollbar");
+				if (mydata->pSharedPluginInstance->UlisterOptions.mwhscrollinvert)
+					PostMessage(mydata->SccviewerWindow, SCCVW_HSCROLL, (GET_WHEEL_DELTA_WPARAM(wParam) > 0) ? SCCSB_LINELEFT : SCCSB_LINERIGHT, 0); // invert
+				else
+					PostMessage(mydata->SccviewerWindow, SCCVW_HSCROLL, (GET_WHEEL_DELTA_WPARAM(wParam) > 0) ? SCCSB_LINERIGHT : SCCSB_LINELEFT, 0);
+				return 0;
+			}
 			// MOUSEHWHEEL : Up-Down scroll
 			break;
 		case WM_MBUTTONDOWN:
@@ -462,6 +477,8 @@ clsVTWindowInstance::clsVTWindowInstance() : ToolTip(TOOLTIP_TIMER_MSG)
 
 	OriginalSccviewerWindowProc = NULL;
 	SccviewerWindow = NULL;
+
+	SccscrollHorizWindow = NULL;
 
 	OriginalSccdisplayWindowProc = NULL;
 	SccdisplayWindow = NULL;
@@ -1389,6 +1406,37 @@ void SetSccdisplayChildWndProc(HWND waWnd)
 	OutputDebugStringA("------------------------------------------------");
 }
 */
+
+
+
+HWND clsVTWindowInstance::FindHorizontalVTScrollbar(HWND hParentWnd)
+{
+	HWND hChild = NULL;
+
+	while (hChild = FindWindowExA(hParentWnd, hChild, WNDCLASSNAME_SCCSCROLL, NULL))
+	{
+		LONG_PTR style = GetWindowLongPtr(hChild, GWL_STYLE);
+		if (style & WS_HSCROLL) return hChild;
+	}
+
+	return NULL;
+}
+
+
+
+bool clsVTWindowInstance::IsCursorOverHorizVTScrollbar()
+{
+	if (!IsWindow(SccscrollHorizWindow)) return false;
+
+	POINT pt;
+	RECT rect;
+
+	if (GetWindowRect(SccscrollHorizWindow, &rect))
+		if (GetCursorPos(&pt))
+			return PtInRect(&rect, pt); // && isScrollBarEnabled() if no Horizontal Scroll over bottom window in full-screen mode
+
+	return false;
+}
 
 
 

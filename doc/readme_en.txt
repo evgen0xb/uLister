@@ -243,9 +243,15 @@ Enter a search string - Ctrl+F/F7
 In version 4.4.0.0, the search can also be launched from the context menu using the right mouse button.
 Find Next/Previous - F3/Shift+F3
 (Search is not available in some formats; case-insensitive search option is supported)
+
 You can zoom in or out using Ctrl "+" / Ctrl "-" or Ctrl + Mouse Wheel (in older versions of the OutsideIn library, as for WinXP, it is not available for some viewing modes).
 Keyboard shortcut Ctrl+NUM*/Ctrl+8 or Ctrl + middle mouse button - reset zoom to 100%.
+
 Use Shift + mouse wheel (or special horizontal mouse wheel) to scroll horizontally.
+In version 4.5.0.0, you can also use the mouse wheel above the horizontal scrollbar for horizontal scrolling.
+Furthermore, if you hide the scrollbars in full-screen mode, you can also use the mouse wheel alone to scroll
+horizontally by placing the mouse pointer at the very bottom of the window (at its lowest pixel line),
+where the horizontal scrollbar would normally be.
 
 For non-graphical documents, zooming is only achieved by changing the font size, which in certain situations will result in
 some formatting issues in the document, but it's still better than nothing at all.
@@ -644,3 +650,6 @@ Finally, the search procedure has been rewritten:
 
 2026-07-18
     - when exporting format types, information about the corresponding DLL is added to formats.txt (reverse engineering sccfa.dll)
+
+2026-07-26
+    - mouse wheel above the horizontal scrollbar - horizontal scrolling
