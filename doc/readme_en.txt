@@ -73,9 +73,15 @@ tooltipsdelayms     (default 3000) - tooltip display time in milliseconds
 tooltipstransparency (default 244, from 0 to 255 inclusive) - tooltip transparency (only works in Windows 8 and above, without overloading older systems);
                     use a value of -1 to force transparency mode off.
 
-In version 4.5.0.0, you can set scrollbars to be automatically disabled when entering full-screen mode and automatically enabled when exiting it:
+Since version 4.5.0.0:
+
+You can set scrollbars to be automatically disabled when entering full-screen mode and automatically enabled when exiting it:
 smartscrollbar      (default on) - manage automatically
                     off - only via context menu
+
+Mouse wheel behavior when the mouse pointer is over the horizontal scrollbar:
+mwheelabovehscrollbar (default on) - switch to horizontal scrolling
+                    off - standard vertical scrolling
 
 Since version 4.0.0.7 of the plugin, ulister.ini can be used to write some useful internal settings of the Outside In Technology
 library, stored in a proprietary binary representation in the ".oit" directory.
@@ -653,3 +659,4 @@ Finally, the search procedure has been rewritten:
 
 2026-07-26
     - mouse wheel above the horizontal scrollbar - horizontal scrolling
+    - added option mwheelabovehscrollbar

@@ -61,6 +61,9 @@ void clsUlisterOptions::LoadUlisterOptions(wchar_t *inipath, const unsigned long
 
 	GetPrivateProfileStringW(ULISTERSECTION, L"smartscrollbar", AON, buf, INT64STRMAXBUF, inipath);
 	if (_wcsicmp(buf, AON) == 0) smartscrollbar = true; else smartscrollbar = false;
+
+	GetPrivateProfileStringW(ULISTERSECTION, L"mwheelabovehscrollbar", AON, buf, INT64STRMAXBUF, inipath);
+	if (_wcsicmp(buf, AON) == 0) mwheelabovehscrollbar = true; else mwheelabovehscrollbar = false;
 }
 
 

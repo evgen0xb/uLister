@@ -423,7 +423,7 @@ LRESULT CALLBACK SccdisplayWindowProc(HWND hWnd, UINT message, WPARAM wParam, LP
 					PostMessage(mydata->SccviewerWindow, SCCVW_HSCROLL, (GET_WHEEL_DELTA_WPARAM(wParam) > 0) ? SCCSB_LINERIGHT : SCCSB_LINELEFT, 0);
 				return 0;
 			}
-			else if (mydata->IsCursorOverHorizVTScrollbar())
+			else if (mydata->pSharedPluginInstance->UlisterOptions.mwheelabovehscrollbar && mydata->IsCursorOverHorizVTScrollbar())
 			{
 				// MOUSEHWHEEL over horizontal scroll bar: horizontal scroll
 				// OutputDebugStringA("IsCursorOverHorizVTScrollbar");

@@ -56,6 +56,7 @@ public:
 	bool	keepinmemory;
 	bool	mwhscrollinvert;
 	bool	smartscrollbar;
+	bool	mwheelabovehscrollbar;
 
 	UINT ToolTipTimer;
 	WORD ToolTipTransparency;
