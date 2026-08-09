@@ -660,3 +660,6 @@ Finally, the search procedure has been rewritten:
 2026-07-26
     - mouse wheel above the horizontal scrollbar - horizontal scrolling
     - added option mwheelabovehscrollbar
+
+2026-08-09
+    - buffer fix

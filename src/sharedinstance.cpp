@@ -54,6 +54,7 @@ VTWORD clsSharedPluginInstance::GetVTFileType(const wchar_t* FileToLoad, __VTTYP
 	FIIdFileExFUNC FIIdFileEx;
 	FIDeInitFUNC FIDeInit;
 
+	if (pOutTypeName) pOutTypeName[0] = '\0';
 	VTWORD  wVTFileType = FI_UNKNOWN;
 	SCCERR  FIErrorCode = SCCERR_UNKNOWN;
 
@@ -70,7 +71,7 @@ VTWORD clsSharedPluginInstance::GetVTFileType(const wchar_t* FileToLoad, __VTTYP
 			FIInit();
 			VTDWORD dwFlags = FIFLAG_NORMAL;
 			FIErrorCode = FIIdFileEx(IOTYPE_UNICODEPATH, FileToLoad, dwFlags, &wVTFileType, pOutTypeName, sizeof(pOutTypeName));
-			if (FIErrorCode != SCCERR_OK) pOutTypeName[0] = '\0';
+			if (FIErrorCode != SCCERR_OK && pOutTypeName) pOutTypeName[0] = '\0';
 			FIDeInit();
 		}
 	}
