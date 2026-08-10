@@ -663,3 +663,6 @@ Finally, the search procedure has been rewritten:
 
 2026-08-09
     - buffer fix
+
+2026-08-10 4.5.0.0
+    - change version number
