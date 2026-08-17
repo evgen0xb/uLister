@@ -205,7 +205,7 @@ HBITMAP clsSharedPluginInstance::GetVTFilePreview(const wchar_t* FileToLoad, con
 
 
 
-void clsSharedPluginInstance::CreatFormatsTxt(const wchar_t* path)
+void clsSharedPluginInstance::CreatFormatsTxt(const wchar_t* path, DWORD filetype)
 {
 	typedef VTDWORD(*FIInitFUNC)(VTVOID);
 	typedef VTDWORD(*FIDeInitFUNC)(VTVOID);
@@ -278,6 +278,28 @@ void clsSharedPluginInstance::CreatFormatsTxt(const wchar_t* path)
 				VTWORD TypeNumber;
 				char TypeName[VTMAXTYPENAMEBUF];
 
+				bool isfirstjson = true;
+				const char jsoncomma[] = ",\r\n";
+
+				if (filetype == ExportFormat::FCSVEURO)
+				{
+					_snprintf_s(buf, ULISTMAXBUF, _TRUNCATE, "Format Number;DLL Name;Format Name\r\n");
+					//OutputDebugStringA(buf);
+					WriteFile(hFile, buf, (DWORD)strlen(buf), &bytesWritten, NULL);
+				}
+				else if (filetype == ExportFormat::FCSV4180)
+				{
+					_snprintf_s(buf, ULISTMAXBUF, _TRUNCATE, "Format Number,DLL Name,Format Name\r\n");
+					//OutputDebugStringA(buf);
+					WriteFile(hFile, buf, (DWORD)strlen(buf), &bytesWritten, NULL);
+				}
+				else if (filetype == ExportFormat::FJSON)
+				{
+					_snprintf_s(buf, ULISTMAXBUF, _TRUNCATE, "[\r\n");
+					//OutputDebugStringA(buf);
+					WriteFile(hFile, buf, (DWORD)strlen(buf), &bytesWritten, NULL);
+				}
+
 				FIInit();
 				MoreIDs = FIGetFirstId(&figetTag, &TypeNumber, TypeName, VTMAXTYPENAMEBUF);
 				while (MoreIDs)
@@ -287,21 +309,39 @@ void clsSharedPluginInstance::CreatFormatsTxt(const wchar_t* path)
 					bool err = FAMapIdToFilterInfo(TypeNumber, &filterinfo);
 					if (!err) TotalSupported++;
 
-					//_snprintf_s(buf, ULISTMAXBUF, _TRUNCATE, "%u  -  %s\r\n", TypeNumber, TypeName);
-					_snprintf_s(buf, ULISTMAXBUF, _TRUNCATE, "%u   %-12s  -  %s\r\n", TypeNumber, (err ? "*" : filterinfo.DLLName), TypeName);
+					if (filetype == ExportFormat::FCSVEURO) _snprintf_s(buf, ULISTMAXBUF, _TRUNCATE, "%u;%s;%s\r\n", TypeNumber, (err ? "" : filterinfo.DLLName), TypeName);
+					else if (filetype == ExportFormat::FCSV4180) _snprintf_s(buf, ULISTMAXBUF, _TRUNCATE, "%u,%s,%s\r\n", TypeNumber, (err ? "" : filterinfo.DLLName), TypeName);
+					else if (filetype == ExportFormat::FJSON)
+					{
+						if (!isfirstjson) WriteFile(hFile, jsoncomma, (DWORD)strlen(jsoncomma), &bytesWritten, NULL);
+						_snprintf_s(buf, ULISTMAXBUF, _TRUNCATE, "  {\r\n    \"Format Number\": %u,\r\n    \"DLL Name\": \"%s\",\r\n    \"Format Name\": \"%s\"\r\n  }", TypeNumber, (err ? "" : filterinfo.DLLName), TypeName);
+						isfirstjson = false;
+					}
+					else _snprintf_s(buf, ULISTMAXBUF, _TRUNCATE, "%u   %-12s  -  %s\r\n", TypeNumber, (err ? "*" : filterinfo.DLLName), TypeName);
 
 					//OutputDebugStringA(buf);
 					WriteFile(hFile, buf, (DWORD)strlen(buf), &bytesWritten, NULL);
 					MoreIDs = FIGetNextId(&figetTag, &TypeNumber, TypeName, VTMAXTYPENAMEBUF);
 				}
 				FIDeInit();
-				_snprintf_s(buf, ULISTMAXBUF, _TRUNCATE, "\r\nTotal known format IDs: %u\r\n", TotalIDs);
-				//OutputDebugStringA(buf);
-				WriteFile(hFile, buf, (DWORD)strlen(buf), &bytesWritten, NULL);
 
-				_snprintf_s(buf, ULISTMAXBUF, _TRUNCATE, "Total supported format IDs: %u\r\n", TotalSupported);
-				//OutputDebugStringA(buf);
-				WriteFile(hFile, buf, (DWORD)strlen(buf), &bytesWritten, NULL);
+				if (filetype == ExportFormat::FTXT)
+				{
+					_snprintf_s(buf, ULISTMAXBUF, _TRUNCATE, "\r\nTotal known format IDs: %u\r\n", TotalIDs);
+					//OutputDebugStringA(buf);
+					WriteFile(hFile, buf, (DWORD)strlen(buf), &bytesWritten, NULL);
+
+					_snprintf_s(buf, ULISTMAXBUF, _TRUNCATE, "Total supported format IDs: %u\r\n", TotalSupported);
+					//OutputDebugStringA(buf);
+					WriteFile(hFile, buf, (DWORD)strlen(buf), &bytesWritten, NULL);
+				}
+				else if (filetype == ExportFormat::FJSON)
+				{
+					_snprintf_s(buf, ULISTMAXBUF, _TRUNCATE, "\r\n]\r\n");
+					//OutputDebugStringA(buf);
+					WriteFile(hFile, buf, (DWORD)strlen(buf), &bytesWritten, NULL);
+				}
+
 
 				CloseHandle(hFile);
 			}

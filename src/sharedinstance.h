@@ -30,10 +30,19 @@ public:
 	HBITMAP GetVTFilePreview(const wchar_t* FileToLoad, const int width, const int height);
 	static bool LoadVTFile(const HWND hViewWnd, const wchar_t* FileToLoad);
 
-	void CreatFormatsTxt(const wchar_t* path);
-
-
+	void CreatFormatsTxt(const wchar_t* path, DWORD filetype);
 };
+
+
+
+namespace ExportFormat { // Export formats.txt/formats.csv/... File Types:
+	enum Type {
+		FTXT = 0,
+		FCSV4180,
+		FCSVEURO,
+		FJSON
+	};
+} // VS2005 fix
 
 
 

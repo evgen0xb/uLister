@@ -651,8 +651,8 @@ Finally, the search procedure has been rewritten:
     - change version number
 
 2026-07-17
-    - added the ability to enable/disable scroll bars to the Options context menu (this is useful for full-screen mode)
-    - added option smartscrollbar
+    - added the ability to enable/disable scroll bars to the Options context menu (this is useful for full-screen mode presentations)
+    - added option smartscrollbar (auto disable/enable scroll bars enter/exit full-screen mode)
 
 2026-07-18
     - when exporting format types, information about the corresponding DLL is added to formats.txt (reverse engineering sccfa.dll)
@@ -666,3 +666,12 @@ Finally, the search procedure has been rewritten:
 
 2026-08-10 4.5.0.0
     - change version number
+
+2026-08-18
+- formats.txt can be exported to CSV files with a "," or ";" delimiter, and to JSON for easy viewing in the csvtab.wlx and jsontab.wlx plugins (why bother?)
+
+https://github.com/evgen0xb/uLister/issues/10
+Actually, formats.txt was originally designed so that it could be converted into a CSV file with literally one line of a batch file:
+
+ECHO.Format Number;DLL Name;Format Name> form_csv.csv
+FOR /F "tokens=1,2,3,*" %%A IN (formats.txt) DO ECHO.%%A;%%B;%%D>> form_csv.csv

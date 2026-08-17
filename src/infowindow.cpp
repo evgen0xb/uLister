@@ -27,6 +27,7 @@ The plugin is provided as-is and without any warranty under the GPLv3 license.
 #include "ulister.h"
 #include "infowindow.h"
 #include "utils.h"
+#include "sharedinstance.h"
 #include "window.h"
 
 
@@ -420,32 +421,127 @@ LRESULT CALLBACK FileInfoWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 
 
 
-void ShowSaveFileDialog(HWND hwndOwner)
+// ***********************************************************************************************************************************************************
+
+
+
+HWND FindChildWindowByClass(HWND hParent, const wchar_t* szClassName)
 {
+	HWND hChild = FindWindowExW(hParent, NULL, szClassName, NULL);
+	if (hChild) return hChild;
+
+	hChild = FindWindowExW(hParent, NULL, NULL, NULL); // find first node
+	while (hChild)
+	{
+		HWND hFound = FindChildWindowByClass(hChild, szClassName);
+		if (hFound) return hFound;
+
+		hChild = FindWindowExW(hParent, hChild, NULL, NULL); // find next node
+	}
+	return NULL;
+}
+
+
+
 #ifdef ULISTER64
-	wchar_t szFileName[MAX_PATH] = L"formats64.txt";
+const wchar_t szDefFileName[] = L"formats64";
 #else
-	wchar_t szFileName[MAX_PATH] = L"formats32.txt";
+const wchar_t szDefFileName[] = L"formats32";
 #endif
 
-	OPENFILENAMEW ofn;
+const wchar_t* Extensions[] = { L".txt", L".csv", L".csv", L".json", L"" }; // The last empty line is "All files (*.*)" and do nothing
 
+
+
+UINT_PTR CALLBACK GetSaveFileNameHookProc(HWND hdlg, UINT uiMsg, WPARAM wParam, LPARAM lParam)
+{
+	if (uiMsg == WM_NOTIFY)
+	{
+		LPOFNOTIFYW lpOfn = (LPOFNOTIFYW)lParam;
+
+		if (lpOfn->hdr.code == CDN_TYPECHANGE || lpOfn->hdr.code == CDN_FOLDERCHANGE)
+		{
+			HWND hParent = GetParent(hdlg);
+			wchar_t szFileName[MAX_PATH];
+			szFileName[0] = L'\0';
+
+			const int extIndex = (lpOfn->lpOFN->nFilterIndex) - 1;
+			const size_t maxElements = sizeof(Extensions) / sizeof(Extensions[0]);
+
+			if (extIndex >= 0 && (size_t)extIndex < maxElements - 1)
+			{
+				const wchar_t* szNewExt = Extensions[extIndex];
+
+				SendMessageW(hParent, CDM_GETSPEC, MAX_PATH, (LPARAM)szFileName);
+
+				if (!szFileName[0])
+				{
+					wcscpy_s(szFileName, MAX_PATH, szDefFileName);
+					wcscat_s(szFileName, MAX_PATH, szNewExt);
+				}
+				else
+				{
+					wchar_t* pDot = wcsrchr(szFileName, L'.');
+					if (pDot) wcscpy_s(pDot, MAX_PATH - (pDot - szFileName), szNewExt);
+					else wcscat_s(szFileName, MAX_PATH, szNewExt);
+				}
+
+				HWND hEditCtrl = FindChildWindowByClass(hParent, L"Edit");
+				if (hEditCtrl) SendMessageW(hEditCtrl, WM_SETTEXT, 0, (LPARAM)szFileName); // fix Windows bug
+			}
+		}
+	}
+	return 0;
+} // GetSaveFileNameHookProc
+
+
+
+/*
+
+https://github.com/evgen0xb/uLister/issues/10
+¬ообще-то formats.txt был изначально задуман так, чтобы его можно было буквально одной строчкой батника сконвертировать в CSV-файл:
+
+ECHO.Format Number;DLL Name;Format Name> form_csv.csv
+FOR /F "tokens=1,2,3,*" %%A IN (formats.txt) DO ECHO.%%A;%%B;%%D>> form_csv.csv
+
+*/
+
+
+
+void ShowSaveFileDialog(HWND hwndOwner)
+{
+	wchar_t szFileName[MAX_PATH];
+
+	wcscpy_s(szFileName, MAX_PATH, szDefFileName);
+	wcscat_s(szFileName, MAX_PATH, Extensions[0]);
+
+	OPENFILENAMEW ofn;
 	ZeroMemory(&ofn, sizeof(ofn));
 	ofn.lStructSize = sizeof(ofn);
 	ofn.hwndOwner = hwndOwner;
-	ofn.lpstrFilter = L"Text files (*.txt)\0*.txt\0All files (*.*)\0*.*\0";
 	ofn.lpstrFile = szFileName;
 	ofn.nMaxFile = MAX_PATH;
-	ofn.Flags = OFN_EXPLORER | OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY;
+	ofn.Flags = OFN_EXPLORER | OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY | OFN_ENABLEHOOK;
+	ofn.lpfnHook = GetSaveFileNameHookProc;
+
+	// Default settings are consistent with Extensions[0]
+	ofn.lpstrFilter = L"Text files (*.txt)\0*.txt\0CSV files RFC 4180 (*.csv)\0*.csv\0CSV files Europe (*.csv)\0*.csv\0JSON files (*.json)\0*.json\0All files (*.*)\0*.*\0";
 	ofn.lpstrDefExt = L"txt";
+	ofn.nFilterIndex = 1;
 
 	if (GetSaveFileNameW(&ofn))
 	{
 		clsInfoWindow *pInfoWindow = (clsInfoWindow*)GetWindowLongPtrW(hwndOwner, GWLP_USERDATA);
 		if (!pInfoWindow) return;
-		clsVTWindowInstance *mydata = (clsVTWindowInstance *)GetWindowLongPtr(pInfoWindow->hwndParentWindow, GWLP_USERDATA); //hwndParentWindow === TListerWindow
+
+		clsVTWindowInstance *mydata = (clsVTWindowInstance *)GetWindowLongPtrW(pInfoWindow->hwndParentWindow, GWLP_USERDATA); //hwndParentWindow === TListerWindow
 		if (!mydata) return;
 
-		mydata->pSharedPluginInstance->CreatFormatsTxt(ofn.lpstrFile);
+		DWORD filetype = ExportFormat::FTXT;
+		if (ofn.nFilterIndex == 2) filetype = ExportFormat::FCSV4180;
+		else if (ofn.nFilterIndex == 3) filetype = ExportFormat::FCSVEURO;
+		else if (ofn.nFilterIndex == 4) filetype = ExportFormat::FJSON;
+
+		mydata->pSharedPluginInstance->CreatFormatsTxt(ofn.lpstrFile, filetype);
 	}
-}
+} // ShowSaveFileDialog
